@@ -29,15 +29,13 @@ if (isModuleAccessible($guid, $connection2)==FALSE) {
 	print "</div>" ;
 }
 else {
-	//New PDO DB connection. 
-	//Gibbon uses PDO to connect to databases, rather than the PHP mysql classes, as they provide paramaterised connections, which are more secure.
-	try {
-		$connection2=new PDO("mysql:host=$databaseServer;dbname=$databaseName;charset=utf8", $databaseUsername, $databasePassword);
-		$connection2->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		$connection2->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-	}
-	catch(PDOException $e) {
-		echo $e->getMessage();
-	}
+	//New PDO DB connection
+	$pdo = new Gibbon\sqlConnection();
+	$connection2 = $pdo->getConnection();
+
+	print "<div class='trail'>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Imports') . "</div>" ;
+	print "</div>" ;
+	
 }	
 ?>

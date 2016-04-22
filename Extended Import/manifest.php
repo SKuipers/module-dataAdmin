@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 //Basic variables
 $name="Extended Import" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
-$description="" ; //Short text description
-$entryURL="index.php" ; //The landing page for the unit, used in the main menu
+$description="Provides additional import functionality for migrating existing data." ; //Short text description
+$entryURL="import.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="0" ; //Verson number
+$version="0.0.01" ; //Verson number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
@@ -40,21 +40,21 @@ $url="https://github.com/SKuipers/" ; //Your URL
 
 //Action rows 
 //One array per action
-// $actionRows[0]["name"]="" ; //The name of the action (appears to user in the right hand side module menu)
-// $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-// $actionRows[0]["category"]="" ; //Optional: subgroups for the right hand side module menu
-// $actionRows[0]["description"]="" ; //Text description
-// $actionRows[0]["URLList"]="" ; //List of pages included in this action
-// $actionRows[0]["entryURL"]="" ; //The landing action for the page.
-// $actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-// $actionRows[0]["defaultPermissionTeacher"]="Y" ; //Default permission for built in role Teacher
-// $actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-// $actionRows[0]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-// $actionRows[0]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-// $actionRows[0]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
-// $actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-// $actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-// $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[0]["name"]="Manage Imports" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
+$actionRows[0]["category"]="" ; //Optional: subgroups for the right hand side module menu
+$actionRows[0]["description"]="" ; //Text description
+$actionRows[0]["URLList"]="import.php" ; //List of pages included in this action
+$actionRows[0]["entryURL"]="import.php" ; //The landing action for the page.
+$actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
+$actionRows[0]["defaultPermissionTeacher"]="Y" ; //Default permission for built in role Teacher
+$actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
+$actionRows[0]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
+$actionRows[0]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
+$actionRows[0]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
+$actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
+$actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
+$actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
