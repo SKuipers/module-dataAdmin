@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //Basic variables
 $name="Extended Import" ; //The name of the variable as it appears to users. Needs to be unique to installation. Also the name of the folder that holds the unit.
 $description="Provides additional import functionality for migrating existing data." ; //Short text description
-$entryURL="import.php" ; //The landing page for the unit, used in the main menu
+$entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
 $version="0.0.01" ; //Verson number
@@ -44,8 +44,8 @@ $actionRows[0]["name"]="Manage Imports" ; //The name of the action (appears to u
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
 $actionRows[0]["category"]="" ; //Optional: subgroups for the right hand side module menu
 $actionRows[0]["description"]="" ; //Text description
-$actionRows[0]["URLList"]="import.php" ; //List of pages included in this action
-$actionRows[0]["entryURL"]="import.php" ; //The landing action for the page.
+$actionRows[0]["URLList"]="import_manage.php" ; //List of pages included in this action
+$actionRows[0]["entryURL"]="import_manage.php" ; //The landing action for the page.
 $actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
 $actionRows[0]["defaultPermissionTeacher"]="Y" ; //Default permission for built in role Teacher
 $actionRows[0]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student

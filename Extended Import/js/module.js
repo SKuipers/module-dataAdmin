@@ -15,3 +15,43 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
+jQuery(function($){
+
+	$(document).ready(function () {
+		$(".columnOrder").each( columnSampleData );
+	});
+
+	$(".columnOrder").on('change', columnSampleData );
+
+
+	function columnSampleData(){
+
+		var textBox = $(this).parent().find(".columnText");
+
+		textBox.attr("readonly", $(this).val() != columnDataCustom );
+		textBox.attr("disabled", $(this).val() != columnDataCustom );
+
+
+		if ( $(this).val() == columnDataFunction ) {
+			textBox.attr("value", $(this).find("option:selected").data("function")+"()" );
+		}
+		else if ( $(this).val() == columnDataCustom ) {
+			textBox.attr("value", "" );
+		}
+		else if ( $(this).val() == columnDataSkip ) {
+			textBox.attr("value", "*skipped*" );
+		}
+		else if ( $(this).val() >= 0 ) {
+
+			if ( $(this).val() in csvFirstLine ) {
+				textBox.attr("value", csvFirstLine[ $(this).val() ] );
+			}
+			else {
+				textBox.attr("value", "" );
+			}
+		}
+
+	}
+
+}); 
