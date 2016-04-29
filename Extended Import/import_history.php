@@ -47,7 +47,7 @@ else {
 	// Get a list of available import options
 	$importTypeList = ExtendedImport\importType::loadImportTypeList();
 
-	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
+	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=extendedImportLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);
 
 	if (empty($importTypeList) || $result->rowCount()<1) {
