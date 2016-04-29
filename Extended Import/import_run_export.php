@@ -47,7 +47,7 @@ else {
 	$dataExport = (isset($_GET['data']) && $_GET['data'] == true);
 
 	//Class includes
-	require_once "./src/import.php" ;
+	require_once "./src/importType.class.php" ;
 
 	$importer = new Gibbon\extendedImporter( NULL, NULL, $pdo );
 

@@ -6,6 +6,7 @@ details:
     table: gibbonPerson
     primary: gibbonPersonID
     select: username
+    modes: { update: true, insert: true }
 keys:
     - gibbonPersonID
     - username

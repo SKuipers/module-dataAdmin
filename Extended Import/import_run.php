@@ -43,10 +43,11 @@ else {
 	print "</div>" ;
 
 	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/parsecsv.lib.php" ;
-
-	$importer = new Gibbon\ExtendedImporter( NULL, NULL, $pdo );
+	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
+	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
+	
+	$importer = new Gibbon\importer( NULL, NULL, $pdo );
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
@@ -101,13 +102,25 @@ else {
 				<tr>
 					<td> 
 						<b><?php print __($guid, "Mode"); ?> *</b><br/>
-						<span class="emphasis small"></span>
+						<span class="emphasis small"><?php print __($guid, "Options available depend on the import type."); ?></span>
 					</td>
 					<td class="right">
 						<select name="mode" id="mode" class="standardWidth">
-							<option value="sync"><?php print __($guid, 'UPDATE & INSERT') ?></option>
-							<option value="update"><?php print __($guid, 'UPDATE only') ?></option>
-							<option value="insert"><?php print __($guid, 'INSERT only') ?></option>
+							<?php
+								$modes = $importType->getDetail('modes');
+
+								if ((isset($modes['update']) && $modes['update'] == true) && (isset($modes['insert']) && $modes['insert'] == true)) {
+									print "<option value='sync'>". __($guid, 'UPDATE & INSERT'). "</option>";
+								}
+
+								if ( isset($modes['update']) && $modes['update'] == true ) {
+									print "<option value='update'>". __($guid, 'UPDATE only') . "</option>";
+								}
+
+								if ( isset($modes['insert']) && $modes['insert'] == true ) {
+									print "<option value='insert'>". __($guid, 'INSERT only'). "</option>";
+								}
+							?>
 						</select>
 					</td>
 				</tr>
@@ -179,7 +192,7 @@ else {
 
 
 		<h4>
-			<?php print __($guid, 'Data Structure') ?>
+			<?php print __($guid, 'Notes') ?>
 		</h4>
 		<ol>
 			<li style='color: #c00; font-weight: bold'><?php print __($guid, 'Always include a header row in the CSV file.') ?></li>

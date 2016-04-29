@@ -42,8 +42,7 @@ else {
 	print "</h3>" ;
 
 	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
-	$importer = new Gibbon\extendedImporter( NULL, NULL, $pdo );
+	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
 	$importTypeList = Gibbon\importType::loadImportTypeList();

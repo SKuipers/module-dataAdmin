@@ -19,10 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Gibbon;
 
-
-use Library\Yaml\Yaml ;
-
-
 /**
  * Extended Import class
  *
@@ -30,7 +26,7 @@ use Library\Yaml\Yaml ;
  * @since	25th April 2016
  * @author	Sandra Kuipers
  */
-class extendedImporter
+class importer
 {
 	const COLUMN_DATA_SKIP = -1;
 	const COLUMN_DATA_CUSTOM = -2;
@@ -230,10 +226,7 @@ class extendedImporter
 				// Run a user_func based on the function name defined for that field
 				else if ($columnIndex == ExtendedImporter::COLUMN_DATA_FUNCTION) {
 					
-					$function = $importType->getField($fieldName, 'function');
-					if ( !empty($function) && method_exists($importType, $function)) {
-						$value = call_user_func( array($importType, $function) ); 
-					}
+					$value = $importType->doImportFunction( $fieldName );
 				}
 				// Use the column index to grab to associated CSV value
 				else {
@@ -503,171 +496,6 @@ class extendedImporter
      */
     public function isValidMimeType( $fileMimeType ) {
     	return in_array( $fileMimeType, $this->csvMimeTypes );
-    }
-
-}
-
-
-
-/**
- * Reads and holds the config info for a custom Import Type
- *
- * @version	25th April 2016
- * @since	25th April 2016
- * @author	Sandra Kuipers
- */
-class importType
-{
-
-	private $details;
-	private $keys;
-	private $table;
-
-	private $validated = false;
-
-
-	/**
-     * Constructor
-     *
-     * @version  26th April 2016
-     * @since    26th April 2016
-     * @param    {string} YAML file data
-     */
-    public function __construct( $data, $pdo = NULL )
-    {
-    	if (isset($data['details'])) {
-    		$this->details = $data['details'];
-    	}
-
-    	if (isset($data['keys'])) {
-    		$this->keys = $data['keys'];
-    	}
-
-    	if (isset($data['table'])) {
-    		$this->table = $data['table'];
-    	}
-
-    	if ($pdo != NULL) {
-    		$this->validated = $this->validateWithDatabase( $pdo );
-    	}
-
-    	if ( empty($this->details) || empty($this->details) || empty($this->table) ) {
-    		return NULL;
-    	}
-    }
-
-    public static function loadImportTypeList( sqlConnection $pdo = NULL ) {
-
-    	$dir = glob( GIBBON_ROOT . "modules/Extended Import/imports/*.yml" );
-
-    	$yaml = new Yaml();
-    	$importTypes = array();
-    	
-    	foreach ($dir as $file) {
-    		if (!file_exists($file)) continue;
-			$fileData = $yaml::parse( file_get_contents( $file ) );
-			if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
-				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo );
-			}
-    	}
-
-    	return $importTypes;
-    }
-
-    public static function loadImportType( $importTypeName, sqlConnection $pdo = NULL ) {
-    	$path = GIBBON_ROOT . "modules/Extended Import/imports/" . $importTypeName .".yml";
-    	if (!file_exists($path)) return NULL;
-
-    	$yaml = new Yaml();
-    	$fileData = $yaml::parse( file_get_contents($path) );
-
-    	return new importType( $fileData, $pdo );
-    }
-
-    public function validateWithDatabase( sqlConnection $pdo ) {
-
-    	try {
-			$sql="SHOW COLUMNS FROM " . $this->getDetail('table');
-			$result = $pdo->executeQuery(array(), $sql);   
-		}
-		catch(PDOException $e) {
-			return false;
-		}
-
-		$columns = $result->fetchAll( \PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE );
-
-		$validatedFields = 0;
-		foreach ($this->table as $fieldName => $field) {
-			if ( isset($columns[$fieldName]) ) {
-				foreach ($columns[$fieldName] as $columnName => $columnField) {
-					$this->table[ $fieldName ][ strtolower($columnName) ] = $columnField;
-				}
-				$validatedFields++;
-			}
-		}
-
-    	return ($validatedFields == count($this->table));
-    }
-
-    public function getDetail($key, $default = "") {
-    	return ( isset($this->details[$key]) )? $this->details[$key] : $default;
-    }
-
-    public function getKeys() {
-    	return ( isset($this->keys) )? $this->keys : array();
-    }
-
-    public function getTables() {
-    	return ( isset($this->details['table']) )? array( $this->details['table'] ) : array();
-    }
-    public function getTableFields() {
-    	return ( isset($this->table) )? array_keys($this->table) : array();
-    }
-
-    public function getField( $fieldName, $key, $default = "" ) {
-
-    	if (isset($this->table[$fieldName][$key])) {
-    		return $this->table[$fieldName][$key];
-    	} else if (isset($this->table[$fieldName]['args'][$key])) {
-    		return $this->table[$fieldName]['args'][$key];
-    	} else {
-    		return $default;
-    	}
-    }
-
-    public function validateFieldValue( $fieldName, $value ) {
-
-    	if (!$this->validated) return false;
-
-    	//TODO: More value validation
-    	return true;
-    }
-
-    public function isFieldRequired( $fieldName ) {
-    	return (isset( $this->table[$fieldName]['args']['required']))?  $this->table[$fieldName]['args']['required'] : false;
-    }
-
-    public function isValid() {
-
-    	return $this->validated;
-    }
-
-    public function readableFieldType( $fieldName ) {
-    	$output = '';
-    	$type = $this->getField($fieldName, 'type');
-    	if (isset($type)) {
-    		$length = $this->getField($fieldName, 'length');
-			if (isset($length) && ( $type == 'varchar' ||  $type == 'int') ) {
-				$output = $type. "(" . $length . ")";
-			} else {
-				$output = $type;
-			}
-		}
-		return $output;
-    }
-
-    public function generatePassword() {
-    	return randomPassword(8);
     }
 
 }

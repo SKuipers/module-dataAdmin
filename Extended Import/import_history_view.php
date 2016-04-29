@@ -34,7 +34,7 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
+	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
