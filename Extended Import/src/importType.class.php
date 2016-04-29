@@ -32,20 +32,34 @@ use Library\Yaml\Yaml ;
  */
 class importType
 {
+    /**
+     * Information about the overall Import Type
+     */
+	private $details = array();
 
-	private $details;
-	private $keys;
-	private $table;
+    /**
+     * Values that can be used for sync & updates
+     */
+	private $keys = array();
 
+    /**
+     * Holds the table fields and information for each field
+     */
+	private $table = array();
+
+    /**
+     * Has the structure been checked against the database?
+     */
 	private $validated = false;
+
 
 	/**
      * Constructor
      *
-     * @version  26th April 2016
-     * @since    26th April 2016
-     * @param    [string]			data - YAML file data
-     * @param    [sqlConnection]	pdo - An active sqlConnection
+     * @version 26th April 2016
+     * @since   26th April 2016
+     * @param   array   importType information
+     * @param   Object  PDO Connection
      */
     public function __construct( $data, $pdo = NULL )
     {
@@ -74,12 +88,12 @@ class importType
      * Load Import Type List
      * Loads all YAML files from a folder and creates an importType object for each
      *
-     * @access public
+     * @access  public
      * @version 29th April 2016
-     * @since 	29th April 2016
-     * @param 	[sqlConnection]	pdo - An active sqlConnection
+     * @since   29th April 2016
+     * @param   Object  PDO Connection
      *
-     * @return 	[array] 2D array of importType objects
+     * @return  array   2D array of importType objects
      */
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
@@ -103,11 +117,11 @@ class importType
      * Load Import Type
      * Loads a YAML file and creates an importType object
      *
-     * @access public
+     * @access  public
      * @version 29th April 2016
      * @since 	29th April 2016
-     * @param 	[string]		importTypeName - name of the file to load, no extention
-     * @param 	[sqlConnection]	pdo - An active sqlConnection
+     * @param   string  Filename of the Import Type
+     * @param   Object  PDO Conenction
      *
      * @return 	[importType]
      */
@@ -125,12 +139,12 @@ class importType
      * Validate With Database
      * Compares the importType structure with the database table to ensure imports will succeed
      *
-     * @access public
+     * @access  public
      * @version 29th April 2016
      * @since 	29th April 2016
-     * @param 	[sqlConnection]	pdo - An active sqlConnection
+     * @param   Object  PDO Conenction
      *
-     * @return 	[bool] true if all fields match existing table columns
+     * @return  bool    true if all fields match existing table columns
      */
     public function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
 
@@ -160,13 +174,13 @@ class importType
     /**
      * Get Detail
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
-     * @param 	[string]	key - name of the detail to retrieve
-     * @param 	[string]	default - an optional value to return if key doesn't exist
+     * @param   string  key - name of the detail to retrieve
+     * @param   string  default - an optional value to return if key doesn't exist
      *
-     * @return 	[var]
+     * @return  var
      */
     public function getDetail($key, $default = "") {
     	return ( isset($this->details[$key]) )? $this->details[$key] : $default;
@@ -175,11 +189,11 @@ class importType
     /**
      * Get Detail
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
      *
-     * @return 	[array] 2D array of available keys to sync with
+     * @return  array   2D array of available keys to sync with
      */
     public function getKeys() {
     	return ( isset($this->keys) )? $this->keys : array();
@@ -188,11 +202,11 @@ class importType
     /**
      * Get Tables
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
      *
-     * @return 	[array] 2D array of table names used in this import
+     * @return  array   2D array of table names used in this import
      */
     public function getTables() {
     	return ( isset($this->details['table']) )? array( $this->details['table'] ) : array();
@@ -201,11 +215,11 @@ class importType
     /**
      * Get Table Fields
      *
-     * @access public
+     * @access  public
      * @version 28th April 2016
      * @since 	28th April 2016
      *
-     * @return 	[array] 2D array of table field names used in this import
+     * @return  array   2D array of table field names used in this import
      */
     public function getTableFields() {
     	return ( isset($this->table) )? array_keys($this->table) : array();
@@ -214,14 +228,14 @@ class importType
     /**
      * Get Field
      *
-     * @access public
+     * @access  public
      * @version 28th April 2016
      * @since 	28th April 2016
-     * @param 	[string]	fieldName - name of the table column
-     * @param 	[string]	key - name of the detail to retrieve
-     * @param 	[string]	default - an optional value to return if key doesn't exist
+     * @param   string  Field Name
+     * @param   string  Key to retrieve
+     * @param   string  Default value to return if key doesn't exist
      *
-     * @return 	[var]
+     * @return  var
      */
     public function getField( $fieldName, $key, $default = "" ) {
 
@@ -238,13 +252,13 @@ class importType
      * Validate Field Value
      * Compares the value type, legth and properties with the expected values for the table column
      *
-     * @access public
+     * @access  public
      * @version 29th April 2016
      * @since 	29th April 2016
-     * @param 	[string]	fieldName - name of the table column
-     * @param 	[var]		value - the value to validate
+     * @param   string  Field name
+     * @param   var     Value to validate
      *
-     * @return 	[bool] true if the value checks out
+     * @return  bool    true if the value checks out
      */
     public function validateFieldValue( $fieldName, $value ) {
 
@@ -257,11 +271,11 @@ class importType
     /**
      * Is Valid
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
      *
-     * @return 	[bool] true if the importType has been successfully checked against the database
+     * @return  bool true if the importType has been successfully checked against the database
      */
     public function isValid() {
 
@@ -271,12 +285,12 @@ class importType
     /**
      * Is Field Required
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
-     * @param 	[string]	fieldName - name of the table column
+     * @param   string	Field name
      *
-     * @return 	[bool] true if marked as a required field
+     * @return  bool true if marked as a required field
      */
     public function isFieldRequired( $fieldName ) {
     	return (isset( $this->table[$fieldName]['args']['required']))?  $this->table[$fieldName]['args']['required'] : false;
@@ -286,12 +300,12 @@ class importType
      * Readable Field Type
      * Create a human friendly representation of the field value type
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
-     * @param 	[string]	fieldName - name of the table column
+     * @param   string  Field name
      *
-     * @return 	[string] 
+     * @return  string 
      */
     public function readableFieldType( $fieldName ) {
     	$output = '';
@@ -311,12 +325,12 @@ class importType
      * Do Import Function
      * Returns the value of a dynmaic function name supplied by the importType field
      *
-     * @access public
+     * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
-     * @param 	[string]	fieldName - name of the table column
+     * @param   string  Field name
      *
-     * @return 	[var|NULL]
+     * @return  var|NULL
      */
     public function doImportFunction( $fieldName ) {
 
@@ -333,11 +347,11 @@ class importType
      * Generate Password
      * Custom function for run-time generation of passwords on import
      *
-     * @access private
+     * @access  private
      * @version 27th April 2016
      * @since 	27th April 2016
      *
-     * @return 	[string] a random password, based on default Gibbon function
+     * @return  string  Random password, based on default Gibbon function
      */
     private function userFunc_generatePassword() {
     	return randomPassword(8);

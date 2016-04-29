@@ -720,9 +720,9 @@ else {
 					</td>
 					<td>
 					<?php 
-						print $importer->getDatabaseResults('inserts');
-						if ($importer->getDatabaseResults('inserts_skipped') > 0) {
-							print " (". $importer->getDatabaseResults('inserts_skipped') ." ". __($guid, "skipped") .")";
+						print $importer->getDatabaseResult('inserts');
+						if ($importer->getDatabaseResult('inserts_skipped') > 0) {
+							print " (". $importer->getDatabaseResult('inserts_skipped') ." ". __($guid, "skipped") .")";
 						}
 					?>
 					</td>
@@ -733,9 +733,9 @@ else {
 						<?php print __($guid, "Database Updates").": "; ?>
 					</td>
 					<td>
-					<?php print $importer->getDatabaseResults('updates');
-						if ($importer->getDatabaseResults('updates_skipped') > 0) {
-							print " (". $importer->getDatabaseResults('updates_skipped') ." ". __($guid, "skipped") .")";
+					<?php print $importer->getDatabaseResult('updates');
+						if ($importer->getDatabaseResult('updates_skipped') > 0) {
+							print " (". $importer->getDatabaseResult('updates_skipped') ." ". __($guid, "skipped") .")";
 						}
 					?>
 					</td>
@@ -787,10 +787,10 @@ else {
 					'rowerrors'			=> $importer->getErrorRowCount(),
 					'errors'			=> $importer->getErrorCount(),
 					'warnings'			=> $importer->getWarningCount(),
-					'inserts'			=> $importer->getDatabaseResults('inserts'),
-					'inserts_skipped'	=> $importer->getDatabaseResults('inserts_skipped'),
-					'updates'			=> $importer->getDatabaseResults('updates'),
-					'updates_skipped'	=> $importer->getDatabaseResults('updates_skipped'),
+					'inserts'			=> $importer->getDatabaseResult('inserts'),
+					'inserts_skipped'	=> $importer->getDatabaseResult('inserts_skipped'),
+					'updates'			=> $importer->getDatabaseResult('updates'),
+					'updates_skipped'	=> $importer->getDatabaseResult('updates_skipped'),
 					'executionTime'		=> $executionTime,
 					'memoryUsage'		=> $memoryUsage,
 				);
