@@ -11,16 +11,32 @@ keys:
     - username
     - studentID
 table:
-    surname: {name: "Surname", desc: "Family Name"}
-    firstName: {name: "First Name", desc: "Given name"}
-    preferredName: {name: "Preffered Name", desc: "Most common name, alias, nickname, handle, etc"}
-    officialName: {name: "Official Name", desc: "Full name as shown in ID documents."}
-    password: {name: "Password", desc: "At least one lowercase and one number, from 8 to 20 chars"}
-    username: {name: "Username", desc: "User account name & login"}
-validate:
-    surname: {type: varchar, length: 30, filter: string, required: true}
-    firstName: {type: varchar, length: 30, filter: string, required: true}
-    preferredName: {type: varchar, length: 30, filter: string, required: true}
-    officialName: {type: varchar, length: 150, filter: string, required: true}
-    password: {type: varchar, length: 20, filter: string, required: true, custom: true, function: generatePassword }
-    username: {type: varchar, length: 20, filter: string, required: true}
+    title: 
+        name: "Title"
+        desc: "e.g. Mr, Mrs, Dr"
+        args: {filter: string}
+    surname: 
+        name: "Surname"
+        desc: "Family Name"
+        args: {filter: string, required: true}
+    firstName: 
+        name: "First Name"
+        desc: "Given name"
+        args: {filter: string, required: true}
+    preferredName: 
+        name: "Preffered Name"
+        desc: "Most common name, alias, nickname, handle, etc"
+        args: {filter: string, required: true}
+    officialName: 
+        name: "Official Name"
+        desc: "Full name as shown in ID documents."
+        args: {filter: string, required: true}
+    password: 
+        name: "Password"
+        desc: "At least one lowercase and one number, from 8 to 20 chars"
+        args: {filter: string, required: true, custom: true, function: generatePassword}
+    username: 
+        name: "Username"
+        desc: "User account name & login"
+        args: {filter: string, required: true}
+        

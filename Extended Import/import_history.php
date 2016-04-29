@@ -48,7 +48,7 @@ else {
 	// Get a list of available import options
 	$importTypeList = $importer->getImportTypeList();
 
-	$sql="SELECT surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
+	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);
 
 	if (empty($importTypeList) || $result->rowCount()<1) {
@@ -75,6 +75,9 @@ else {
 				print "<th>" ;
 					print __($guid, "Details") ;
 				print "</th>" ;
+				print "<th>" ;
+					print __($guid, "Actions") ;
+				print "</th>" ;
 			print "</tr>" ;
 
 		while ($row=$result->fetch()) {
@@ -91,10 +94,11 @@ else {
 
 				print "<td>" . $importType->getDetail('category'). "</td>" ;
 				print "<td>" . $importType->getDetail('name'). "</td>" ;
+				print "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
+
 				print "<td>";
-					print ($row['success'] == true)? 'Success' : 'Failed';
-				print "</td>" ;
-				
+					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+				print "</td>";
 
 			print "</tr>" ;
 		}

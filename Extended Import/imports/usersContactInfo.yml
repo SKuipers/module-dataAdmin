@@ -1,0 +1,138 @@
+details:
+    type: usersContactInfo
+    category: Users
+    name: Contact Information
+    desc: Addresses, phone numbers, and emergency contacts
+    table: gibbonPerson
+    primary: gibbonPersonID
+    select: username
+keys:
+    - gibbonPersonID
+    - username
+table:
+    username: 
+        name: "Username"
+        desc: "User account name & login"
+        args: {filter: string, required: true}
+
+
+    address1: 
+        name: "Address 1"
+        desc: "Unit, Building, Street"
+        args: {filter: string}
+    address1District: 
+        name: "Address 1 (District)"
+        desc: "County, State, District"
+        args: {filter: string}
+    address1Country: 
+        name: "Address 1 (Country)"
+        desc: ""
+        args: {filter: string}
+
+
+    address2: 
+        name: "Address 2"
+        desc: "Unit, Building, Street"
+        args: {filter: string}
+    address2District: 
+        name: "Address 2 (District)"
+        desc: "County, State, District"
+        args: {filter: string}
+    address2Country: 
+        name: "Address 2 (Country)"
+        desc: ""
+        args: {filter: string}
+
+
+    phone1Type: 
+        name: "Phone 1 (Type)"
+        desc: "Mobile, Home, Work, Fax, Pager, Other"
+        args: {filter: string}
+    phone1CountryCode: 
+        name: "Phone 1 (Country Code)"
+        desc: "IDD code, without 00 or +"
+        args: {filter: string}
+    phone1: 
+        name: "Phone 1"
+        desc: "No spaces or punctuation, just numbers"
+        args: {filter: numeric}
+
+
+    phone2Type: 
+        name: "Phone 2 (Type)"
+        desc: "Mobile, Home, Work, Fax, Pager, Other"
+        args: {filter: string}
+    phone2CountryCode: 
+        name: "Phone 2 (Country Code)"
+        desc: "IDD code, without 00 or +"
+        args: {filter: string}
+    phone2: 
+        name: "Phone 2"
+        desc: "No spaces or punctuation, just numbers"
+        args: {filter: numeric}
+
+
+    phone3Type: 
+        name: "Phone 3 (Type)"
+        desc: "Mobile, Home, Work, Fax, Pager, Other"
+        args: {filter: string}
+    phone3CountryCode: 
+        name: "Phone 3 (Country Code)"
+        desc: "IDD code, without 00 or +"
+        args: {filter: string}
+    phone3: 
+        name: "Phone 3"
+        desc: "No spaces or punctuation, just numbers"
+        args: {filter: numeric}
+
+
+    phone4Type: 
+        name: "Phone 4 (Type)"
+        desc: "Mobile, Home, Work, Fax, Pager, Other"
+        args: {filter: string}
+    phone4CountryCode: 
+        name: "Phone 4 (Country Code)"
+        desc: "IDD code, without 00 or +"
+        args: {filter: string}
+    phone4: 
+        name: "Phone 4"
+        desc: "No spaces or punctuation, just numbers"
+        args: {filter: numeric}
+
+
+    emergency1Name: 
+        name: "Emergency 1 Name"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency1Number1: 
+        name: "Emergency 1 Phone Number 1"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency1Number2: 
+        name: "Emergency 1 Phone Number 2"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency1Relationship: 
+        name: "Emergency 1 Relationship"
+        desc: "For students and staff only"
+        args: {filter: string}
+
+
+    emergency2Name: 
+        name: "Emergency 2 Name"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency2Number1: 
+        name: "Emergency 2 Phone Number 1"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency2Number2: 
+        name: "Emergency 2 Phone Number 2"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency2Relationship: 
+        name: "Emergency 2 Relationship"
+        desc: "For students and staff only"
+        args: {filter: string}
+
+        

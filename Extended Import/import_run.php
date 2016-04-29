@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Extended Import/import_setup.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Extended Import/import_run.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -52,10 +52,15 @@ else {
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
 	$importType = $importer->getImportType( $type );
 
-	if ( empty($importType) || !$importType->isValidImportType() ) {
+	if ( empty($importType)  ) {
 		print "<div class='error'>" ;
 		print __($guid, "Your request failed because your inputs were invalid.") ;
 		print "</div>" ;
+		return;
+	} else if ( !$importType->isValid() ) {
+		print "<div class='error'>";
+		printf( __($guid, 'Import cannot proceed, as the selected Import Type "%s" did not validate with the database.'), $type) ;
+		print "<br/></div>";
 		return;
 	}
 
@@ -71,6 +76,7 @@ else {
 
 	//STEP 1, SELECT TERM -----------------------------------------------------------------------------------
 	if ($step==1) {
+
 		try {
 			$data=array( 'type' => $type, 'success' => '1' ); 
 			$sql="SELECT importLogID FROM importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
@@ -90,7 +96,7 @@ else {
 		<p>
 			<?php //print __($guid, 'This page allows you to import user data from a CSV file, in one of two modes: 1) Sync - the import file includes all users, whether they be students, staff, parents or other. The system will take the import and set any existing users not present in the file to "Left", whilst importing new users into the system, or 2) Import - the import file includes only users you wish to add to the system. New users will be assigned a random password, unless a default is set or the Password field is not blank. Select the CSV file you wish to use for the synchronise operation.') ?><br/>
 		</p>
-		<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_setup.php&type=$type&step=2" ?>" enctype="multipart/form-data">
+		<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=2" ?>" enctype="multipart/form-data">
 			<table class='smallIntBorder fullWidth' cellspacing='0'>	
 				<tr>
 					<td> 
@@ -180,8 +186,15 @@ else {
 			<li><?php print __($guid, 'You may only submit CSV files.') ?></li>
 			<li><?php print __($guid, 'Imports cannot be run concurrently (e.g. make sure you are the only person importing at any one time).') ?></li>
 		</ol>
-		<br/>
 	<?php
+
+	if ( isActionAccessible($guid, $connection2, "/modules/Extended Import/import_run_export.php") ) {
+		print "<div class='linkTop'>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "</div>" ;
+	}
 
 	print "<table class='smallIntBorder fullWidth colorOddEven' cellspacing='0'>" ;
 		print "<tr class='head'>" ;
@@ -296,7 +309,7 @@ else {
 			print "var columnDataFunction = " . Gibbon\ExtendedImporter::COLUMN_DATA_FUNCTION .";";
 			print "</script>";
 
-			print "<form method='post' action='". $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_setup.php&type=$type&step=3' enctype='multipart/form-data'>";
+			print "<form method='post' action='". $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=3' enctype='multipart/form-data'>";
 
 			if ($mode == "sync" || $mode == "update") {
 
@@ -595,8 +608,14 @@ else {
 
 				print "</table><br/>" ;
 			}
+
+			$executionTime = substr( microtime(true) - $timeStart, 0, 6 ).' sec';
+
+			$size = max( 0, memory_get_usage() - $memoryStart );
+			$unit=array('bytes','KB','MB','GB','TB','PB');
+    		$memoryUsage = @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
+
 				
-			
 			?>
 
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">	
@@ -613,7 +632,7 @@ else {
 						<?php print __($guid, "Execution time").": "; ?>
 					</td>
 					<td>
-						<?php print substr( microtime(true) - $timeStart, 0, 6 ).' sec'; ?>
+						<?php print $executionTime; ?>
 					</td>
 				</tr>
 				<tr>
@@ -622,10 +641,8 @@ else {
 					</td>
 					<td>
 						<?php 
-						$size = max( 0, memory_get_usage() - $memoryStart );
-						$unit=array('bytes','KB','MB','GB','TB','PB');
-    					$memUsage = @round($size/pow(1024,($i=floor(log($size,1024)))),2);
-						print $memUsage.' '.$unit[$i]; 
+						
+						print $memoryUsage; 
 						?>
 					</td>
 				</tr>
@@ -710,13 +727,13 @@ else {
 					?>
 					</td>
 				</tr>
-				
+
 				
 			</table><br/>
 
 			<?php if ($step==3) : ?>
 
-			<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_setup.php&type=$type&step=4" ?>" enctype="multipart/form-data">
+			<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=4" ?>" enctype="multipart/form-data">
 
 				<table class='smallIntBorder fullWidth' cellspacing='0'>
 					<tr>
@@ -748,7 +765,24 @@ else {
 			if ($step==4) {
 				$columnOrder['syncField'] =  $syncField;
 				$columnOrder['syncColumn'] =  $syncColumn;
-				//$importer->createImportLog( $_SESSION[$guid]['gibbonPersonID'], $type, $overallSuccess, array(), $columnOrder );
+
+				$results = array(
+					'importSuccess'		=> $importSuccess,
+					'buildSuccess'		=> $buildSuccess,
+					'databaseSuccess'	=> $databaseSuccess,
+					'rows'				=> $importer->getRowCount(),
+					'rowerrors'			=> $importer->getErrorRowCount(),
+					'errors'			=> $importer->getErrorCount(),
+					'warnings'			=> $importer->getWarningCount(),
+					'inserts'			=> $importer->getDatabaseResults('inserts'),
+					'inserts_skipped'	=> $importer->getDatabaseResults('inserts_skipped'),
+					'updates'			=> $importer->getDatabaseResults('updates'),
+					'updates_skipped'	=> $importer->getDatabaseResults('updates_skipped'),
+					'executionTime'		=> $executionTime,
+					'memoryUsage'		=> $memoryUsage,
+				);
+				
+				$importer->createImportLog( $_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder );
 			}
 		}
 

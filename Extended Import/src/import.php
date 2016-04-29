@@ -136,7 +136,7 @@ class ExtendedImporter
     		if (!file_exists($file)) continue;
 			$fileData = $yaml::parse( file_get_contents( $file ) );
 			if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
-				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData );
+				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $this->pdo );
 			}
     	}
 
@@ -150,7 +150,7 @@ class ExtendedImporter
     	$yaml = new Yaml();
     	$fileData = $yaml::parse( file_get_contents($path) );
 
-    	return new importType( $fileData );
+    	return new importType( $fileData, $this->pdo );
     }
 
     public function openCSVFile( $csvFile ) {
@@ -506,11 +506,13 @@ class ExtendedImporter
 		}	
     }
 
-    public function createImportLog( $gibbonPersonID, $type, $success = true, $data = array(), $columnOrder = array() ) {
+    public function createImportLog( $gibbonPersonID, $type, $results = array(), $columnOrder = array() ) {
     	
-		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "data"=>serialize($data), "columnOrder"=>serialize($columnOrder) ); 
+    	$success = ( $results['importSuccess'] && $results['buildSuccess'] && $results['databaseSuccess'] );
 
-		$sql="INSERT INTO importLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, data=:data, columnOrder=:columnOrder" ;
+		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) ); 
+
+		$sql="INSERT INTO importLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
 		$result=$this->pdo->executeQuery($data, $sql);
 	
 		return $this->pdo->getQuerySuccess();
@@ -542,7 +544,9 @@ class importType
 	private $details;
 	private $keys;
 	private $table;
-	private $validate;
+
+	private $validated = false;
+
 
 	/**
      * Constructor
@@ -551,7 +555,7 @@ class importType
      * @since    26th April 2016
      * @param    {string} YAML file data
      */
-    public function __construct( $data )
+    public function __construct( $data, $pdo = NULL )
     {
     	if (isset($data['details'])) {
     		$this->details = $data['details'];
@@ -565,18 +569,38 @@ class importType
     		$this->table = $data['table'];
     	}
 
-    	if (isset($data['validate'])) {
-    		$this->validate = $data['validate'];
+    	if ($pdo != NULL) {
+    		$this->validated = $this->validateWithDatabase( $pdo );
     	}
 
-    	if ( empty($this->details) || empty($this->details) || empty($this->table) || empty($this->validate) ) {
+    	if ( empty($this->details) || empty($this->details) || empty($this->table) ) {
     		return NULL;
     	}
     }
 
-    public function isValidImportType() {
-    	//TODO: More format validation
-    	return $this != NULL;
+    public function validateWithDatabase( sqlConnection $pdo ) {
+
+    	try {
+			$sql="SHOW COLUMNS FROM " . $this->getDetail('table');
+			$result = $pdo->executeQuery(array(), $sql);   
+		}
+		catch(PDOException $e) {
+			return false;
+		}
+
+		$columns = $result->fetchAll( \PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE );
+
+		$validatedFields = 0;
+		foreach ($this->table as $fieldName => $field) {
+			if ( isset($columns[$fieldName]) ) {
+				foreach ($columns[$fieldName] as $columnName => $columnField) {
+					$this->table[ $fieldName ][ strtolower($columnName) ] = $columnField;
+				}
+				$validatedFields++;
+			}
+		}
+
+    	return ($validatedFields == count($this->table));
     }
 
     public function getDetail($key, $default = "") {
@@ -595,22 +619,31 @@ class importType
     }
 
     public function getField( $fieldName, $key, $default = "" ) {
+
     	if (isset($this->table[$fieldName][$key])) {
     		return $this->table[$fieldName][$key];
-    	} else if (isset($this->validate[$fieldName][$key])) {
-    		return $this->validate[$fieldName][$key];
+    	} else if (isset($this->table[$fieldName]['args'][$key])) {
+    		return $this->table[$fieldName]['args'][$key];
     	} else {
     		return $default;
     	}
     }
 
     public function validateFieldValue( $fieldName, $value ) {
+
+    	if (!$this->validated) return false;
+
     	//TODO: More value validation
     	return true;
     }
 
     public function isFieldRequired( $fieldName ) {
-    	return (isset($this->validate[$fieldName]['required']))? $this->validate[$fieldName]['required'] : false;
+    	return (isset( $this->table[$fieldName]['args']['required']))?  $this->table[$fieldName]['args']['required'] : false;
+    }
+
+    public function isValid() {
+
+    	return $this->validated;
     }
 
     public function readableFieldType( $fieldName ) {
