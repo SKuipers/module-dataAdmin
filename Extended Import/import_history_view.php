@@ -39,7 +39,7 @@ else {
 	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
 	$data = array( 'importLogID' => $importLogID );
-	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
+	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
 	$result=$pdo->executeQuery($data, $sql);
 
 	if ( $result->rowCount() < 1) {

@@ -615,7 +615,7 @@ class importer
 
 		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) ); 
 
-		$sql="INSERT INTO importLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
+		$sql="INSERT INTO extendedImportLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
 		$result=$this->pdo->executeQuery($data, $sql);
 	
 		return $this->pdo->getQuerySuccess();

@@ -80,7 +80,7 @@ else {
 
 		try {
 			$data=array( 'type' => $type, 'success' => '1' ); 
-			$sql="SELECT importLogID FROM importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
+			$sql="SELECT importLogID FROM extendedImportLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
 			$result = $pdo->executeQuery($data, $sql);
 		}
 		catch(PDOException $e) { 
@@ -287,7 +287,7 @@ else {
 			if ($columnOrder == 'last') {
 				try {
 					$data=array( 'type' => $type, 'success' => '1' ); 
-					$sql="SELECT columnOrder FROM importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
+					$sql="SELECT columnOrder FROM extendedImportLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
 					$columnResult = $pdo->executeQuery($data, $sql);
 				}
 				catch(PDOException $e) { 
