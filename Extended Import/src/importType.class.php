@@ -162,13 +162,37 @@ class importType
 		foreach ($this->table as $fieldName => $field) {
 			if ( isset($columns[$fieldName]) ) {
 				foreach ($columns[$fieldName] as $columnName => $columnField) {
-					$this->table[ $fieldName ][ strtolower($columnName) ] = $columnField;
+                    if ($columnName == 'Type') {
+                        $this->parseTableValueType($fieldName, $columnField);
+                    } else {
+					   $this->table[ $fieldName ][ strtolower($columnName) ] = $columnField;
+                    }
 				}
 				$validatedFields++;
 			}
 		}
 
     	return ($validatedFields == count($this->table));
+    }
+
+    private function parseTableValueType( $fieldName, $columnField ) {
+
+        $type = (strpos($type, "(") !== FALSE)? strstr( $columnField, "(", true ) : $columnField;
+        $info = substr( $columnField, strpos($columnField, "(")+1, -1 );
+
+        //print $type .'-'. $info . '<br/>';
+
+        if ($type == 'varchar') {
+
+        }
+        else if ($type == 'int') {
+
+        }
+        else if ($type == 'enum') {
+
+        }
+
+        $this->table[ $fieldName ]['type'] = $type;
     }
 
     /**
