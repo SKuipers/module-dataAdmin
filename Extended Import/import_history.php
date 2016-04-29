@@ -43,10 +43,10 @@ else {
 
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
-	$importer = new Gibbon\ExtendedImporter( NULL, NULL, $pdo );
+	$importer = new Gibbon\extendedImporter( NULL, NULL, $pdo );
 
 	// Get a list of available import options
-	$importTypeList = $importer->getImportTypeList();
+	$importTypeList = Gibbon\importType::loadImportTypeList();
 
 	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);

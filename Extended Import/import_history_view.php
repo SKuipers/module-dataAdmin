@@ -33,6 +33,9 @@ else {
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
 
+	//Class includes
+	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
+
 	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
 	$data = array( 'importLogID' => $importLogID );
@@ -46,8 +49,16 @@ else {
 
 	} else {
 		$importLog = $result->fetch();
-
 		$importResults = (isset($importLog['importResults']))? unserialize($importLog['importResults']) : array();
+
+		if (empty($importResults) || !isset($importLog['type'])) {
+			print "<div class='error'>" ;
+			print __($guid, "There are no records to display.") ;
+			print "</div>" ;
+			return;
+		}
+
+		$importType = Gibbon\importType::loadImportType( $importLog['type'] );
 	?>
 		<h1>
 			<?php print __($guid, 'Import History'); ?>
@@ -65,7 +76,7 @@ else {
 				</td>
 				<td width="25%">
 					<?php print __($guid, "Import Type").": "; ?><br/>
-					<?php print $importLog['type']; ?>
+					<?php print $importType->getDetail('name'); ?>
 				</td>
 				<td width="25%">
 					<?php print __($guid, "Details").": "; ?><br/>

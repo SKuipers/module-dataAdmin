@@ -39,14 +39,10 @@ else {
 
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/import.php" ;
-	$importer = new Gibbon\ExtendedImporter( NULL, NULL, $pdo );
-
-	//$importer->test();
-
-	//$importer->createLog( $_SESSION[$guid]["gibbonPersonID"], 'usersBasic', true );
+	$importer = new Gibbon\extendedImporter( NULL, NULL, $pdo );
 
 	// Get a list of available import options
-	$importTypeList = $importer->getImportTypeList();
+	$importTypeList = Gibbon\importType::loadImportTypeList();
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;

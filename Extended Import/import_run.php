@@ -50,7 +50,7 @@ else {
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = $importer->getImportType( $type );
+	$importType = Gibbon\importType::loadImportType( $type, $pdo );
 
 	if ( empty($importType)  ) {
 		print "<div class='error'>" ;

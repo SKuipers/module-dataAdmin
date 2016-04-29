@@ -30,7 +30,7 @@ use Library\Yaml\Yaml ;
  * @since	25th April 2016
  * @author	Sandra Kuipers
  */
-class ExtendedImporter
+class extendedImporter
 {
 	const COLUMN_DATA_SKIP = -1;
 	const COLUMN_DATA_CUSTOM = -2;
@@ -123,34 +123,6 @@ class ExtendedImporter
             $this->pdo = new sqlConnection();
         else
             $this->pdo = $pdo ;
-    }
-
-    public function getImportTypeList() {
-
-    	$dir = glob( GIBBON_ROOT . "modules/Extended Import/imports/*.yml" );
-
-    	$yaml = new Yaml();
-    	$importTypes = array();
-    	
-    	foreach ($dir as $file) {
-    		if (!file_exists($file)) continue;
-			$fileData = $yaml::parse( file_get_contents( $file ) );
-			if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
-				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $this->pdo );
-			}
-    	}
-
-    	return $importTypes;
-    }
-
-    public function getImportType( $importTypeName ) {
-    	$path = GIBBON_ROOT . "modules/Extended Import/imports/" . $importTypeName .".yml";
-    	if (!file_exists($path)) return NULL;
-
-    	$yaml = new Yaml();
-    	$fileData = $yaml::parse( file_get_contents($path) );
-
-    	return new importType( $fileData, $this->pdo );
     }
 
     public function openCSVFile( $csvFile ) {
@@ -297,9 +269,11 @@ class ExtendedImporter
 
     public function importIntoDatabase( $importType, $liveRun = TRUE ) {
 
-    	if ( $this->lockTables( $importType->getTables() ) == false) {
-    		$this->errorID = ExtendedImporter::ERROR_LOCKING_DATABASE;
-			return false;
+    	if ($liveRun) {
+	    	if ( $this->lockTables( $importType->getTables() ) == false) {
+	    		$this->errorID = ExtendedImporter::ERROR_LOCKING_DATABASE;
+				return false;
+			}
 		}
 
 		$tableName = $importType->getDetail('table');
@@ -396,7 +370,9 @@ class ExtendedImporter
 
 		}
 
-		$this->unlockTables();
+		if ($liveRun) {
+			$this->unlockTables();
+		}
 
 		return true;
     }
@@ -531,6 +507,8 @@ class ExtendedImporter
 
 }
 
+
+
 /**
  * Reads and holds the config info for a custom Import Type
  *
@@ -576,6 +554,34 @@ class importType
     	if ( empty($this->details) || empty($this->details) || empty($this->table) ) {
     		return NULL;
     	}
+    }
+
+    public static function loadImportTypeList( sqlConnection $pdo = NULL ) {
+
+    	$dir = glob( GIBBON_ROOT . "modules/Extended Import/imports/*.yml" );
+
+    	$yaml = new Yaml();
+    	$importTypes = array();
+    	
+    	foreach ($dir as $file) {
+    		if (!file_exists($file)) continue;
+			$fileData = $yaml::parse( file_get_contents( $file ) );
+			if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
+				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo );
+			}
+    	}
+
+    	return $importTypes;
+    }
+
+    public static function loadImportType( $importTypeName, sqlConnection $pdo = NULL ) {
+    	$path = GIBBON_ROOT . "modules/Extended Import/imports/" . $importTypeName .".yml";
+    	if (!file_exists($path)) return NULL;
+
+    	$yaml = new Yaml();
+    	$fileData = $yaml::parse( file_get_contents($path) );
+
+    	return new importType( $fileData, $pdo );
     }
 
     public function validateWithDatabase( sqlConnection $pdo ) {
