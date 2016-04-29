@@ -97,7 +97,7 @@ else {
 				print "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
 
 				print "<td>";
-					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=480'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
 				print "</td>";
 
 			print "</tr>" ;

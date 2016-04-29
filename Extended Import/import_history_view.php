@@ -32,6 +32,163 @@ else {
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
-	
+
+	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
+
+	$data = array( 'importLogID' => $importLogID );
+	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
+	$result=$pdo->executeQuery($data, $sql);
+
+	if ( $result->rowCount() < 1) {
+		print "<div class='error'>" ;
+		print __($guid, "There are no records to display.") ;
+		print "</div>" ;
+
+	} else {
+		$importLog = $result->fetch();
+
+		$importResults = (isset($importLog['importResults']))? unserialize($importLog['importResults']) : array();
+	?>
+		<h1>
+			<?php print __($guid, 'Import History'); ?>
+		</h1>
+
+		<table class='blank fullWidth' cellspacing='0'>	
+			<tr>
+				<td width="25%">
+					<?php print __($guid, "Date").": "; ?><br/>
+					<?php printf( "<span title='%s'>%s</span>", $importLog['timestamp'], date('M j, Y', $importLog['unixtime']) ); ?>
+				</td>
+				<td width="25%">
+					<?php print __($guid, "User").": "; ?><br/>
+					<?php printf( "<span title='%s'>%s %s</span>", $importLog['username'], $importLog['preferredName'], $importLog['surname'] ); ?>
+				</td>
+				<td width="25%">
+					<?php print __($guid, "Import Type").": "; ?><br/>
+					<?php print $importLog['type']; ?>
+				</td>
+				<td width="25%">
+					<?php print __($guid, "Details").": "; ?><br/>
+					<?php print ($importLog['success'])? __($guid, "Success") : __($guid, "Failed"); ?>
+				</td>
+			</tr>
+		</table>
+		<br/>
+
+		<table class='smallIntBorder fullWidth' cellspacing='0'>	
+			<tr <?php print "class='". ( ($importResults['importSuccess'])? 'current' : 'error' ) ."'"; ?>>
+				<td class="right"  width="50%">
+					<?php print __($guid, "Reading CSV file").": "; ?>
+				</td>
+				<td>
+					<?php print ($importResults['importSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Execution time").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['executionTime']; ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Memory usage").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['memoryUsage']; ?>
+				</td>
+			</tr>
+		</table><br/>
+		<table class='smallIntBorder fullWidth' cellspacing='0'>	
+			<tr <?php print "class='". ( ($importResults['buildSuccess'])? 'current' : 'error' ) ."'"; ?>>
+				<td class="right" width="50%">
+					<?php print __($guid, "Validating data").": "; ?>
+				</td>
+				<td>
+					<?php print ($importResults['buildSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Rows processed").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['rows']; ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Rows with errors").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['rowerrors']; ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Total errors").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['errors']; ?>
+				</td>
+			</tr>
+			<?php if ($importResults['warnings'] > 0) : ?>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Total warnings").": "; ?>
+				</td>
+				<td>
+					<?php print $importResults['warnings']; ?>
+				</td>
+			</tr>
+			<?php endif; ?>
+		</table><br/>
+
+		<table class='smallIntBorder fullWidth' cellspacing='0'>	
+			<tr <?php print "class='". ( ($importResults['databaseSuccess'])? 'current' : 'error' ) ."'"; ?>>
+				<td class="right" width="50%">
+					<?php print __($guid, "Querying database").": "; ?>
+				</td>
+				<td>
+					<?php print ($importResults['databaseSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+				</td>
+			</tr>
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Database Inserts").": ";?>
+				</td>
+				<td>
+				<?php 
+					print $importResults['inserts'];
+					if ($importResults['inserts_skipped'] > 0) {
+						print " (". $importResults['inserts_skipped'] ." ". __($guid, "skipped") .")";
+					}
+				?>
+				</td>
+			</tr>
+
+			<tr>
+				<td class="right">
+					<?php print __($guid, "Database Updates").": "; ?>
+				</td>
+				<td>
+				<?php 
+					print $importResults['updates'];
+					if ($importResults['updates_skipped'] > 0) {
+						print " (". $importResults['updates_skipped'] ." ". __($guid, "skipped") .")";
+					}
+				?>
+				</td>
+			</tr>
+
+			
+		</table><br/>
+
+
+	<?php
+	}
+
 }	
 ?>
