@@ -58,7 +58,7 @@ else {
 			return;
 		}
 
-		$importType = Gibbon\importType::loadImportType( $importLog['type'] );
+		$importType = ExtendedImport\importType::loadImportType( $importLog['type'] );
 	?>
 		<h1>
 			<?php print __($guid, 'Import History'); ?>
@@ -66,21 +66,23 @@ else {
 
 		<table class='blank fullWidth' cellspacing='0'>	
 			<tr>
-				<td width="25%">
-					<?php print __($guid, "Date").": "; ?><br/>
-					<?php printf( "<span title='%s'>%s</span>", $importLog['timestamp'], date('M j, Y', $importLog['unixtime']) ); ?>
-				</td>
-				<td width="25%">
-					<?php print __($guid, "User").": "; ?><br/>
-					<?php printf( "<span title='%s'>%s %s</span>", $importLog['username'], $importLog['preferredName'], $importLog['surname'] ); ?>
-				</td>
-				<td width="25%">
+				<td width="50%">
 					<?php print __($guid, "Import Type").": "; ?><br/>
 					<?php print $importType->getDetail('name'); ?>
 				</td>
-				<td width="25%">
+				<td width="50%">
+					<?php print __($guid, "Date").": "; ?><br/>
+					<?php printf( "<span title='%s'>%s</span>", $importLog['timestamp'], date('F j, Y, g:i a', $importLog['unixtime']) ); ?>
+				</td>
+			</tr>
+			<tr>
+				<td width="50%">
 					<?php print __($guid, "Details").": "; ?><br/>
 					<?php print ($importLog['success'])? __($guid, "Success") : __($guid, "Failed"); ?>
+				</td>
+				<td width="50%">
+					<?php print __($guid, "User").": "; ?><br/>
+					<?php printf( "<span title='%s'>%s %s</span>", $importLog['username'], $importLog['preferredName'], $importLog['surname'] ); ?>
 				</td>
 			</tr>
 		</table>

@@ -47,11 +47,11 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 	
-	$importer = new Gibbon\importer( NULL, NULL, $pdo );
+	$importer = new ExtendedImport\importer( NULL, NULL, $pdo );
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = Gibbon\importType::loadImportType( $type, $pdo );
+	$importType = ExtendedImport\importType::loadImportType( $type, $pdo );
 
 	if ( empty($importType)  ) {
 		print "<div class='error'>" ;
@@ -317,9 +317,9 @@ else {
 
 			print "<script>";
 			print "var csvFirstLine = " . json_encode($firstLine) .";";
-			print "var columnDataSkip = " . Gibbon\ExtendedImporter::COLUMN_DATA_SKIP .";";
-			print "var columnDataCustom = " . Gibbon\ExtendedImporter::COLUMN_DATA_CUSTOM .";";
-			print "var columnDataFunction = " . Gibbon\ExtendedImporter::COLUMN_DATA_FUNCTION .";";
+			print "var columnDataSkip = " . ExtendedImport\importer::COLUMN_DATA_SKIP .";";
+			print "var columnDataCustom = " . ExtendedImport\importer::COLUMN_DATA_CUSTOM .";";
+			print "var columnDataFunction = " . ExtendedImport\importer::COLUMN_DATA_FUNCTION .";";
 			print "</script>";
 
 			print "<form method='post' action='". $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=3' enctype='multipart/form-data'>";
@@ -405,20 +405,20 @@ else {
 							$lastImportValue = ($columnOrder == 'last' && isset($columnOrderLast[$count]))? $columnOrderLast[$count] : '';
 							// Allow users to skip non-required columns
 							if ( $importType->isFieldRequired($fieldName) == false ) {
-								$selectThis = ($lastImportValue == Gibbon\ExtendedImporter::COLUMN_DATA_SKIP)? 'selected' : '';
-								print "<option value='".Gibbon\ExtendedImporter::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
+								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_SKIP)? 'selected' : '';
+								print "<option value='".ExtendedImport\importer::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'custom')) {
-								$selectThis = ($lastImportValue == Gibbon\ExtendedImporter::COLUMN_DATA_CUSTOM)? 'selected' : '';
-								print "<option value='".Gibbon\ExtendedImporter::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
+								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_CUSTOM)? 'selected' : '';
+								print "<option value='".ExtendedImport\importer::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'function') ) {
-								$selectThis = ($lastImportValue == Gibbon\ExtendedImporter::COLUMN_DATA_FUNCTION)? 'selected' : '';
-								print "<option value='".Gibbon\ExtendedImporter::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
+								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_FUNCTION)? 'selected' : '';
+								print "<option value='".ExtendedImport\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
 							}
 
 							foreach ($headings as $i => $name) {

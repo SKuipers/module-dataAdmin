@@ -45,7 +45,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
-	$importTypeList = Gibbon\importType::loadImportTypeList();
+	$importTypeList = ExtendedImport\importType::loadImportTypeList();
 
 	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);
@@ -96,7 +96,7 @@ else {
 				print "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
 
 				print "<td>";
-					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=480'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
 				print "</td>";
 
 			print "</tr>" ;

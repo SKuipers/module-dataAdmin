@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon;
+namespace ExtendedImport;
 
 /**
  * Extended Import class
@@ -103,20 +103,20 @@ class importer
      * @param    Gibbon\sqlConnection
      * @return    void
      */
-    public function __construct(session $session = NULL, config $config = NULL, sqlConnection $pdo = NULL)
+    public function __construct(\Gibbon\session $session = NULL, \Gibbon\config $config = NULL, \Gibbon\sqlConnection $pdo = NULL)
     {
         if ($session === NULL)
-            $this->session = new session();
+            $this->session = new \Gibbon\session();
         else
             $this->session = $session ;
 
         if ($config === NULL)
-            $this->config = new config();
+            $this->config = new \Gibbon\config();
         else
             $this->config = $config ;
 
         if ($pdo === NULL)
-            $this->pdo = new sqlConnection();
+            $this->pdo = new \Gibbon\sqlConnection();
         else
             $this->pdo = $pdo ;
     }
@@ -214,17 +214,17 @@ class importer
 
 				$value = '';
 				// Skip marked columns
-				if ($columnIndex == ExtendedImporter::COLUMN_DATA_SKIP) {
+				if ($columnIndex == importer::COLUMN_DATA_SKIP) {
 					$fieldCount++;
 					continue;
 				}
 				// Get the custom text value provided by the user (from Step 2)
-				else if ($columnIndex == ExtendedImporter::COLUMN_DATA_CUSTOM) {
+				else if ($columnIndex == importer::COLUMN_DATA_CUSTOM) {
 					
 					$value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
 				}
 				// Run a user_func based on the function name defined for that field
-				else if ($columnIndex == ExtendedImporter::COLUMN_DATA_FUNCTION) {
+				else if ($columnIndex == importer::COLUMN_DATA_FUNCTION) {
 					
 					$value = $importType->doImportFunction( $fieldName );
 				}
@@ -236,14 +236,14 @@ class importer
 				// Filter & validate the value
 				$validate = $importType->validateFieldValue( $fieldName, $value );
 				if ($validate == false ) {
-					$this->logError( $rowNum, ExtendedImporter::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
+					$this->logError( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
 						array($importType->getField($fieldName, 'type'), $importType->getField($fieldName, 'length')) );
 
 					$partialFail = TRUE;
 				}
 
 				if ( empty($value) && $importType->isFieldRequired($fieldName) ) {
-					$this->logError( $rowNum, ExtendedImporter::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
+					$this->logError( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
 					$partialFail = TRUE;
 				} else {
 					$fields[ $fieldName ] = $value;
@@ -264,7 +264,7 @@ class importer
 
     	if ($liveRun) {
 	    	if ( $this->lockTables( $importType->getTables() ) == false) {
-	    		$this->errorID = ExtendedImporter::ERROR_LOCKING_DATABASE;
+	    		$this->errorID = importer::ERROR_LOCKING_DATABASE;
 				return false;
 			}
 		}
@@ -278,7 +278,7 @@ class importer
 
 			// Ensure we have a valid key
 			if (!isset($row[$selectionKey])) {
-				$this->logError( $rowNum, ExtendedImporter::ERROR_KEY_MISSING, $selectionKey );
+				$this->logError( $rowNum, importer::ERROR_KEY_MISSING, $selectionKey );
 				$partialFail = TRUE;
 				continue;
 			}
@@ -290,7 +290,7 @@ class importer
 				$result = $this->pdo->executeQuery($data, $sql);
 			}
 			catch(PDOException $e) { 
-				$this->logError( $rowNum, ExtendedImporter::ERROR_DATABASE_GENERIC, $selectionKey );
+				$this->logError( $rowNum, importer::ERROR_DATABASE_GENERIC, $selectionKey );
 				$partialFail = TRUE;
 				continue;
 			}
@@ -307,7 +307,7 @@ class importer
 
 				// Dont update records on INSERT ONLY mode
 				if ($this->mode == 'insert') {
-					$this->logError( $rowNum, ExtendedImporter::WARNING_DUPLICATE_KEY, $selectionKey, $primaryKeyValue );
+					$this->logError( $rowNum, importer::WARNING_DUPLICATE_KEY, $selectionKey, $primaryKeyValue );
 					$this->databaseResults['updates_skipped'] += 1;
 					continue;
 				}
@@ -323,7 +323,7 @@ class importer
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
-					$this->logError( $rowNum, ExtendedImporter::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
+					$this->logError( $rowNum, importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
 				}
@@ -335,7 +335,7 @@ class importer
 
 				// Dont add records on UPDATE ONLY mode
 				if ($this->mode == 'update') {
-					$this->logError( $rowNum, ExtendedImporter::WARNING_RECORD_NOT_FOUND, $selectionKey, $row[ $selectionKey ] );
+					$this->logError( $rowNum, importer::WARNING_RECORD_NOT_FOUND, $selectionKey, $row[ $selectionKey ] );
 					$this->databaseResults['inserts_skipped'] += 1;
 					continue;
 				}
@@ -350,14 +350,14 @@ class importer
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
-					$this->logError( $rowNum, ExtendedImporter::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
+					$this->logError( $rowNum, importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
 				}
 				
 			}
 			else {
-				$this->logError( $rowNum, ExtendedImporter::ERROR_DATABASE_GENERIC, $selectionKey, $primaryKeyValue );
+				$this->logError( $rowNum, importer::ERROR_DATABASE_GENERIC, $selectionKey, $primaryKeyValue );
 				$partialFail = TRUE;
 			}
 
@@ -420,26 +420,26 @@ class importer
 
     	switch ($errorID) {
     		// ERRORS
-    		case ExtendedImporter::ERROR_REQUIRED_FIELD_MISSING: 
+    		case importer::ERROR_REQUIRED_FIELD_MISSING: 
     			return __( $this->config->get('guid'), "Missing value for required field."); break;
-    		case ExtendedImporter::ERROR_INVALID_FIELD_VALUE: 
+    		case importer::ERROR_INVALID_FIELD_VALUE: 
     			return __( $this->config->get('guid'), "Invalid value type for field: %s Expected: %s(%s)"); break;
-    		case ExtendedImporter::ERROR_INVALID_INPUTS:
+    		case importer::ERROR_INVALID_INPUTS:
     			return __( $this->config->get('guid'), "Your request failed because your inputs were invalid."); break;
-    		case ExtendedImporter::ERROR_LOCKING_DATABASE:
+    		case importer::ERROR_LOCKING_DATABASE:
     			return __( $this->config->get('guid'), "The database could not be locked for use."); break;
-    		case ExtendedImporter::ERROR_KEY_MISSING:
+    		case importer::ERROR_KEY_MISSING:
     			return __($this->config->get('guid'), "Missing value for primary key."); break;
-    		case ExtendedImporter::ERROR_DATABASE_GENERIC:
+    		case importer::ERROR_DATABASE_GENERIC:
     			return __($this->config->get('guid'), "There was an error accessing the database."); break;
-    		case ExtendedImporter::ERROR_DATABASE_FAILED_INSERT:
+    		case importer::ERROR_DATABASE_FAILED_INSERT:
     			return __($this->config->get('guid'), "Failed to insert record into database."); break;
-    		case ExtendedImporter::ERROR_DATABASE_FAILED_UPDATE:
+    		case importer::ERROR_DATABASE_FAILED_UPDATE:
     			return __($this->config->get('guid'), "Failed to update database record."); break;
     		// WARNINGS
-    		case ExtendedImporter::WARNING_DUPLICATE_KEY:
+    		case importer::WARNING_DUPLICATE_KEY:
     			return __($this->config->get('guid'), "A duplicate entry already exists for this record. Record skipped."); break;
-    		case ExtendedImporter::WARNING_RECORD_NOT_FOUND:
+    		case importer::WARNING_RECORD_NOT_FOUND:
     			return __($this->config->get('guid'), "A database entry for this record could not be found. Record skipped."); break;
     		default:
     			return __( $this->config->get('guid'), "An unknown error occured, so the import will be aborted."); break;

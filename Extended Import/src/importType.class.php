@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace Gibbon;
+namespace ExtendedImport;
 
 
 use Library\Yaml\Yaml ;
@@ -81,7 +81,7 @@ class importType
      *
      * @return 	[array] 2D array of importType objects
      */
-    public static function loadImportTypeList( sqlConnection $pdo = NULL ) {
+    public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
     	$dir = glob( GIBBON_ROOT . "modules/Extended Import/imports/*.yml" );
 
@@ -111,7 +111,7 @@ class importType
      *
      * @return 	[importType]
      */
-    public static function loadImportType( $importTypeName, sqlConnection $pdo = NULL ) {
+    public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
     	$path = GIBBON_ROOT . "modules/Extended Import/imports/" . $importTypeName .".yml";
     	if (!file_exists($path)) return NULL;
 
@@ -132,7 +132,7 @@ class importType
      *
      * @return 	[bool] true if all fields match existing table columns
      */
-    public function validateWithDatabase( sqlConnection $pdo ) {
+    public function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
 
     	try {
 			$sql="SHOW COLUMNS FROM " . $this->getDetail('table');

@@ -41,7 +41,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
-	$importTypeList = Gibbon\importType::loadImportTypeList();
+	$importTypeList = ExtendedImport\importType::loadImportTypeList();
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;

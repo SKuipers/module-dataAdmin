@@ -49,11 +49,9 @@ else {
 	//Class includes
 	require_once "./src/importType.class.php" ;
 
-	$importer = new Gibbon\extendedImporter( NULL, NULL, $pdo );
-
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = Gibbon\importType::loadImportType( $type, $pdo );
+	$importType = ExtendedImport\importType::loadImportType( $type, $pdo );
 
 	if ( empty($importType)  ) {
 		print "<div class='error'>" ;
