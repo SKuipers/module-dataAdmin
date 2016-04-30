@@ -19,9 +19,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
-
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_load.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
@@ -29,16 +26,64 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 	print "</div>" ;
 }
 else {
-	//New PDO DB connection
-	$pdo = new Gibbon\sqlConnection();
-	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Load Snapshot') . "</div>" ;print "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Load Snapshot') . "</div>" ;
+	print "</div>" ;
 
 	print "<h3>" ;
 	print __($guid, "Load Snapshot") ;
 	print "</h3>" ;
+
+	print "<div class='warning'>" ;
+	print __($guid, 'Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.');
+	print "</div>" ;
 	
+
+	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
+	
+	//Check if file exists
+	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
+	if ($filename=="") {
+		print "<div class='error'>" ;
+			print __($guid, "You have not specified one or more required parameters.") ;
+		print "</div>" ;
+	}
+	else {
+
+		$filepath = $_SESSION[$guid]["absolutePath"] . "/uploads/snapshots/" . $filename;
+		if ( !file_exists( $filepath ) ) {
+			print "<div class='error'>" ;
+				print __($guid, "The specified record cannot be found.") ;
+			print "</div>" ;
+		}
+		else {
+			//Let's go!
+			?>
+			<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_loadProcess.php?file=$filename" ?>">
+				<table class='smallIntBorder fullWidth' cellspacing='0'>	
+					<tr>
+						<td> 
+							<b><?php print __($guid, 'Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.') ; ?></b><br/>&nbsp;<br/>
+							<span style="font-size: 120%; color: #cc0000"><i><?php print __($guid, 'This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
+						</td>
+						<td class="right">
+							
+						</td>
+					</tr>
+					<tr>
+						<td> 
+							<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
+							<input type="submit" value="<?php print __($guid, 'Yes') ; ?>">
+						</td>
+						<td class="right">
+							
+						</td>
+					</tr>
+				</table>
+			</form>
+			<?php
+		}
+	}
 }	
 ?>

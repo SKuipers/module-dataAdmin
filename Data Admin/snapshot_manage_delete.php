@@ -35,7 +35,8 @@ else {
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 	
 	//Check if file exists
-	$filename=$_GET["file"] ;
+	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
+	
 	if ($filename=="") {
 		print "<div class='error'>" ;
 			print __($guid, "You have not specified one or more required parameters.") ;

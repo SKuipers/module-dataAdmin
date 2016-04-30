@@ -29,7 +29,7 @@ $connection2 = $pdo->getConnection();
 //Set timezone from session variable
 date_default_timezone_set($_SESSION[$guid]["timezone"]);
 
-$filename=$_GET["file"] ;
+$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
 
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_delete.php&file=$filename" ;
 $URLDelete=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;

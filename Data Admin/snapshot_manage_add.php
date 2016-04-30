@@ -29,16 +29,32 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 	print "</div>" ;
 }
 else {
-	//New PDO DB connection
-	$pdo = new Gibbon\sqlConnection();
-	$connection2 = $pdo->getConnection();
-
 	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Create Snapshot') . "</div>" ;print "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Create Snapshot') . "</div>" ;
+		print "</div>" ;
 
-	print "<h3>" ;
-	print __($guid, "Create Snapshot") ;
-	print "</h3>" ;
+	print "<div class='warning'>" ;
+	print __($guid, 'Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.');
+	print "</div>" ;
+
+	print "<div class='warning'>" ;
+	print __($guid, 'Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.');
+	print "</div>" ;
+	?>
+	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_addProcess.php" ?>">
+		<table class='smallIntBorder fullWidth' cellspacing='0'>	
+			<tr>
+				<td>
+					
+				</td>
+				<td class="right">
+					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
+					<input type="submit" value="<?php print __($guid, "Create Snapshot") ; ?>">
+				</td>
+			</tr>
+		</table>
+	</form>
+	<?php
 	
 }	
 ?>
