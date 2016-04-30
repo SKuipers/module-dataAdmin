@@ -146,7 +146,7 @@ else {
 						<span class="emphasis small"><?php print __($guid, 'See Notes below for specification.') ?></span>
 					</td>
 					<td class="right">
-						<input type="file" name="file" id="file" size="chars">
+						<input type="file" name="file" id="file" size="chars" accept=".csv">
 						<script type="text/javascript">
 							var file=new LiveValidation('file');
 							file.add(Validate.Presence);
