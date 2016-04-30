@@ -46,5 +46,51 @@ else {
 		print "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __($guid, 'Create Snapshot') . "<img style='margin-left: 5px' title='" . __($guid, 'Create Snapshot'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
 		print "</div>" ;
 	}
+
+	$path=$_SESSION[$guid]["absolutePath"] ;
+	if (is_dir($path ."/uploads/snapshots")==FALSE) {
+		mkdir($path ."/uploads/snapshots", 0777, TRUE) ;
+	}
+
+	$snapshotList = glob( $path . "/uploads/snapshots/*.sql" );
+
+	usort($snapshotList, function($a,$b){
+	  return filemtime($b) - filemtime($a);
+	});
+
+	if (count($snapshotList)<1) {
+		print "<div class='error'>" ;
+		print __($guid, "There are no records to display.") ;
+		print "</div>" ;
+	}
+	else {
+		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+			print "<tr class='head'>" ;
+				print "<th>" ;
+					print __($guid, "Date") ;
+				print "</th>" ;
+				print "<th style='width: 140px;'>" ;
+					print __($guid, "Size") ;
+				print "</th>" ;
+				print "<th style='width: 80px!important'>" ;
+					print __($guid, "Actions") ;
+				print "</th>" ;
+			print "</tr>" ;
+
+		foreach ($snapshotList as $snapshotPath) {
+			$snapshotFile = basename( $snapshotPath );
+			print "<tr>" ;
+				print "<td>". date("F j, Y, g:i a", filemtime($snapshotPath)). "</td>" ;
+				print "<td>". readableFileSize( filesize($snapshotPath)) . "</td>" ;
+
+				print "<td>";
+					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __($guid, 'Load') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/delivery2.png'/></a> " ;
+					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_delete.php&file=". $snapshotFile. "'><img style='margin-left: 5px' title='" . __($guid, 'Delete') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a> " ;
+				print "</td>";
+			print "</tr>" ;
+		}
+		print "</table>" ;
+
+	}
 }	
 ?>
