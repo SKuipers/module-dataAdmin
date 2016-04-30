@@ -2,7 +2,7 @@ details:
     type: usersBasic
     category: Users
     name: Basic User Data
-    desc: Import basic user names and details
+    desc: Basic user names and details
     table: gibbonPerson
     primary: gibbonPersonID
     select: username

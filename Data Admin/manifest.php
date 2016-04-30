@@ -48,11 +48,11 @@ $url="https://github.com/SKuipers/" ; //Your URL
 
 //Action rows 
 //One array per action
-$actionRows[0]["name"]="Manage Imports" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[0]["name"]="Import & Export" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[0]["category"]="Import" ; //Optional: subgroups for the right hand side module menu
+$actionRows[0]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
 $actionRows[0]["description"]="View and run available import actions." ; //Text description
-$actionRows[0]["URLList"]="import_manage.php,import_run.php,import_run_export.php" ; //List of pages included in this action
+$actionRows[0]["URLList"]="import_manage.php,import_run.php,export_run.php" ; //List of pages included in this action
 $actionRows[0]["entryURL"]="import_manage.php" ; //The landing action for the page.
 $actionRows[0]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
 $actionRows[0]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
@@ -79,6 +79,22 @@ $actionRows[1]["categoryPermissionStaff"]="N" ; //Should this action be availabl
 $actionRows[1]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
 $actionRows[1]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
 $actionRows[1]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+
+$actionRows[2]["name"]="Manage Snapshots" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[2]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
+$actionRows[2]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
+$actionRows[2]["description"]="Create and restore a mysqldump file." ; //Text description
+$actionRows[2]["URLList"]="snapshot_manage.php,snapshot_manage_add.php,snapshot_manage_delete.php,snapshot_manage_load.php" ; //List of pages included in this action
+$actionRows[2]["entryURL"]="snapshot_manage.php" ; //The landing action for the page.
+$actionRows[2]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
+$actionRows[2]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
+$actionRows[2]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
+$actionRows[2]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
+$actionRows[2]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
+$actionRows[2]["categoryPermissionStaff"]="N" ; //Should this action be available to user roles in the Staff category?
+$actionRows[2]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
+$actionRows[2]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
+$actionRows[2]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.

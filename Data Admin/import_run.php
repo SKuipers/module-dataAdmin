@@ -201,11 +201,11 @@ else {
 		</ol>
 	<?php
 
-	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run_export.php") ) {
+	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php") ) {
 		print "<div class='linkTop'>" ;
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "</div>" ;
 	}
 

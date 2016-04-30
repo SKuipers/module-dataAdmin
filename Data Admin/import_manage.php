@@ -51,7 +51,7 @@ else {
 	else {
 
 		print "<h3>" ;
-		print __($guid, "Imports") ;
+		print __($guid, "Imports & Exports") ;
 		print "</h3>" ;
 
 		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
@@ -91,8 +91,8 @@ else {
 
 				print "</td>";
 				print "<td>";
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __($guid, 'Run') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=". $importTypeName. "&data=1'><img style='margin-left: 5px' title='" . __($guid, 'Export to Excel'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __($guid, 'Import') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/upload.png'/></a> " ;
+					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1'><img style='margin-left: 5px' title='" . __($guid, 'Export to Excel'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		
 				print "</td>";
 			print "</tr>" ;

@@ -36,7 +36,7 @@ date_default_timezone_set($_SESSION[$guid]["timezone"]);
 //Module includes
 include "./moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run_export.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
