@@ -40,6 +40,10 @@ else {
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
+	print "<h3>" ;
+	print __($guid, "Imports & Exports") ;
+	print "</h3>" ;
+
 	// Get a list of available import options
 	$importTypeList = DataAdmin\importType::loadImportTypeList();
 
@@ -49,11 +53,6 @@ else {
 		print "</div>" ;
 	}
 	else {
-
-		print "<h3>" ;
-		print __($guid, "Imports & Exports") ;
-		print "</h3>" ;
-
 		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 			print "<tr class='head'>" ;
 				print "<th style='width: 80px;'>" ;

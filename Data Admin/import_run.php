@@ -623,11 +623,7 @@ else {
 			}
 
 			$executionTime = substr( microtime(true) - $timeStart, 0, 6 ).' sec';
-
-			$size = max( 0, memory_get_usage() - $memoryStart );
-			$unit=array('bytes','KB','MB','GB','TB','PB');
-    		$memoryUsage = @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-
+    		$memoryUsage = readableFileSize(  max( 0, memory_get_usage() - $memoryStart )  );
 				
 			?>
 
