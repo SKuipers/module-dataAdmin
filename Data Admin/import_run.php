@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Extended Import/import_run.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -47,11 +47,11 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 	
-	$importer = new ExtendedImport\importer( NULL, NULL, $pdo );
+	$importer = new DataAdmin\importer( NULL, NULL, $pdo );
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = ExtendedImport\importType::loadImportType( $type, $pdo );
+	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
 
 	if ( empty($importType)  ) {
 		print "<div class='error'>" ;
@@ -80,7 +80,7 @@ else {
 
 		try {
 			$data=array( 'type' => $type, 'success' => '1' ); 
-			$sql="SELECT importLogID FROM extendedImportLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
+			$sql="SELECT importLogID FROM dataAdminImportLog as importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
 			$result = $pdo->executeQuery($data, $sql);
 		}
 		catch(PDOException $e) { 
@@ -201,7 +201,7 @@ else {
 		</ol>
 	<?php
 
-	if ( isActionAccessible($guid, $connection2, "/modules/Extended Import/import_run_export.php") ) {
+	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run_export.php") ) {
 		print "<div class='linkTop'>" ;
 		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/import_run_export.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
@@ -317,9 +317,9 @@ else {
 
 			print "<script>";
 			print "var csvFirstLine = " . json_encode($firstLine) .";";
-			print "var columnDataSkip = " . ExtendedImport\importer::COLUMN_DATA_SKIP .";";
-			print "var columnDataCustom = " . ExtendedImport\importer::COLUMN_DATA_CUSTOM .";";
-			print "var columnDataFunction = " . ExtendedImport\importer::COLUMN_DATA_FUNCTION .";";
+			print "var columnDataSkip = " . DataAdmin\importer::COLUMN_DATA_SKIP .";";
+			print "var columnDataCustom = " . DataAdmin\importer::COLUMN_DATA_CUSTOM .";";
+			print "var columnDataFunction = " . DataAdmin\importer::COLUMN_DATA_FUNCTION .";";
 			print "</script>";
 
 			print "<form method='post' action='". $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=3' enctype='multipart/form-data'>";
@@ -405,20 +405,20 @@ else {
 							$lastImportValue = ($columnOrder == 'last' && isset($columnOrderLast[$count]))? $columnOrderLast[$count] : '';
 							// Allow users to skip non-required columns
 							if ( $importType->isFieldRequired($fieldName) == false ) {
-								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_SKIP)? 'selected' : '';
-								print "<option value='".ExtendedImport\importer::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
+								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_SKIP)? 'selected' : '';
+								print "<option value='".DataAdmin\importer::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'custom')) {
-								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_CUSTOM)? 'selected' : '';
-								print "<option value='".ExtendedImport\importer::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
+								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_CUSTOM)? 'selected' : '';
+								print "<option value='".DataAdmin\importer::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'function') ) {
-								$selectThis = ($lastImportValue == ExtendedImport\importer::COLUMN_DATA_FUNCTION)? 'selected' : '';
-								print "<option value='".ExtendedImport\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
+								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_FUNCTION)? 'selected' : '';
+								print "<option value='".DataAdmin\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
 							}
 
 							foreach ($headings as $i => $name) {

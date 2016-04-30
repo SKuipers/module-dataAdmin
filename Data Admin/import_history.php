@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Extended Import/import_history.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -45,9 +45,9 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
-	$importTypeList = ExtendedImport\importType::loadImportTypeList();
+	$importTypeList = DataAdmin\importType::loadImportTypeList();
 
-	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=extendedImportLog.gibbonPersonID ORDER BY timestamp DESC" ;
+	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);
 
 	if (empty($importTypeList) || $result->rowCount()<1) {

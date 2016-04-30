@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Extended Import/import_history_view.php")==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_view.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -39,7 +39,7 @@ else {
 	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
 	$data = array( 'importLogID' => $importLogID );
-	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=extendedImportLog.gibbonPersonID AND importLogID=:importLogID";
+	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
 	$result=$pdo->executeQuery($data, $sql);
 
 	if ( $result->rowCount() < 1) {
@@ -58,7 +58,7 @@ else {
 			return;
 		}
 
-		$importType = ExtendedImport\importType::loadImportType( $importLog['type'] );
+		$importType = DataAdmin\importType::loadImportType( $importLog['type'] );
 	?>
 		<h1>
 			<?php print __($guid, 'Import History'); ?>

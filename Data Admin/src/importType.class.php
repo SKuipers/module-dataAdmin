@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace ExtendedImport;
+namespace DataAdmin;
 
 
 use Library\Yaml\Yaml ;
@@ -97,7 +97,7 @@ class importType
      */
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
-    	$dir = glob( GIBBON_ROOT . "modules/Extended Import/imports/*.yml" );
+    	$dir = glob( GIBBON_ROOT . "modules/Data Admin/imports/*.yml" );
 
     	$yaml = new Yaml();
     	$importTypes = array();
@@ -126,7 +126,7 @@ class importType
      * @return 	[importType]
      */
     public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
-    	$path = GIBBON_ROOT . "modules/Extended Import/imports/" . $importTypeName .".yml";
+    	$path = GIBBON_ROOT . "modules/Data Admin/imports/" . $importTypeName .".yml";
     	if (!file_exists($path)) return NULL;
 
     	$yaml = new Yaml();

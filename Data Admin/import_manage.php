@@ -41,7 +41,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
-	$importTypeList = ExtendedImport\importType::loadImportTypeList();
+	$importTypeList = DataAdmin\importType::loadImportTypeList();
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;
@@ -81,7 +81,7 @@ else {
 				print "<td>";
 
 					$data=array("type"=>$importTypeName); 
-					$sql="SELECT surname, preferredName, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM extendedImportLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=extendedImportLog.gibbonPersonID && type=:type ORDER BY timestamp DESC LIMIT 1" ;
+					$sql="SELECT surname, preferredName, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID && type=:type ORDER BY timestamp DESC LIMIT 1" ;
 					$result=$pdo->executeQuery($data, $sql);
 
 					if ($pdo->getSuccess() && $result->rowCount()>0) {

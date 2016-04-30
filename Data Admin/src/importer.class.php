@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace ExtendedImport;
+namespace DataAdmin;
 
 /**
  * Extended Import class
@@ -615,7 +615,7 @@ class importer
 
 		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) ); 
 
-		$sql="INSERT INTO extendedImportLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
+		$sql="INSERT INTO dataAdminImportLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
 		$result=$this->pdo->executeQuery($data, $sql);
 	
 		return $this->pdo->getQuerySuccess();
