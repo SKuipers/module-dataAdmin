@@ -142,6 +142,15 @@ class importer
             $this->pdo = $pdo ;
     }
 
+    public function __get($name) {
+        return isset($this->$name) ? $this->$name : null;
+    }
+
+    public function __set($name, $value)
+    {
+        throw new Exception('Trying to access a read-only property.');
+    }
+
     /**
      * Is Valid Mime Type
      * Validates the supplied MIME Type with a list of valid types
@@ -292,7 +301,9 @@ class importer
 				if ( empty($value) && $importType->isFieldRequired($fieldName) ) {
 					$this->logError( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
 					$partialFail = TRUE;
-				} else {
+				}
+
+                if ( !empty($value) ) {
 					$fields[ $fieldName ] = $value;
 				}
 

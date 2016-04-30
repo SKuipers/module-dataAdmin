@@ -177,7 +177,7 @@ class importType
 
     private function parseTableValueType( $fieldName, $columnField ) {
 
-        $type = (strpos($type, "(") !== FALSE)? strstr( $columnField, "(", true ) : $columnField;
+        $type = (strpos($columnField, "(") !== FALSE)? strstr( $columnField, "(", true ) : $columnField;
         $info = substr( $columnField, strpos($columnField, "(")+1, -1 );
 
         //print $type .'-'. $info . '<br/>';

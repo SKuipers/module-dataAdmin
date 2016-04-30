@@ -39,5 +39,5 @@ table:
     username: 
         name: "Username"
         desc: "User account name & login"
-        args: {filter: string, required: true}
+        args: {filter: string, required: true, key: unique}
         
