@@ -35,12 +35,11 @@ else {
 	print __($guid, "Load Snapshot") ;
 	print "</h3>" ;
 
+	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
+
 	print "<div class='warning'>" ;
 	print __($guid, 'Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.');
 	print "</div>" ;
-	
-
-	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 	
 	//Check if file exists
 	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;

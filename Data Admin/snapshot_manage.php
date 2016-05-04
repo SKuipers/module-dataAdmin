@@ -38,6 +38,8 @@ else {
 	print __($guid, "Database Snapshots") ;
 	print "</h3>" ;
 
+	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
+
 	print "<div class='warning'>" ;
 	print __($guid, 'Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.');
 	print "</div>" ;
