@@ -1,0 +1,36 @@
+details:
+    type: departments
+    category: Groupings
+    name: Departments
+    desc: Departments and Learning Areas
+    table: gibbonDepartment
+    primary: gibbonDepartmentID
+    select: gibbonDepartmentID
+    modes: { update: true, insert: true }
+keys:
+    - gibbonDepartmentID
+table:
+    type: 
+        name: "Type"
+        desc: ""
+        args: { filter: string, required: true }
+    name: 
+        name: "Department Name"
+        desc: ""
+        args: { filter: string, required: true }
+    nameShort: 
+        name: "Short Name"
+        desc: ""
+        args: { filter: string, required: true }
+    subjectListing: 
+        name: "Subject Listing"
+        desc: ""
+        args: { filter: string }
+    blurb: 
+        name: "Description"
+        desc: ""
+        args: { filter: string }
+    logo: 
+        name: "Logo"
+        desc: "125x125px jpg/png/gif"
+        args: { filter: string }
