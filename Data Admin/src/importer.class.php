@@ -254,8 +254,6 @@ class importer
      */
     public function buildTableData( $importType, $columnOrder, $customValues = array() ) {
 
-    	$importTypeFields = $importType->getTableFields();
-
 		$this->tableData = array();
 
 		foreach ( $this->importData as $rowNum => $row ) {
@@ -263,7 +261,7 @@ class importer
 			$fields = array();
 			$fieldCount = 0;
 			$partialFail = FALSE;
-			foreach ($importTypeFields as $fieldName) {
+			foreach ($importType->getTableFields() as $fieldName) {
 				$columnIndex = $columnOrder[ $fieldCount ];
 
 				$value = '';
@@ -370,11 +368,22 @@ class importer
 			}
 
 			$primaryKeyValue = $result->fetchColumn(0);
-			$sqlFields = array();
-			foreach (array_keys($row) as $field) {
-				$sqlFields[] = $field."=:".$field;
-			}
-			$sqlFields = implode(", ", $sqlFields );
+
+            // Build the query field=:value associations
+            $sqlFields = array();
+            foreach (array_keys($row) as $fieldName ) {
+
+                if ( !empty($importType->getField($fieldName, 'relationship')) ) {
+                    // Handle relational table data
+                    extract( $importType->getField($fieldName, 'relationship') );
+                    $sqlFields[] = "$fieldName=(SELECT $key FROM $table WHERE $field=:$fieldName)";
+                } else {
+                    // Direct field association
+                    $sqlFields[] = $fieldName."=:".$fieldName;
+                }
+            }
+            $sqlFieldString = implode(", ", $sqlFields );
+
 
 			// Handle Existing Records
 			if ($result->rowCount() == 1) {
@@ -392,8 +401,8 @@ class importer
 				if (!$liveRun) continue;
 
 				try {
-					$data[$selectionKey] = $row[ $selectionKey ];
-					$sql="UPDATE $tableName SET " . $sqlFields . " WHERE $selectionKey=:$selectionKey" ;
+					$data[ $selectionKey ] = $row[ $selectionKey ];
+					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE $selectionKey=:$selectionKey" ;
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
@@ -420,7 +429,7 @@ class importer
 				if (!$liveRun) continue;
 
 				try {
-					$sql="INSERT INTO $tableName SET ".$sqlFields;
+					$sql="INSERT INTO $tableName SET ".$sqlFieldString;
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
@@ -434,7 +443,6 @@ class importer
 				$this->logError( $rowNum, importer::ERROR_DATABASE_GENERIC, $selectionKey, $primaryKeyValue );
 				$partialFail = TRUE;
 			}
-
 		}
 
         if ($liveRun) {
