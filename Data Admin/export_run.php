@@ -90,20 +90,30 @@ else {
 	$primaryKey = $importType->getDetail('primary');
 
 	$tableFields = $importType->getTableFields();
-	$tableFields[0] = $primaryKey;
+
+	if ($dataExport) {
+		$tableFields = array_merge( array($primaryKey), $tableFields);
+	}
 
 	// Create the header row
 	$count = 0;
 	foreach ($tableFields as $fieldName ) {
-		$excel->getActiveSheet()->getColumnDimension( num2alpha($count) )->setAutoSize(true);
+		
 		$excel->getActiveSheet()->setCellValue( num2alpha($count).'1', $importType->getField($fieldName, 'name', $fieldName ) );
 		$excel->getActiveSheet()->getStyle( num2alpha($count).'1')->applyFromArray($style_head_fill);
+
+		// Dont auto-size giant text fields
+		if ( $importType->getField($fieldName, 'kind') == 'text' ) {
+			$excel->getActiveSheet()->getColumnDimension( num2alpha($count) )->setWidth(25);
+		} else {
+			$excel->getActiveSheet()->getColumnDimension( num2alpha($count) )->setAutoSize(true);
+		}
+
 		$count++;
 	}
 
 	// Get the data
 	if ($dataExport) {
-		
  		try {
 			$data=array(); 
 			$sql="SELECT ".implode(', ', $tableFields)." FROM $tableName ORDER BY $primaryKey ASC" ;

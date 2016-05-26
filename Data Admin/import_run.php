@@ -238,7 +238,7 @@ else {
 						 	print " <strong class='highlight'>*</strong>";
 						 }
 					print "</td>" ;
-					print "<td>" . $importType->getField($fieldName, 'desc'). "</td>" ;
+					print "<td><em>" . $importType->getField($fieldName, 'desc'). "</em></td>" ;
 					print "<td>";
 						print $importType->readableFieldType($fieldName);
 					print "</td>" ;
@@ -761,7 +761,11 @@ else {
 							<input name="fieldDelimiter" id="fieldDelimiter" value="<?php print urlencode($fieldDelimiter); ?>" type="hidden">
 							<input name="stringEnclosure" id="stringEnclosure" value="<?php print urlencode($stringEnclosure); ?>" type="hidden">
 							<input name="address" type="hidden" value="<?php print $_SESSION[$guid]["address"] ?>">
-							<input id="submitStep3" type="submit" value="<?php print __($guid, "Submit") ; ?>" <?php if (!$overallSuccess) print "disabled"; ?> >
+							<?php if (!$overallSuccess) : ?>
+								<input id="submitStep3" type="submit" value="<?php print __($guid, "Cannot Continue") ; ?>" disabled>
+							<?php else : ?>
+								<input id="submitStep3" type="submit" value="<?php print __($guid, "Submit") ; ?>"  >
+							<?php endif; ?>
 						</td>
 					</tr>
 				</table>
