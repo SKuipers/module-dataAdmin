@@ -87,11 +87,11 @@ else {
 	$excel->setActiveSheetIndex(0) ;
 
 	$tableName = $importType->getDetail('table');
-	$primaryKey = $importType->getDetail('primary');
+	$primaryKey = $importType->getPrimaryKey();
 
 	$tableFields = $importType->getTableFields();
 
-	if ($dataExport) {
+	if ($dataExport && !empty($primaryKey)) {
 		$tableFields = array_merge( array($primaryKey), $tableFields);
 	}
 
