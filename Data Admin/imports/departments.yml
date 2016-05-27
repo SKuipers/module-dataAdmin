@@ -4,11 +4,11 @@ details:
     name: Departments
     desc: Departments and Learning Areas
     table: gibbonDepartment
-    primary: gibbonDepartmentID
-    select: gibbonDepartmentID
     modes: { update: true, insert: true }
-keys:
-    - gibbonDepartmentID
+primaryKey:
+    gibbonDepartmentID
+uniqueKeys:
+    - nameShort
 table:
     type: 
         name: "Type"

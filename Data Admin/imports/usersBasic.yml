@@ -4,13 +4,12 @@ details:
     name: Basic User Data
     desc: Basic user names and details
     table: gibbonPerson
-    primary: gibbonPersonID
-    select: username
     modes: { update: true, insert: true }
-keys:
-    - gibbonPersonID
+primaryKey:
+    gibbonPersonID
+uniqueKeys:
     - username
-    - studentID
+    - [ username, email ]
 table:
     title: 
         name: "Title"
@@ -39,5 +38,9 @@ table:
     username: 
         name: "Username"
         desc: "User account name & login"
-        args: {filter: string, required: true, key: unique}
+        args: {filter: string, required: true}
+    email: 
+        name: "Email"
+        desc: ""
+        args: {filter: email}
         

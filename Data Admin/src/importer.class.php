@@ -32,17 +32,20 @@ class importer
 	const COLUMN_DATA_CUSTOM = -2;
 	const COLUMN_DATA_FUNCTION = -3;
 
-	const ERROR_INVALID_INPUTS = 1;
-	const ERROR_REQUIRED_FIELD_MISSING = 5;
-	const ERROR_INVALID_FIELD_VALUE = 6;
-	const ERROR_LOCKING_DATABASE = 7;
-	const ERROR_DATABASE_GENERIC = 8;
-	const ERROR_DATABASE_FAILED_INSERT = 9;
-	const ERROR_DATABASE_FAILED_UPDATE = 10;
-	const ERROR_KEY_MISSING = 11;
+	const ERROR_INVALID_INPUTS = 201;
+	const ERROR_REQUIRED_FIELD_MISSING = 205;
+	const ERROR_INVALID_FIELD_VALUE = 206;
+	const ERROR_LOCKING_DATABASE = 207;
+	const ERROR_DATABASE_GENERIC = 208;
+	const ERROR_DATABASE_FAILED_INSERT = 209;
+	const ERROR_DATABASE_FAILED_UPDATE = 210;
+	const ERROR_KEY_MISSING = 211;
+    const ERROR_NON_UNIQUE_KEY =212;
 
 	const WARNING_DUPLICATE_KEY = 101;
 	const WARNING_RECORD_NOT_FOUND = 102;
+
+    const MESSAGE_GENERATED_PASSWORD = 10;
 
 	public $fieldDelimiter = ',';
 	public $stringEnclosure = '"';
@@ -70,11 +73,14 @@ class importer
 	/**
 	 * Array of validated, database-friendly records
 	 */
-	private $tableData;
+	private $tableData = array();
+    private $tableFields = array();
 
-	private $rowErrors = array();
-	private $importErrors = array();
-	private $importWarnings = array();
+    /**
+     * Errors
+     */
+	private $importLog = array( 'error' => array(), 'warning' => array(), 'message' => array() );
+    private $rowErrors = array();
 
 	/**
 	 * ID of the last error message
@@ -96,7 +102,7 @@ class importer
 	 * Valid import MIME types
 	 */
 	private $csvMimeTypes = array(
-		"text/csv","text/comma-separated-values","text/x-comma-separated-values","application/vnd.ms-excel","application/csv"
+		"text/csv", "text/comma-separated-values", "text/x-comma-separated-values", "application/vnd.ms-excel", "application/csv"
 	);
 	
 	/**
@@ -148,7 +154,7 @@ class importer
 
     public function __set($name, $value)
     {
-        throw new Exception('Trying to access a read-only property.');
+        throw new \Exception('Trying to access a read-only property.');
     }
 
     /**
@@ -229,10 +235,10 @@ class importer
 		$this->importHeaders = $csv->titles;
 		$this->importData = $csv->data;
 
-		$this->importErrors = $csv->error_info;
+		$this->importLog['error'] = $csv->error_info;
 		unset($csv);
 
-		foreach ($this->importErrors as $error) {
+		foreach ($this->importLog['error'] as $error) {
 			$this->rowErrors[ $error['row'] ] = 1;
 		}
 
@@ -253,6 +259,8 @@ class importer
      * @return	bool	true if build succeeded
      */
     public function buildTableData( $importType, $columnOrder, $customValues = array() ) {
+
+        if ( empty($this->importData) ) return false;
 
 		$this->tableData = array();
 
@@ -290,28 +298,52 @@ class importer
 				// Filter & validate the value
 				$validate = $importType->validateFieldValue( $fieldName, $value );
 				if ($validate == false ) {
-					$this->logError( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
+					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
 						array($importType->getField($fieldName, 'type'), $importType->getField($fieldName, 'length')) );
 
 					$partialFail = TRUE;
 				}
 
+                // Required field is empty?
 				if ( empty($value) && $importType->isFieldRequired($fieldName) ) {
-					$this->logError( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
+					$this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
 					$partialFail = TRUE;
 				}
 
-                if ( !empty($value) ) {
-					$fields[ $fieldName ] = $value;
-				}
+				$fields[ $fieldName ] = $value;
 
 				$fieldCount++;
 			}
+
+            // Add the primary key if we're syncing with a databse ID
+            if ($this->syncField == true) {
+
+                if (isset($row[ $this->syncColumn ]) && !empty($row[ $this->syncColumn ])) {
+                    $fields[ $importType->getPrimaryKey() ] = $row[ $this->syncColumn ];
+                } else {
+                    $this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $importType->getPrimaryKey(), $this->syncColumn);
+                    $partialFail = TRUE;
+                }
+            }
+
+            // Salt & hash passwords - then output them
+            if ( isset($fields['password'] ) ) {
+                //$this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
+                $salt=getSalt() ;
+                $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
+                $fields[ 'passwordStrongSalt' ] = $salt;
+                $fields[ 'password' ] = '';
+                
+            }
 
 			if (!empty($fields) && $partialFail == FALSE) {
 				$this->tableData[] = $fields;
 			}
 		}
+
+        if ( count($this->tableData) > 0 && isset($this->tableData[0]) ) {
+            $this->tableFields = array_keys($this->tableData[0]);
+        }
 
 		return ( !empty($this->tableData) && $this->getErrorCount() == 0 );
     }
@@ -337,43 +369,54 @@ class importer
         	}
         }
 
-		if (empty($this->tableData)) {
+		if (empty($this->tableData) || count($this->tableData) < 1) {
 			return false;
 		}
 
 		$tableName = $importType->getDetail('table');
-		$primaryKey = $importType->getDetail('primary');
-		$selectionKey = $importType->getDetail('select');
+		$primaryKey = $importType->getPrimaryKey();
+
+        // Setup the query string for keys
+        $sqlKeyQueryString = $this->getKeyQueryString( $importType );
 
 		$partialFail = FALSE;
 		foreach ($this->tableData as $rowNum => $row) {
 
-			// Ensure we have a valid key
-			if (!isset($row[$selectionKey])) {
-				$this->logError( $rowNum, importer::ERROR_KEY_MISSING, $selectionKey );
-				$partialFail = TRUE;
-				continue;
-			}
+            // Ensure we have valid key(s)
+            if ( array_diff($importType->getUniqueKeyFields(), array_keys($row) ) != false ) {
+                $this->log( $rowNum, importer::ERROR_KEY_MISSING );
+                $partialFail = TRUE;
+                continue;
+            }
 
 			// Find existing record(s)
 			try {
-				$data=array( $selectionKey => $row[ $selectionKey ] ); 
-				$sql="SELECT $primaryKey FROM $tableName WHERE $selectionKey=:$selectionKey" ;
-				$result = $this->pdo->executeQuery($data, $sql);
+                $data = array();
+                // Add the unique keys
+                foreach ($importType->getUniqueKeyFields() as $keyField) {
+                    $data[ $keyField ] = $row[ $keyField ];
+                }
+                // Add the primary key if database IDs is enabled
+                if ($this->syncField == true) {
+                    $data[ $primaryKey ] = $row[ $primaryKey ];
+                }
+
+                // print_r($data);
+                // print $sqlKeyQueryString.'<br/>';
+
+				$result = $this->pdo->executeQuery($data, $sqlKeyQueryString);
 			}
 			catch(PDOException $e) { 
-				$this->logError( $rowNum, importer::ERROR_DATABASE_GENERIC, $selectionKey );
+				$this->log( $rowNum, importer::ERROR_DATABASE_GENERIC );
 				$partialFail = TRUE;
 				continue;
 			}
-
-			$primaryKeyValue = $result->fetchColumn(0);
 
             // Build the query field=:value associations
             $sqlFields = array();
             foreach (array_keys($row) as $fieldName ) {
 
-                if ( !empty($importType->getField($fieldName, 'relationship')) ) {
+                if ( $importType->isFieldRelational($fieldName) ) {
                     // Handle relational table data
                     extract( $importType->getField($fieldName, 'relationship') );
                     $sqlFields[] = "$fieldName=(SELECT $key FROM $table WHERE $field=:$fieldName)";
@@ -388,12 +431,21 @@ class importer
 			// Handle Existing Records
 			if ($result->rowCount() == 1) {
 
+                $primaryKeyValue = $result->fetchColumn(0);
+
 				// Dont update records on INSERT ONLY mode
 				if ($this->mode == 'insert') {
-					$this->logError( $rowNum, importer::WARNING_DUPLICATE_KEY, $selectionKey, $primaryKeyValue );
+					$this->log( $rowNum, importer::WARNING_DUPLICATE_KEY, $primaryKey, $primaryKeyValue );
 					$this->databaseResults['updates_skipped'] += 1;
 					continue;
 				}
+
+                // If these IDs don't match, then one of the unique keys matched (eg: non-unique value with different database ID)
+                if ($this->syncField == true && $primaryKeyValue != $row[ $primaryKey ] ) {
+                    $this->log( $rowNum, importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[ $primaryKey ], array( $primaryKey, intval($primaryKeyValue) ) );
+                    $this->databaseResults['updates_skipped'] += 1;
+                    continue;
+                }
 
 				$this->databaseResults['updates'] += 1;
 
@@ -401,12 +453,12 @@ class importer
 				if (!$liveRun) continue;
 
 				try {
-					$data[ $selectionKey ] = $row[ $selectionKey ];
-					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE $selectionKey=:$selectionKey" ;
+					$row[ $primaryKey ] = $primaryKeyValue;
+					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE $primaryKey=:$primaryKey" ;
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
-					$this->logError( $rowNum, importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
+					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
 				}
@@ -418,7 +470,7 @@ class importer
 
 				// Dont add records on UPDATE ONLY mode
 				if ($this->mode == 'update') {
-					$this->logError( $rowNum, importer::WARNING_RECORD_NOT_FOUND, $selectionKey, $row[ $selectionKey ] );
+					$this->log( $rowNum, importer::WARNING_RECORD_NOT_FOUND );
 					$this->databaseResults['inserts_skipped'] += 1;
 					continue;
 				}
@@ -433,15 +485,17 @@ class importer
 					$this->pdo->executeQuery($row, $sql);
 				}
 				catch(PDOException $e) { 
-					$this->logError( $rowNum, importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
+					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
 				}
 				
 			}
 			else {
-				$this->logError( $rowNum, importer::ERROR_DATABASE_GENERIC, $selectionKey, $primaryKeyValue );
-				$partialFail = TRUE;
+
+                $primaryKeyValues = $result->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE, 0);
+                $this->log( $rowNum, importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array( $primaryKey, implode(', ',$primaryKeyValues) ) );
+                $partialFail = TRUE;
 			}
 		}
 
@@ -450,6 +504,49 @@ class importer
         }
 
 		return (!$partialFail);
+    }
+
+    protected function getKeyQueryString( $importType ) {
+
+        $tableName = $importType->getDetail('table');
+        $primaryKey = $importType->getPrimaryKey();
+
+        $sqlKeys = array();
+        foreach ( $importType->getUniqueKeys() as $uniqueKey ) {
+
+            // Handle multi-part unique keys (eg: school year AND course short name) 
+            if ( is_array($uniqueKey) && count($uniqueKey) > 1 ) {
+
+                $sqlKeysFields = array();
+                foreach ($uniqueKey as $fieldName) {
+                    if (!in_array($fieldName, $this->tableFields) ) continue;
+
+                    // Relational fields used as keys -.-
+                    if ( $importType->isFieldRelational($fieldName) ) {
+                        extract( $importType->getField($fieldName, 'relationship') );
+                        $sqlKeysFields[] = "$fieldName=(SELECT $key FROM $table WHERE $field=:$fieldName)";
+                    } else {
+                        $sqlKeysFields[] = $fieldName.'=:'.$fieldName;
+                    }
+                }
+                $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields ) .')';
+            } else {
+                // Skip key fields which dont exist in our imported data set
+                if (!in_array($uniqueKey, $this->tableFields) ) continue;
+
+                $sqlKeys[] = $uniqueKey.'=:'.$uniqueKey;
+            }
+            
+        }
+
+        // Add the primary key if database IDs is enabled
+        if ($this->syncField == true) {
+            $sqlKeys[] = $primaryKey.'=:'.$primaryKey;
+        }
+
+        $sqlKeyString = implode(' OR ', $sqlKeys );
+
+        return "SELECT $primaryKey FROM $tableName WHERE ". $sqlKeyString ;
     }
 
     /**
@@ -477,25 +574,25 @@ class importer
     }
 
     /**
-     * Get Errors
+     * Get Logs
      *
      * @access  public
      * @since	28th April 2016
      * @return	array	Errors logged with logError
      */
-    public function getErrors() {
-    	return $this->importErrors;
+    public function getLogs() {
+    	return array_merge($this->importLog['message'], $this->importLog['warning'], $this->importLog['error']);
     }
 
     /**
-     * Get Warnings
+     * Get Warning Count
      *
      * @access  public
-     * @since	28th April 2016
-     * @return	array	Warnings logged with logError
+     * @since   28th April 2016
+     * @return  int     Warning count
      */
-    public function getWarnings() {
-    	return $this->importWarnings;
+    public function getWarningCount() {
+        return count($this->importLog['warning']);
     }
 
     /**
@@ -506,7 +603,7 @@ class importer
      * @return	int		Error count
      */
     public function getErrorCount() {
-    	return count($this->importErrors);
+    	return count($this->importLog['error']);
     }
 
     /**
@@ -521,17 +618,6 @@ class importer
     }
 
     /**
-     * Get Warning Count
-     *
-     * @access  public
-     * @since	28th April 2016
-     * @return	int		Warning count
-     */
-    public function getWarningCount() {
-    	return count($this->importWarnings);
-    }
-
-    /**
      * Get Last Error
      *
      * @access  public
@@ -539,14 +625,14 @@ class importer
      * @return	string	Translated error message
      */
     public function getLastError() {
-    	return $this->errorMessage( $this->errorID );
+    	return $this->translateMessage( $this->errorID );
     }
 
     /**
-     * Log Error
+     * Log
      *
-     * @access  public
-     * @version	28th April 2016
+     * @access  protected
+     * @version	27th May 2016
      * @since	28th April 2016
      * @param	int		Row Number
      * @param	int		Error ID
@@ -554,20 +640,26 @@ class importer
      * @param	string	Field Index
      * @param	array	Values to pass to String Format
      */
-    public function logError( $rowNum, $errorID, $fieldName, $fieldNum = -1, $args = array() ) {
+    protected function log( $rowNum, $messageID, $fieldName = '', $fieldNum = -1, $args = array() ) {
 
-    	$error = array( 
+        if ($messageID > 200 ) {
+            $type = 'error';
+        } else if ($messageID > 100 ) {
+            $type = 'warning';
+        } else {
+            $type = 'message';
+        }
+
+    	$this->importLog[ $type ][] = array( 
     		'index' => $rowNum,
     		'row' => $rowNum+2,
-    		'info' => vsprintf( $this->errorMessage($errorID), $args ),
+    		'info' => vsprintf( $this->translateMessage($messageID), $args ),
     		'field_name' => $fieldName,
     		'field' => $fieldNum,
+            'type' => $type
     	);
 
-    	if ( $errorID >= 100 ) {
-    		$this->importWarnings[] = $error;
-    	} else {
-    		$this->importErrors[] = $error;
+    	if ( $type == 'error' ) {
     		$this->rowErrors[ $rowNum ] = 1;
     	}
     }
@@ -575,14 +667,14 @@ class importer
     /**
      * Error Message
      *
-     * @access  public
-     * @version	28th April 2016
+     * @access  protected
+     * @version	27th May 2016
      * @since	28th April 2016
      * @param	int		Error ID
      *
      * @return	string	Translated error message
      */
-    public function errorMessage( $errorID ) {
+    protected function translateMessage( $errorID ) {
 
     	switch ($errorID) {
     		// ERRORS
@@ -595,7 +687,9 @@ class importer
     		case importer::ERROR_LOCKING_DATABASE:
     			return __( $this->config->get('guid'), "The database could not be locked/unlocked for use."); break;
     		case importer::ERROR_KEY_MISSING:
-    			return __($this->config->get('guid'), "Missing value for primary key."); break;
+    			return __($this->config->get('guid'), "Missing value for primary key or unique key set."); break;
+            case importer::ERROR_NON_UNIQUE_KEY:
+                return __($this->config->get('guid'), "Encountered non-unique values used by %s: %s"); break;
     		case importer::ERROR_DATABASE_GENERIC:
     			return __($this->config->get('guid'), "There was an error accessing the database."); break;
     		case importer::ERROR_DATABASE_FAILED_INSERT:
@@ -607,8 +701,11 @@ class importer
     			return __($this->config->get('guid'), "A duplicate entry already exists for this record. Record skipped."); break;
     		case importer::WARNING_RECORD_NOT_FOUND:
     			return __($this->config->get('guid'), "A database entry for this record could not be found. Record skipped."); break;
+            // MESSAGES
+            case importer::MESSAGE_GENERATED_PASSWORD:
+                return __($this->config->get('guid'), "Password generated for user %s: %s"); break;
     		default:
-    			return __( $this->config->get('guid'), "An unknown error occured, so the import will be aborted."); break;
+    			return __( $this->config->get('guid'), "An error occured, the import was aborted."); break;
 
     		
     	}

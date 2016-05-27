@@ -4,11 +4,12 @@ details:
     name: Course Information
     desc: Course names and descriptions by School Year
     table: gibbonCourse
-    primary: gibbonCourseID
-    select: nameShort
     modes: { update: true, insert: true }
-keys:
-    - gibbonCourseID
+primaryKey:
+    gibbonCourseID
+uniqueKeys:
+    - [ gibbonSchoolYearID, name ]
+    - [ gibbonSchoolYearID, nameShort ]
 table:
     gibbonSchoolYearID: 
         name: "School Year"

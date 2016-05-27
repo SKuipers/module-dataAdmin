@@ -40,7 +40,9 @@ class importType
     /**
      * Values that can be used for sync & updates
      */
-	protected $keys = array();
+    protected $primaryKey;
+	protected $uniqueKeys = array();
+    protected $keyFields = array();
 
     /**
      * Holds the table fields and information for each field
@@ -67,8 +69,23 @@ class importType
     		$this->details = $data['details'];
     	}
 
-    	if (isset($data['keys'])) {
-    		$this->keys = $data['keys'];
+        if (isset($data['primaryKey'])) {
+            $this->primaryKey = $data['primaryKey'];
+        }
+
+    	if (isset($data['uniqueKeys'])) {
+    		$this->uniqueKeys = $data['uniqueKeys'];
+
+            //Grab the unique fields used in all keys
+            foreach ($this->uniqueKeys as $key) {
+                if (is_array($key) && count($key) > 1) {
+                    foreach ($key as $keyName) {
+                        if (!in_array($keyName, $this->keyFields)) $this->keyFields[] = $keyName;
+                    }
+                } else {
+                    if (!in_array($key, $this->keyFields)) $this->keyFields[] = $key;
+                }
+            }
     	}
 
     	if (isset($data['table'])) {
@@ -79,7 +96,7 @@ class importType
     		$this->validated = $this->validateWithDatabase( $pdo );
     	}
 
-    	if ( empty($this->details) || empty($this->details) || empty($this->table) ) {
+    	if ( empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table) ) {
     		return NULL;
     	}
     }
@@ -244,6 +261,19 @@ class importType
     }
 
     /**
+     * Get Primary Key
+     *
+     * @access  public
+     * @version 27th April 2016
+     * @since   27th April 2016
+     *
+     * @return  array   2D array of available keys to sync with
+     */
+    public function getPrimaryKey() {
+        return $this->primaryKey;
+    }
+
+    /**
      * Get Keys
      *
      * @access  public
@@ -252,8 +282,21 @@ class importType
      *
      * @return  array   2D array of available keys to sync with
      */
-    public function getKeys() {
-    	return ( isset($this->keys) )? $this->keys : array();
+    public function getUniqueKeys() {
+    	return $this->uniqueKeys;
+    }
+
+    /**
+     * Get Key Fields
+     *
+     * @access  public
+     * @version 25th May 2016
+     * @since   25th May 2016
+     *
+     * @return  array   2D array of available key fields
+     */
+    public function getUniqueKeyFields() {
+        return ( isset($this->keyFields) )? $this->keyFields : array();
     }
 
     /**
@@ -367,6 +410,20 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
+     * @since   27th April 2016
+     * @param   string  Field name
+     *
+     * @return  bool true if marked as a required field
+     */
+    public function isFieldRelational( $fieldName ) {
+        return ( isset($this->table[$fieldName]['relationship']) && !empty($this->table[$fieldName]['relationship']) );
+    }
+
+    /**
+     * Is Field Required
+     *
+     * @access  public
+     * @version 27th April 2016
      * @since 	27th April 2016
      * @param   string	Field name
      *
@@ -377,17 +434,17 @@ class importType
     }
 
     /**
-     * Is Field Unique
+     * Is Field Required
      *
      * @access  public
      * @version 27th April 2016
      * @since   27th April 2016
      * @param   string  Field name
      *
-     * @return  bool true if marked as a unique field
+     * @return  bool true if marked as a required field
      */
-    public function isFieldUnique( $fieldName ) {
-        return (isset( $this->table[$fieldName]['args']['unique']))? $this->table[$fieldName]['args']['unique'] : false;
+    public function isFieldUniqueKey( $fieldName ) {
+        return ( in_array($fieldName, $this->keyFields) ) ;
     }
 
     /**
@@ -404,6 +461,11 @@ class importType
     public function readableFieldType( $fieldName ) {
     	$output = '';
     	$kind = $this->getField($fieldName, 'kind');
+
+        if ($this->isFieldRelational($fieldName)) {
+            $relationship = $this->getField($fieldName, 'relationship');
+            return $relationship['table'].' '.$relationship['field'];
+        }
 
     	if (isset($kind)) {
     		$length = $this->getField($fieldName, 'length');

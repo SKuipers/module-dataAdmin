@@ -326,43 +326,134 @@ else {
 
 			if ($mode == "sync" || $mode == "update") {
 
+				$lastFieldValue = ($columnOrder == 'last' && isset($columnOrderLast['syncField']))? $columnOrderLast['syncField'] : 'N';
+				$lastColumnValue = ($columnOrder == 'last' && isset($columnOrderLast['syncColumn']))? $columnOrderLast['syncColumn'] : '';
+
 				print "<table class='smallIntBorder fullWidth' cellspacing='0'>" ;
+
 				print "<tr>" ;
-						print "<td class='right'>";
-						print __($guid, "Sync database field:");
-						print "</td>";
+					print "<td>";
+						print "<strong>";
+						print __($guid, "Use database ID field?");
+						print "</strong><br/>";
 
-						print "<td>";
-							print "<select name='syncField' style='width:190px;'>";
-							$lastImportValue = ($columnOrder == 'last' && isset($columnOrderLast['syncField']))? $columnOrderLast['syncField'] : '';
-							foreach ($importType->getKeys() as $key ) {
-								printf("<option value='%s' %s>%s</option>", $key, ($lastImportValue == $key)? 'selected' : '', $key );
-							}
-							print "</select>" ;
-						print "</td>";
+						print "<span class='emphasis small'>";
+						print __($guid, "Only entries with a matching database ID will be updated.");
+						print "</span>";
+					print "</td>";
+					print "<td class='right standardWidth'>";
+					
+					print "<input type='radio' name='syncField' value='Y' ". (($lastFieldValue == 'Y')? 'checked' : '') ."> " . __($guid, 'Yes') .' ';
+					print "<input type='radio' name='syncField' value='N' ". (($lastFieldValue == 'N')? 'checked' : '') ."> " . __($guid, 'No');
 
-						print "<td class='right'>";
-						print __($guid, "with CSV column:");
-						print "</td>";
+					print "</td>";
+				print "</tr>" ;
 
-						print "<td>";
-							
-							print "<select name='syncColumn' style='width:190px;'>";
-							$lastImportValue = ($columnOrder == 'last' && isset($columnOrderLast['syncColumn']))? $columnOrderLast['syncColumn'] : '';
-							foreach ($headings as $i => $name) {
-								printf("<option value='%s' %s>%s</option>", $name, ($lastImportValue == $name)? 'selected' : '', $name);
-							}
-							print "</select>" ;
-						print "</td>";
-					print "</tr>" ;
+				print "<tr class='syncDetails'>" ;
+					print "<td>";
+					printf( __($guid, "Sync field %s with CSV column:"), '<code>'.$importType->getPrimaryKey().'</code>' );
+					print "</td>";
 
-					print "<tr>" ;
-						print "<td colspan=4><span class='emphasis small'>";
-						print __($guid, "Data will only be synced for entries where the column value matches the value of the selected database field.");
-						print "</span></td>";
-					print "</tr>" ;
+					print "<td>";
+						print "<select name='syncColumn' class='standardWidth'>";
+						print "<option value='0' ". (($lastColumnValue == 0)? 'selected' : '') ."> </option>";
+
+						foreach ($headings as $i => $name) {
+							printf("<option value='%s' %s>%s</option>", $name, ($lastColumnValue == $name)? 'selected' : '', $name);
+						}
+						print "</select>" ;
+					print "</td>";
+				print "</tr>" ;
 				print "</table><br/>" ;
+				?>
+				<script type="text/javascript">
+					$(document).ready(function(){
 
+						if ($('input[name=syncField]:checked').val() != "Y" ) {
+							$(".syncDetails").css("display","none");
+						}
+
+						$("input[name=syncField]").click(function(){
+							if ($('input[name=syncField]:checked').val()=="Y" ) {
+								$(".syncDetails").slideDown("slow", $(".syncDetails").css("display","table-row")); 
+
+							} else {
+								$(".syncDetails").css("display","none");
+							}
+						});
+					});
+				</script>
+				<?php
+			}
+
+			// Import Restrictions & Unique Key Info
+			$importRestrictions = array();
+
+			if (!empty($importType->getUniqueKeys())) {
+				foreach ($importType->getUniqueKeys() as $key) {
+
+					if (is_array($key)) {
+						$keyNames = array();
+						foreach(array_reverse($key) as $keyName) {
+							$keyNames[] = $importType->getField($keyName, 'name');
+						}
+						$importRestrictions[] = __($guid, 'Unique').' '. implode(__($guid, ' for each '), $keyNames);
+					} else {
+						$importRestrictions[] = $importType->getField($key, 'name') .' ' . __($guid, 'must be unique');
+					}
+				}
+			}
+
+			foreach ($importType->getTableFields() as $fieldName) {
+				if ($importType->isFieldRelational($fieldName)) {
+
+					extract( $importType->getField($fieldName, 'relationship') );
+					$importRestrictions[] = sprintf( __($guid, 'Each %s should match the %s of a %s'), 
+						$importType->getField($fieldName, 'name'), $field, $table
+					);
+				}
+
+				if ($importType->getField($fieldName, 'type') == 'enum') {
+
+					$importRestrictions[] = sprintf( __($guid, '%s must be one of: %s'), 
+						$importType->getField($fieldName, 'name'), 
+						implode(', ', $importType->getField($fieldName, 'elements'))
+					);
+
+				}
+
+				if ($importType->getField($fieldName, 'filter') == 'email') {
+					$importRestrictions[] = sprintf( __($guid, '%s must be a valid email address'), $importType->getField($fieldName, 'name') );
+				}
+
+				if ($importType->getField($fieldName, 'filter') == 'url') {
+					$importRestrictions[] = sprintf( __($guid, '%s must be a valid url'), $importType->getField($fieldName, 'name') );
+				}
+			}
+
+
+			if (!empty($importRestrictions)) {
+
+				print "<table class='smallIntBorder fullWidth' cellspacing='0'>" ;
+
+				print "<tr>" ;
+					print "<th colspan=2>";
+						print "<strong>";
+						print __($guid, "Import Restrictions");
+						print "</strong>";
+					print "</th>" ;
+				print "</tr>" ;
+
+				foreach ($importRestrictions as $count => $restriction) {
+					print "<tr>" ;
+						print "<td style='width: 20px'>". ($count + 1) .".</td>";
+						print "<td>";
+						print $restriction;
+						print "</td>" ;
+					print "</tr>" ;
+				}
+
+				print "</table><br/>" ;
 			}
 
 			print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
@@ -370,7 +461,7 @@ else {
 				print "<th >" ;
 					print __($guid, "Field Name") ;
 				print "</th>" ;
-				print "<th style='width: 100px;'>" ;
+				print "<th style='width: 120px;'>" ;
 					print __($guid, "Type") ;
 				print "</th>" ;
 				print "<th style='width:215px;'>" ;
@@ -392,6 +483,14 @@ else {
 							 printf("<span title='%s'>%s</span>", $importType->getField($fieldName, 'desc'), $importType->getField($fieldName, 'name') );
 							 if ( $importType->isFieldRequired($fieldName) ) {
 							 	print " <strong class='highlight'>*</strong>";
+							 }
+
+							 if ( $importType->isFieldUniqueKey($fieldName) ) {
+							 	print "<img title='" . __($guid, 'Unique Key') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/target.png'/ style='float: right; width:12px; height:12px;margin-left:4px;'>";
+							 }
+
+							 if ( $importType->isFieldRelational($fieldName) ) {
+							 	print "<img title='" . __($guid, 'Relational') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/ style='float: right; width:10px; height:10px;margin-left:4px;'>";
 							 }
 						print "</td>" ;
 
@@ -421,15 +520,15 @@ else {
 								print "<option value='".DataAdmin\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
 							}
 
-							foreach ($headings as $i => $name) {
+							foreach ($headings as $i => $columnName) {
 
 								if ($columnOrder == 'linear' || $columnOrder == 'linearplus') {
 									$selected = ($columnOrder == 'linearplus')? ($i == $count+1) : ($i == $count);
 								}
 								else if ($columnOrder == 'guess') {
-									$selected = ($name == $fieldName) || ($name == $importType->getField($fieldName, 'name') );
+									$selected = ($columnName == $fieldName) || ($columnName == $importType->getField($fieldName, 'name') );
 									if (!$selected) {
-										similar_text( strtoupper( $importType->getField($fieldName, 'name') ), strtoupper($name), $similarity);
+										similar_text( strtoupper( $importType->getField($fieldName, 'name') ), strtoupper($columnName), $similarity);
 										$selected = ceil($similarity) > 85;
 									}
 								}
@@ -437,7 +536,7 @@ else {
 									$selected = ($i == $columnOrderLast[$count]);
 								}
 
-								printf("<option value='%s' %s>%s</option>", $i, ($selected)? 'selected' : '', $name);
+								printf("<option value='%s' %s>%s</option>", $i, ($selected)? 'selected' : '', $columnName);
 							}
 							
 							print "</select>" ;
@@ -523,7 +622,7 @@ else {
 			print __($guid, 'Import cannot proceed, as the "Mode" field have been left blank.');
 			print "<br/></div>";
 		}
-		else if ( ($mode == 'sync' || $mode == 'update') && (empty($syncField) || $syncColumn < 0 ) ) {
+		else if ( ($mode == 'sync' || $mode == 'update') && (!empty($syncField) && $syncColumn < 0 ) ) {
 			print "<div class='error'>";
 			print __($guid, "Your request failed because your inputs were invalid.") ;
 			print "<br/></div>";
@@ -537,7 +636,7 @@ else {
 		else {
 
 			$importer->mode = $mode;
-			$importer->syncField = $syncField;
+			$importer->syncField = ($syncField == 'Y');
     		$importer->syncColumn = $syncColumn;
 			$importer->fieldDelimiter = (!empty($fieldDelimiter))? stripslashes($fieldDelimiter) : ',';
     		$importer->stringEnclosure = (!empty($stringEnclosure))? stripslashes($stringEnclosure) : '"';
@@ -583,7 +682,9 @@ else {
 				print "</div>";
 			}
 
-			if ($importer->getErrorCount() > 0 || $importer->getWarningCount() > 0) {
+			$logs = $importer->getLogs();
+
+			if (count($logs) > 0) {
 				print "<table class='smallIntBorder fullWidth colorOddEven' cellspacing='0'>" ;
 					print "<tr class='head'>" ;
 						print "<th style='width: 40px;'>" ;
@@ -597,27 +698,38 @@ else {
 						print "</th>" ;
 					print "</tr>" ;
 
-					foreach ($importer->getErrors() as $error ) {
-						print "<tr class='error'>" ;
-							print "<td>" . $error['row'] . "</td>";
+					foreach ($logs as $log ) {
+						print "<tr class='".$log['type']."'>" ;
+							print "<td>" . $log['row'] . "</td>";
 							print "<td>";
-								print $error['field_name'];
-								print ($error['field'] >= 0)? " (". $error['field'] .")" : "";
+								print $log['field_name'];
+								print ($log['field'] >= 0)? " (". $log['field'] .")" : "";
 							print "</td>";
-							print "<td>" . $error['info'] . "</td>";
+							print "<td>" . $log['info'] . "</td>";
 						print "</tr>" ;
 					}
 
-					foreach ($importer->getWarnings() as $warning ) {
-						print "<tr class='warning'>" ;
-							print "<td>" . $warning['row'] . "</td>";
-							print "<td>";
-								print $warning['field_name'];
-								print ($warning['field'] >= 0)? " (". $warning['field'] .")" : "";
-							print "</td>";
-							print "<td>" . $warning['info'] . "</td>";
-						print "</tr>" ;
-					}
+					// foreach ($importer->getErrors() as $error ) {
+					// 	print "<tr class='error'>" ;
+					// 		print "<td>" . $error['row'] . "</td>";
+					// 		print "<td>";
+					// 			print $error['field_name'];
+					// 			print ($error['field'] >= 0)? " (". $error['field'] .")" : "";
+					// 		print "</td>";
+					// 		print "<td>" . $error['info'] . "</td>";
+					// 	print "</tr>" ;
+					// }
+
+					// foreach ($importer->getWarnings() as $warning ) {
+					// 	print "<tr class='warning'>" ;
+					// 		print "<td>" . $warning['row'] . "</td>";
+					// 		print "<td>";
+					// 			print $warning['field_name'];
+					// 			print ($warning['field'] >= 0)? " (". $warning['field'] .")" : "";
+					// 		print "</td>";
+					// 		print "<td>" . $warning['info'] . "</td>";
+					// 	print "</tr>" ;
+					// }
 
 				print "</table><br/>" ;
 			}
