@@ -109,6 +109,9 @@ else {
 			$excel->getActiveSheet()->getColumnDimension( num2alpha($count) )->setAutoSize(true);
 		}
 
+		$excel->getActiveSheet()->getComment( num2alpha($count).'1' )
+								->getText()->createTextRun( $importType->getField($fieldName, 'desc', '' ) );
+
 		$count++;
 	}
 
