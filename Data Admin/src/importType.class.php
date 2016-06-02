@@ -204,8 +204,11 @@ class importType
      */
     protected function parseTableValueType( $fieldName, $columnField ) {
 
-        // Split the info from inside the brackets, eg int(3)
-        $info = preg_split("/[()]+/", $columnField );
+        // Split the info from inside the outer brackets, eg int(3)
+        $firstBracket = strpos($columnField, '(');
+
+        $info[0] = substr($columnField, 0, $firstBracket);
+        $info[1] = substr($columnField, $firstBracket+1, -1);
 
         // Cancel out if the type is not valid
         if (!isset($info[0])) return;
