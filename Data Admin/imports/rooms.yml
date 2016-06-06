@@ -1,0 +1,78 @@
+details:
+    type: rooms
+    category: Other
+    name: Facilities
+    desc: Rooms, Spaces and School Facilities
+    table: gibbonSpace
+    modes: { update: true, insert: true }
+primaryKey:
+    gibbonSpaceID
+uniqueKeys:
+    - name
+table:
+    name: 
+        name: "Name"
+        desc: "Must be unique."
+        args: { filter: string, required: true }
+    type: 
+        name: "Type"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    gibbonPersonID1: 
+        name: "User 1"
+        desc: "Username"
+        args: { filter: string }
+        relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
+    gibbonPersonID2: 
+        name: "User 2"
+        desc: "Username"
+        args: { filter: string }
+        relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
+    capacity: 
+        name: "Capacity"
+        desc: ""
+        args: { filter: number }
+    computer: 
+        name: "Teacher's Computer"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    computerStudent: 
+        name: "Student Computers"
+        desc: "How many are there"
+        args: { filter: string, required: true, custom: true }
+    projector: 
+        name: "Projector"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    tv: 
+        name: "TV"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    dvd: 
+        name: "DVD Player"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    hifi: 
+        name: "Hifi"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    speakers: 
+        name: "Speakers"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    iwb: 
+        name: "Interactive White Board"
+        desc: ""
+        args: { filter: string, required: true, custom: true }
+    phoneInternal: 
+        name: "Extension"
+        desc: "Room's internal phone number."
+        args: { filter: string }
+    phoneExternal: 
+        name: "Phone Number"
+        desc: "Room's external phone number."
+        args: { filter: string }
+    comment: 
+        name: "Comment"
+        desc: ""
+        args: { filter: string }
