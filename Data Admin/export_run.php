@@ -109,8 +109,11 @@ else {
 			$excel->getActiveSheet()->getColumnDimension( num2alpha($count) )->setAutoSize(true);
 		}
 
-		$excel->getActiveSheet()->getComment( num2alpha($count).'1' )
-								->getText()->createTextRun( $importType->getField($fieldName, 'desc', '' ) );
+		// Add notes to column headings
+		$info = ($importType->isFieldRequired($fieldName))? "* required\n" : '';
+		$info .= $importType->getField($fieldName, 'desc', '' );
+
+		$excel->getActiveSheet()->getComment( num2alpha($count).'1' )->getText()->createTextRun( $info );
 
 		$count++;
 	}
