@@ -48,6 +48,7 @@ class importType
      * Holds the table fields and information for each field
      */
 	protected $table = array();
+    protected $tablesUsed = array();
 
     /**
      * Has the structure been checked against the database?
@@ -90,6 +91,17 @@ class importType
 
     	if (isset($data['table'])) {
     		$this->table = $data['table'];
+            $this->tablesUsed[] = $this->details['table'];
+
+            // Add relational tables to the tablesUsed array so they're locked
+            foreach ($this->table as $fieldName => $field) {
+                if ($this->isFieldRelational($fieldName)) {
+                    $relationship = $this->getField($fieldName, 'relationship');
+                    if (!in_array($relationship['table'], $this->tablesUsed)) {
+                        $this->tablesUsed[] = $relationship['table'];
+                    }
+                }
+            }
     	}
 
     	if ($pdo != NULL) {
@@ -233,10 +245,16 @@ class importType
             $this->setField( $fieldName, 'scale', $info[2] );
         }
         else if ($info[0] == 'enum') {
+
             // Grab the CSV enum elements as an array
             $elements = explode(',', str_replace("'", "", $info[1]) );
             $this->setField( $fieldName, 'elements', $elements );
-            $this->setField( $fieldName, 'kind', 'enum' );
+
+            if ($info[1] == "'Y','N'" || $info[1] == "'N','Y'") {
+                $this->setField( $fieldName, 'kind', 'yesno' );
+            } else {
+                $this->setField( $fieldName, 'kind', 'enum' );
+            }
 
             if ( empty($this->getField($fieldName, 'desc')) ) {
                 $this->setField( $fieldName, 'desc', implode(', ', $elements) );
@@ -304,6 +322,7 @@ class importType
 
     /**
      * Get Tables
+     * Get the tables used in this import. All tables used must be locked.
      *
      * @access  public
      * @version 27th April 2016
@@ -312,7 +331,7 @@ class importType
      * @return  array   2D array of table names used in this import
      */
     public function getTables() {
-    	return ( isset($this->details['table']) )? array( $this->details['table'] ) : array();
+    	return $this->tablesUsed;
     }
 
     /**
@@ -479,6 +498,7 @@ class importType
                 case 'number':  $output = "Number (" . $length . " digits)"; break;
                 case 'decimal': $scale = $this->getField($fieldName, 'scale');
                                 $output = "Decimal (" . str_repeat('0', $length) .".". str_repeat('0', $scale)." format)"; break;
+                case 'yesno':   $output = "Y or N"; break;
                 case 'boolean': $output = "True or False"; break;
                 case 'enum':    $output = "Options"; break;
                 default:        $output = ucfirst($kind);

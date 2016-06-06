@@ -213,7 +213,7 @@ else {
 		print "<tr class='head'>" ;
 			print "<th style='width: 20px;'>" ;
 			print "</th>" ;
-			print "<th >" ;
+			print "<th style='width: 120px;'>" ;
 				print __($guid, "Name") ;
 			print "</th>" ;
 			print "<th >" ;
