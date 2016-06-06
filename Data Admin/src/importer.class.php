@@ -272,7 +272,7 @@ class importer
 			foreach ($importType->getTableFields() as $fieldName) {
 				$columnIndex = $columnOrder[ $fieldCount ];
 
-				$value = '';
+				$value = NULL;
 				// Skip marked columns
 				if ($columnIndex == importer::COLUMN_DATA_SKIP) {
 					$fieldCount++;
@@ -296,8 +296,7 @@ class importer
 				}
 				
 				// Filter & validate the value
-				$validate = $importType->validateFieldValue( $fieldName, $value );
-				if ($validate == false ) {
+				if ( $importType->validateFieldValue( $fieldName, $value ) == false ) {
 					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
 						array($importType->getField($fieldName, 'type'), $importType->getField($fieldName, 'length')) );
 
@@ -305,7 +304,7 @@ class importer
 				}
 
                 // Required field is empty?
-				if ( empty($value) && $importType->isFieldRequired($fieldName) ) {
+				if ( (!isset($value) || $value == NULL) && $importType->isFieldRequired($fieldName) ) {
 					$this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
 					$partialFail = TRUE;
 				}
@@ -362,12 +361,15 @@ class importer
      */
     public function importIntoDatabase( $importType, $liveRun = TRUE ) {
 
-        if ($liveRun) {
-        	if ( $this->lockTables( $importType->getTables() ) == false) {
-        		$this->errorID = importer::ERROR_LOCKING_DATABASE;
-        		return false;
-        	}
-        }
+        // Temporaily removed - Locked tables referenced more than once need an alias
+        // http://forums.mysql.com/read.php?21,134450,144180#msg-144180
+        // 
+        // if ($liveRun) {
+        // 	if ( $this->lockTables( $importType->getTables() ) == false) {
+        // 		$this->errorID = importer::ERROR_LOCKING_DATABASE;
+        // 		return false;
+        // 	}
+        // }
 
 		if (empty($this->tableData) || count($this->tableData) < 1) {
 			return false;
@@ -499,9 +501,9 @@ class importer
 			}
 		}
 
-        if ($liveRun) {
-        	$partialFail = ($this->unlockTables() == false);
-        }
+        // if ($liveRun) {
+        // 	$partialFail = ($this->unlockTables() == false);
+        // }
 
 		return (!$partialFail);
     }
@@ -751,7 +753,6 @@ class importer
 
     	if (empty($tables)) return false;
 
-    	$lockFail=false;
 		try {
 			$sql="LOCK TABLES " . implode(' WRITE, ', $tables) ." WRITE";
 			$result = $this->pdo->executeQuery(array(), $sql);   
