@@ -111,9 +111,12 @@ else {
 
 		// Add notes to column headings
 		$info = ($importType->isFieldRequired($fieldName))? "* required\n" : '';
+		$info .= $importType->readableFieldType($fieldName)."\n";
 		$info .= $importType->getField($fieldName, 'desc', '' );
 
-		$excel->getActiveSheet()->getComment( num2alpha($count).'1' )->getText()->createTextRun( $info );
+		if (!empty($info)) {
+			$excel->getActiveSheet()->getComment( num2alpha($count).'1' )->getText()->createTextRun( $info );
+		}
 
 		$count++;
 	}
@@ -142,9 +145,6 @@ else {
 		}
 
 	}
-
-
-	
 
 	//FINALISE THE DOCUMENT SO IT IS READY FOR DOWNLOAD
 	// Set active sheet index to the first sheet, so Excel opens this as the first sheet
