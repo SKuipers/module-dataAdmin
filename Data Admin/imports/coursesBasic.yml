@@ -32,7 +32,7 @@ table:
     description: 
         name: "Description"
         desc: "May contain HTML tags"
-        args: { filter: string }
+        args: { filter: html }
     gibbonYearGroupIDList: 
         name: "Year Groups"
         desc: "Comma separated Year Group IDs"

@@ -41,6 +41,7 @@ class importer
 	const ERROR_DATABASE_FAILED_UPDATE = 210;
 	const ERROR_KEY_MISSING = 211;
     const ERROR_NON_UNIQUE_KEY =212;
+    const ERROR_RELATIONAL_FIELD_MISMATCH = 213;
 
 	const WARNING_DUPLICATE_KEY = 101;
 	const WARNING_RECORD_NOT_FOUND = 102;
@@ -75,6 +76,8 @@ class importer
 	 */
 	private $tableData = array();
     private $tableFields = array();
+
+    private $readonlyData = array();
 
     /**
      * Errors
@@ -294,20 +297,61 @@ class importer
 					$columnKey = (isset($this->importHeaders[$columnIndex]))? $this->importHeaders[$columnIndex] : -1;
 					$value = (isset($row[ $columnKey ]))? $row[ $columnKey ] : NULL;
 				}
+
+                // Filter
+                $value = $importType->filterFieldValue( $fieldName, $value );
 				
-				// Filter & validate the value
+				// Validate the value
 				if ( $importType->validateFieldValue( $fieldName, $value ) == false ) {
-					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount,
-						array($importType->getField($fieldName, 'type'), $importType->getField($fieldName, 'length')) );
+                    $type = $importType->getField($fieldName, 'type');
+                    $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $importType->getField($fieldName, 'filter');
+                    
+					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $type, $expectation) );
 
 					$partialFail = TRUE;
 				}
+
+                // Handle relational table data
+                // Moved from Insert/Update queries so we can confirm on the dry run (and multi-key relationships)
+                if ( $importType->isFieldRelational($fieldName) ) {
+                    extract( $importType->getField($fieldName, 'relationship') );
+
+                    // Muli-key relationships
+                    if (is_array($field) && count($field) > 0 ) {
+                        $fieldArray = array_slice($field, 1);
+
+                        $relationalData = array( $fieldName => $value );
+                        $relationalSQL = "SELECT $key FROM $table WHERE ".$field[0]."=:$fieldName";
+
+                        foreach ($fieldArray as $relationalField) {
+                            $relationalData[$relationalField] = $fields[ $relationalField ];
+                            $relationalSQL .= " AND $relationalField=:$relationalField";
+                        }
+                    // Single key/value relationship
+                    } else {
+                        $relationalData = array( $fieldName => $value );
+                        $relationalSQL = "SELECT $key FROM $table WHERE $field=:$fieldName";
+                    }
+                    //print_r($relationalData);
+                    //print '<br/>'.$relationalSQL.'<br/>';
+
+                    $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
+                    if ($result->rowCount() > 0) {
+                        $value = $result->fetchColumn(0);
+                        //echo $fieldName .'='. $value .'<br/>';
+                    } else {
+                        $field = (is_array($field))? implode(', ', $field) : $field;
+                        $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount, 
+                            array($importType->getField($fieldName, 'name'), $field, $table) );
+                        $partialFail = TRUE;
+                    }
+                }
 
                 // Required field is empty?
-				if ( (!isset($value) || $value == NULL) && $importType->isFieldRequired($fieldName) ) {
-					$this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
-					$partialFail = TRUE;
-				}
+                if ( (!isset($value) || $value == NULL) && $importType->isFieldRequired($fieldName) ) {
+                    $this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
+                    $partialFail = TRUE;
+                }
 
 				$fields[ $fieldName ] = $value;
 
@@ -403,8 +447,9 @@ class importer
                     $data[ $primaryKey ] = $row[ $primaryKey ];
                 }
 
-                // print_r($data);
-                // print $sqlKeyQueryString.'<br/>';
+                //print_r($data);
+                //print '<br/>'.$sqlKeyQueryString.'<br/>';
+                //print_r( array_keys($row) );
 
 				$result = $this->pdo->executeQuery($data, $sqlKeyQueryString);
 			}
@@ -418,12 +463,9 @@ class importer
             $sqlFields = array();
             foreach (array_keys($row) as $fieldName ) {
 
-                if ( $importType->isFieldRelational($fieldName) ) {
-                    // Handle relational table data
-                    extract( $importType->getField($fieldName, 'relationship') );
-                    $sqlFields[] = "$fieldName=(SELECT $key FROM $table WHERE $field=:$fieldName)";
+                if ( $importType->isFieldReadOnly($fieldName) ) {
+                    continue;
                 } else {
-                    // Direct field association
                     $sqlFields[] = $fieldName."=:".$fieldName;
                 }
             }
@@ -523,13 +565,7 @@ class importer
                 foreach ($uniqueKey as $fieldName) {
                     if (!in_array($fieldName, $this->tableFields) ) continue;
 
-                    // Relational fields used as keys -.-
-                    if ( $importType->isFieldRelational($fieldName) ) {
-                        extract( $importType->getField($fieldName, 'relationship') );
-                        $sqlKeysFields[] = "$fieldName=(SELECT $key FROM $table WHERE $field=:$fieldName)";
-                    } else {
-                        $sqlKeysFields[] = $fieldName.'=:'.$fieldName;
-                    }
+                    $sqlKeysFields[] = $fieldName.'=:'.$fieldName;
                 }
                 $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields ) .')';
             } else {
@@ -683,7 +719,7 @@ class importer
     		case importer::ERROR_REQUIRED_FIELD_MISSING: 
     			return __( $this->config->get('guid'), "Missing value for required field."); break;
     		case importer::ERROR_INVALID_FIELD_VALUE: 
-    			return __( $this->config->get('guid'), "Invalid value type for field: %s Expected: %s(%s)"); break;
+    			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s(%s)"); break;
     		case importer::ERROR_INVALID_INPUTS:
     			return __( $this->config->get('guid'), "Your request failed because your inputs were invalid."); break;
     		case importer::ERROR_LOCKING_DATABASE:
@@ -698,6 +734,8 @@ class importer
     			return __($this->config->get('guid'), "Failed to insert record into database."); break;
     		case importer::ERROR_DATABASE_FAILED_UPDATE:
     			return __($this->config->get('guid'), "Failed to update database record."); break;
+            case importer::ERROR_RELATIONAL_FIELD_MISMATCH: 
+                return __( $this->config->get('guid'), "%s value does not match an existing %s in %s"); break;
     		// WARNINGS
     		case importer::WARNING_DUPLICATE_KEY:
     			return __($this->config->get('guid'), "A duplicate entry already exists for this record. Record skipped."); break;
@@ -708,8 +746,6 @@ class importer
                 return __($this->config->get('guid'), "Password generated for user %s: %s"); break;
     		default:
     			return __( $this->config->get('guid'), "An error occured, the import was aborted."); break;
-
-    		
     	}
     }
 

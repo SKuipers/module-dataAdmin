@@ -408,6 +408,8 @@ else {
 				if ($importType->isFieldRelational($fieldName)) {
 
 					extract( $importType->getField($fieldName, 'relationship') );
+					$field = (is_array($field))? implode(', ', $field) : $field;
+					
 					$importRestrictions[] = sprintf( __($guid, 'Each %s should match the %s of a %s'), 
 						$importType->getField($fieldName, 'name'), $field, $table
 					);

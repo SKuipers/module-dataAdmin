@@ -55,7 +55,6 @@ class importType
      */
 	protected $validated = false;
 
-
 	/**
      * Constructor
      *
@@ -189,8 +188,14 @@ class importType
 
 		$validatedFields = 0;
 		foreach ($this->table as $fieldName => $field) {
+            if ($this->isFieldReadOnly($fieldName)) {
+                $validatedFields++;
+                continue;
+            }
+
 			if ( isset($columns[$fieldName]) ) {
 				foreach ($columns[$fieldName] as $columnName => $columnField) {
+
                     if ($columnName == 'Type') {
                         $this->parseTableValueType($fieldName, $columnField);
                     } else {
@@ -218,9 +223,10 @@ class importType
 
         // Split the info from inside the outer brackets, eg int(3)
         $firstBracket = strpos($columnField, '(');
+        $lastBracket = strrpos($columnField, ')');
 
         $info[0] = substr($columnField, 0, $firstBracket);
-        $info[1] = substr($columnField, $firstBracket+1, -1);
+        $info[1] = substr($columnField, $firstBracket+1, $lastBracket-$firstBracket-1 );
 
         // Cancel out if the type is not valid
         if (!isset($info[0])) return;
@@ -235,7 +241,7 @@ class importType
             $this->setField( $fieldName, 'kind', 'text' );
         }
         else if ($info[0] == 'integer' || $info[0] == 'int' || $info[0] == 'tinyint' || $info[0] == 'smallint' || $info[0] == 'mediumint' || $info[0] == 'bigint') {
-            $this->setField( $fieldName, 'kind', 'number' );
+            $this->setField( $fieldName, 'kind', 'integer' );
             $this->setField( $fieldName, 'length', $info[1] );
         }
         else if ($info[0] == 'decimal' || $info[0] == 'numeric' || $info[0] == 'float' || $info[0] == 'real') {
@@ -249,6 +255,7 @@ class importType
             // Grab the CSV enum elements as an array
             $elements = explode(',', str_replace("'", "", $info[1]) );
             $this->setField( $fieldName, 'elements', $elements );
+            $this->setField( $fieldName, 'length', count($elements) );
 
             if ($info[1] == "'Y','N'" || $info[1] == "'N','Y'") {
                 $this->setField( $fieldName, 'kind', 'yesno' );
@@ -390,6 +397,52 @@ class importType
     }
 
     /**
+     * Filter Field Value
+     * Compares the value type, legth and properties with the expected values for the table column
+     *
+     * @access  public
+     * @version 29th April 2016
+     * @since   29th April 2016
+     * @param   string  Field name
+     * @param   var     Value to validate
+     *
+     * @return  bool    true if the value checks out
+     */
+    public function filterFieldValue( $fieldName, $value ) {
+
+        $value = trim($value);
+
+        $filter = $this->getField( $fieldName, 'filter' );
+
+        switch($filter) {
+            
+            case 'html':    // Filter valid tags? requres db connection, which we dont store
+                            break;
+                            
+            case 'url':     $value = filter_var( $value, FILTER_SANITIZE_URL); break;
+            case 'email':   $value = filter_var( $value, FILTER_SANITIZE_EMAIL); break;
+
+            case 'yesno':   // Translate generic boolean values into Y or N
+                            $strvalue = strtoupper($value);
+                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') $value = 'Y';
+                            if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') $value = 'N'; 
+                            break;
+
+            case 'schoolyear': 
+                            // Change school years formated as 2015-16 to 2015-2016
+                            if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
+                                $value = substr($value, 0, 5) . substr($value, 0, 2) . substr($value, 5, 2);
+                            }
+
+            case 'string':  
+            default:        $value = strip_tags($value);   
+
+        }
+
+        return $value;
+    }
+
+    /**
      * Validate Field Value
      * Compares the value type, legth and properties with the expected values for the table column
      *
@@ -405,22 +458,82 @@ class importType
 
     	if (!$this->validated) return false;
 
+        if ( $this->isFieldRelational($fieldName) ) {
+            return true;
+        }
 
-    	//TODO: More value validation
+        // Validate based on filter type (from args)
+        $filter = $this->getField( $fieldName, 'filter' );
+
+        switch($filter) {
+            
+            case 'url':         if (filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
+            case 'email':       if (filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false; break;
+
+            case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
+
+            default:            if (substr($filter, 0, 1) == '/') {
+                                    if ( preg_match($filter, $value) == false ) {
+                                        return false;
+                                    }
+                                };   
+        }
+                            
+        // Validate based on value type (from db)
+        $kind = $this->getField( $fieldName, 'kind' );
+        
+        switch($kind) {
+            case 'char':    $length = $this->getField( $fieldName, 'length' );
+                            if ( strlen($value) > $length ) return false;
+                            break;
+
+            case 'text':    break;
+
+            case 'integer': $value = intval($value);
+                            $length = $this->getField( $fieldName, 'length' );
+                            if ( strlen($value) > $length ) return false;
+                            break;
+
+            case 'decimal': $value = floatval($value);
+                            $length = $this->getField( $fieldName, 'length' );
+
+                            if (strpos($value, '.') !== false) {
+                                $number = strstr($value, '.', true);
+                                if ( strlen($number) > $length ) return false;
+                            } else {
+                                if ( strlen($value) > $length ) return false;
+                            }
+                            break;
+
+            case 'yesno':   if ( $value != 'Y' && $value != 'N' ) return false;
+                            break;
+
+            case 'boolean': if ( !is_bool($value) ) return false;
+                            break;
+
+            case 'enum':    $elements = $this->getField( $fieldName, 'elements' );
+                            if ( !in_array($value, $elements) ) return false;
+                            break;
+        }
+
+        //echo $fieldName .'='. $value .'<br>';
+
+        //TODO: More value validation
         //TODO: Handle relational table data
         //TODO: Sanitize
         
-    	return true;
+    	return $value;
     }
 
     /**
      * Is Valid
+     * Has the ImportType been checked against the databate table for field validity?
      *
      * @access  public
      * @version 27th April 2016
      * @since 	27th April 2016
      *
-     * @return  bool true if the importType has been successfully checked against the database
+     * @return  bool true if the importType has been validated
      */
     public function isValid() {
 
@@ -439,6 +552,20 @@ class importType
      */
     public function isFieldRelational( $fieldName ) {
         return ( isset($this->table[$fieldName]['relationship']) && !empty($this->table[$fieldName]['relationship']) );
+    }
+
+    /**
+     * Is Field Read Only (for relational reference)
+     *
+     * @access  public
+     * @version 27th April 2016
+     * @since   27th April 2016
+     * @param   string  Field name
+     *
+     * @return  bool true if marked as a read only
+     */
+    public function isFieldReadOnly( $fieldName ) {
+        return (isset( $this->table[$fieldName]['args']['readonly']))? $this->table[$fieldName]['args']['readonly'] : false;
     }
 
     /**
@@ -485,8 +612,8 @@ class importType
     	$kind = $this->getField($fieldName, 'kind');
 
         if ($this->isFieldRelational($fieldName)) {
-            $relationship = $this->getField($fieldName, 'relationship');
-            return $relationship['table'].' '.$relationship['field'];
+            extract( $this->getField($fieldName, 'relationship') );
+            return $table.' '.( (is_array($field))? implode(', ', $field) : $field );
         }
 
     	if (isset($kind)) {
@@ -495,7 +622,7 @@ class importType
             switch($kind) {
                 case 'char':    $output = "Text (" . $length . " chars)"; break;
                 case 'text':    $output = "Text"; break;
-                case 'number':  $output = "Number (" . $length . " digits)"; break;
+                case 'integer': $output = "Number (" . $length . " digits)"; break;
                 case 'decimal': $scale = $this->getField($fieldName, 'scale');
                                 $output = "Decimal (" . str_repeat('0', $length) .".". str_repeat('0', $scale)." format)"; break;
                 case 'yesno':   $output = "Y or N"; break;
