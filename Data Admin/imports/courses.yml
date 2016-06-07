@@ -1,5 +1,5 @@
 details:
-    type: coursesBasic
+    type: courses
     category: Courses
     name: Course Information
     desc: Course names and descriptions by School Year
