@@ -138,7 +138,22 @@ class importType
 			}
     	}
 
+        uasort($importTypes, array('self', 'sortImportTypes')); 
+
     	return $importTypes;
+    }
+
+    protected static function sortImportTypes($a, $b) {
+        if ($a->getDetail('category') < $b->getDetail('category'))
+            return -1;
+        else if ($a->getDetail('category') > $b->getDetail('category'))
+            return 1;
+        if ($a->getDetail('name') < $b->getDetail('name'))
+            return -1;
+        else if ($a->getDetail('name') > $b->getDetail('name'))
+            return 1;
+        
+        return 0;
     }
 
     /**
@@ -203,7 +218,9 @@ class importType
                     }
 				}
 				$validatedFields++;
-			}
+			} else {
+                echo '<div class="error">Invalid field '. $fieldName .'</div>';
+            }
 		}
 
     	return ($validatedFields == count($this->table));
@@ -225,39 +242,40 @@ class importType
         $firstBracket = strpos($columnField, '(');
         $lastBracket = strrpos($columnField, ')');
 
-        $info[0] = substr($columnField, 0, $firstBracket);
-        $info[1] = substr($columnField, $firstBracket+1, $lastBracket-$firstBracket-1 );
+        $type = ($firstBracket !== false)? substr($columnField, 0, $firstBracket) : $columnField;
+        $details = ($firstBracket !== false)? substr($columnField, $firstBracket+1, $lastBracket-$firstBracket-1 ) : '';
 
         // Cancel out if the type is not valid
-        if (!isset($info[0])) return;
+        if (!isset($type)) return;
 
-        $this->setField( $fieldName, 'type', $info[0] );
+        $this->setField( $fieldName, 'type', $type );
 
-        if ($info[0] == 'varchar' || $info[0] == 'character') {
+        if ($type == 'varchar' || $type == 'character') {
             $this->setField( $fieldName, 'kind', 'char' );
-            $this->setField( $fieldName, 'length', $info[1] );
+            $this->setField( $fieldName, 'length', $details );
         }
-        else if ($info[0] == 'text' || $info[0] == 'mediumtext' || $info[0] == 'longtext' || $info[0] == 'blob') {
+        else if ($type == 'text' || $type == 'mediumtext' || $type == 'longtext' || $type == 'blob') {
             $this->setField( $fieldName, 'kind', 'text' );
         }
-        else if ($info[0] == 'integer' || $info[0] == 'int' || $info[0] == 'tinyint' || $info[0] == 'smallint' || $info[0] == 'mediumint' || $info[0] == 'bigint') {
+        else if ($type == 'integer' || $type == 'int' || $type == 'tinyint' || $type == 'smallint' || $type == 'mediumint' || $type == 'bigint') {
             $this->setField( $fieldName, 'kind', 'integer' );
-            $this->setField( $fieldName, 'length', $info[1] );
+            $this->setField( $fieldName, 'length', $details );
         }
-        else if ($info[0] == 'decimal' || $info[0] == 'numeric' || $info[0] == 'float' || $info[0] == 'real') {
+        else if ($type == 'decimal' || $type == 'numeric' || $type == 'float' || $type == 'real') {
             $this->setField( $fieldName, 'kind', 'decimal' );
-            $this->setField( $fieldName, 'length', $info[1] - $info[2] );
-            $this->setField( $fieldName, 'precision', $info[1] );
-            $this->setField( $fieldName, 'scale', $info[2] );
+            $decimalParts = explode(',', $details);
+            $this->setField( $fieldName, 'length', $decimalParts[0] - $decimalParts[1] );
+            $this->setField( $fieldName, 'precision', $decimalParts[0] );
+            $this->setField( $fieldName, 'scale', $decimalParts[1] );
         }
-        else if ($info[0] == 'enum') {
+        else if ($type == 'enum') {
 
             // Grab the CSV enum elements as an array
-            $elements = explode(',', str_replace("'", "", $info[1]) );
+            $elements = explode(',', str_replace("'", "", $details) );
             $this->setField( $fieldName, 'elements', $elements );
             $this->setField( $fieldName, 'length', count($elements) );
 
-            if ($info[1] == "'Y','N'" || $info[1] == "'N','Y'") {
+            if ($details == "'Y','N'" || $details == "'N','Y'") {
                 $this->setField( $fieldName, 'kind', 'yesno' );
             } else {
                 $this->setField( $fieldName, 'kind', 'enum' );
@@ -268,7 +286,7 @@ class importType
             }
         }
         else {
-            $this->setField( $fieldName, 'kind', $info[0] );
+            $this->setField( $fieldName, 'kind', $type );
         }
        
     }
@@ -413,6 +431,7 @@ class importType
         $value = trim($value);
 
         $filter = $this->getField( $fieldName, 'filter' );
+        $strvalue = strtoupper($value);
 
         switch($filter) {
             
@@ -422,10 +441,51 @@ class importType
             case 'url':     $value = filter_var( $value, FILTER_SANITIZE_URL); break;
             case 'email':   $value = filter_var( $value, FILTER_SANITIZE_EMAIL); break;
 
+            case 'status':  // Translate TIS blackbaud status types
+                            if ($value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
+                                $value = 'Full';
+                            }
+                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $strvalue == 'NO' || $strvalue == 'N') {
+                                $value = 'Left';
+                            }
+                            else if ($value == 'Accepted/Not Enrolled' ) {
+                                $value = 'Expected';
+                            }
+                            else if ($value == 'Inquiry' || $value == 'Applicant' ) {
+                                $value = 'Pending Approval';
+                            }
+                            else {
+                                $value = 'Full';
+                            }
+
+            case 'date':    // Handle various date formats
+                            if ( preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
+                                $date = strtotime($value);
+                                $value = date('Y-m-d', $date);
+                            }
+                            break;
+
+            case 'gender':  // Handle various gender formats
+                            $strvalue = str_replace('.', '', $strvalue);
+                            if ($strvalue == 'M' || $strvalue == 'MALE' || $strvalue == 'MR') {
+                                $value = 'M';
+                            } else if ($strvalue == 'F' || $strvalue == 'FEMALE' || $strvalue == 'MS' || $strvalue == 'MRS' || $strvalue == 'MISS') {
+                                $value = 'F';
+                            } else if (empty($value)) {
+                                $value = 'Unspecified';
+                            } else {
+                                $value = 'Other';
+                            }
+
+                            break;
+
             case 'yesno':   // Translate generic boolean values into Y or N
-                            $strvalue = strtoupper($value);
-                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') $value = 'Y';
-                            if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') $value = 'N'; 
+                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') {
+                                $value = 'Y';
+                            } else if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') {
+                                $value = 'N'; 
+                            }
+
                             break;
 
             case 'schoolyear': 

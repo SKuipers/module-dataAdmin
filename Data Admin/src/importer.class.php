@@ -302,11 +302,11 @@ class importer
                 $value = $importType->filterFieldValue( $fieldName, $value );
 				
 				// Validate the value
-				if ( $importType->validateFieldValue( $fieldName, $value ) == false ) {
+				if ( $importType->validateFieldValue( $fieldName, $value ) === false ) {
                     $type = $importType->getField($fieldName, 'type');
                     $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $importType->getField($fieldName, 'filter');
                     
-					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $type, $expectation) );
+					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $expectation) );
 
 					$partialFail = TRUE;
 				}
@@ -324,7 +324,7 @@ class importer
                         $relationalSQL = "SELECT $key FROM $table WHERE ".$field[0]."=:$fieldName";
 
                         foreach ($fieldArray as $relationalField) {
-                            $relationalData[$relationalField] = $fields[ $relationalField ];
+                            $relationalData[ $relationalField ] = $fields[ $relationalField ];
                             $relationalSQL .= " AND $relationalField=:$relationalField";
                         }
                     // Single key/value relationship
@@ -565,14 +565,14 @@ class importer
                 foreach ($uniqueKey as $fieldName) {
                     if (!in_array($fieldName, $this->tableFields) ) continue;
 
-                    $sqlKeysFields[] = $fieldName.'=:'.$fieldName;
+                    $sqlKeysFields[] = "($fieldName=:$fieldName AND $fieldName IS NOT NULL)";
                 }
                 $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields ) .')';
             } else {
                 // Skip key fields which dont exist in our imported data set
                 if (!in_array($uniqueKey, $this->tableFields) ) continue;
 
-                $sqlKeys[] = $uniqueKey.'=:'.$uniqueKey;
+                $sqlKeys[] = "($uniqueKey=:$uniqueKey AND $uniqueKey IS NOT NULL)";
             }
             
         }
@@ -719,7 +719,7 @@ class importer
     		case importer::ERROR_REQUIRED_FIELD_MISSING: 
     			return __( $this->config->get('guid'), "Missing value for required field."); break;
     		case importer::ERROR_INVALID_FIELD_VALUE: 
-    			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s(%s)"); break;
+    			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s"); break;
     		case importer::ERROR_INVALID_INPUTS:
     			return __( $this->config->get('guid'), "Your request failed because your inputs were invalid."); break;
     		case importer::ERROR_LOCKING_DATABASE:
