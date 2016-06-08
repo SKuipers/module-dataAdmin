@@ -442,10 +442,10 @@ class importType
             case 'email':   $value = filter_var( $value, FILTER_SANITIZE_EMAIL); break;
 
             case 'status':  // Translate TIS blackbaud status types
-                            if ($value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
+                            if ($value == 'Current' || $value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Full';
                             }
-                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $strvalue == 'NO' || $strvalue == 'N') {
+                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $value == 'Previous Staff' || $strvalue == 'NO' || $strvalue == 'N') {
                                 $value = 'Left';
                             }
                             else if ($value == 'Accepted/Not Enrolled' ) {
@@ -457,6 +457,7 @@ class importType
                             else {
                                 $value = 'Full';
                             }
+                            break;
 
             case 'date':    // Handle various date formats
                             if ( preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
@@ -476,7 +477,6 @@ class importType
                             } else {
                                 $value = 'Other';
                             }
-
                             break;
 
             case 'yesno':   // Translate generic boolean values into Y or N
@@ -485,7 +485,6 @@ class importType
                             } else if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') {
                                 $value = 'N'; 
                             }
-
                             break;
 
             case 'schoolyear': 
@@ -493,6 +492,7 @@ class importType
                             if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
                                 $value = substr($value, 0, 5) . substr($value, 0, 2) . substr($value, 5, 2);
                             }
+                            break;
 
             case 'string':  
             default:        $value = strip_tags($value);   

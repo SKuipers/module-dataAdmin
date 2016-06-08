@@ -340,10 +340,13 @@ class importer
                         $value = $result->fetchColumn(0);
                         //echo $fieldName .'='. $value .'<br/>';
                     } else {
-                        $field = (is_array($field))? implode(', ', $field) : $field;
-                        $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount, 
-                            array($importType->getField($fieldName, 'name'), $field, $table) );
-                        $partialFail = TRUE;
+                        // Missing relation for required field? Or missing relation for value provided?
+                        if (!empty($value) || $importType->isFieldRequired($fieldName)) {
+                            $field = (is_array($field))? implode(', ', $field) : $field;
+                            $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount, 
+                                array($importType->getField($fieldName, 'name'), $field, $table) );
+                            $partialFail = TRUE;
+                        }
                     }
                 }
 
