@@ -1,0 +1,25 @@
+details:
+    type: houses
+    category: Groupings
+    name: Houses
+    desc: 
+    table: gibbonHouse
+    modes: { update: true, insert: true }
+primaryKey:
+    gibbonHouseID
+uniqueKeys:
+    - name
+    - nameShort
+table:
+    name: 
+        name: "House Name"
+        desc: ""
+        args: { filter: string, required: true }
+    nameShort: 
+        name: "Short Name"
+        desc: ""
+        args: { filter: string, required: true }
+    logo: 
+        name: "Logo"
+        desc: ""
+        args: { filter: string }
