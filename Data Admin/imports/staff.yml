@@ -2,7 +2,7 @@ details:
     type: staff
     category: Users
     name: Staff / Faculty
-    desc: 
+    desc: Staff details (for existing users)
     table: gibbonStaff
     modes: { update: true, insert: true }
 primaryKey:

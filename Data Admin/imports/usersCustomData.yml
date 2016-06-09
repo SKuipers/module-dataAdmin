@@ -1,0 +1,25 @@
+details:
+    type: usersCustomData
+    category: Users
+    name: Custom Field Data
+    desc: TIS-specific custom fields
+    table: gibbonPerson
+    modes: { update: true, insert: true }
+primaryKey:
+    gibbonPersonID
+uniqueKeys:
+    - username
+table:
+    gibbonPersonID: 
+        name: "Staff Member"
+        desc: "Username"
+        args: { filter: string, required: true }
+        relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
+    fields: 
+        name: "Custom Fields"
+        desc: ""
+        args: { filter: serialize }
+    advisor:
+        name: "Academic Advisor"
+        desc: ""
+        args: { filter: string, serialize: fields }

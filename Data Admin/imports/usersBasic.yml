@@ -9,7 +9,7 @@ primaryKey:
     gibbonPersonID
 uniqueKeys:
     - username
-    - [ username, email ]
+#   - [ username, email ]
     - studentID
 table:
     title: 
