@@ -435,11 +435,46 @@ class importType
 
         switch($filter) {
             
-            case 'html':    // Filter valid tags? requres db connection, which we dont store
+            case 'html':    // Filter valid tags? requres db connection, which we dont store :(
                             break;
                             
             case 'url':     $value = filter_var( $value, FILTER_SANITIZE_URL); break;
             case 'email':   $value = filter_var( $value, FILTER_SANITIZE_EMAIL); break;
+
+            case 'yesno':   // Translate generic boolean values into Y or N
+                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') {
+                                $value = 'Y';
+                            } else if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') {
+                                $value = 'N'; 
+                            }
+                            break;
+
+            case 'date':    // Handle various date formats
+                            if ( preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
+                                $date = strtotime($value);
+                                $value = date('Y-m-d', $date);
+                            }
+                            break;
+
+            case 'schoolyear': 
+                            // Change school years formated as 2015-16 to 2015-2016
+                            if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
+                                $value = substr($value, 0, 5) . substr($value, 0, 2) . substr($value, 5, 2);
+                            }
+                            break;
+
+            case 'gender':  // Handle various gender formats
+                            $strvalue = str_replace('.', '', $strvalue);
+                            if ($strvalue == 'M' || $strvalue == 'MALE' || $strvalue == 'MR') {
+                                $value = 'M';
+                            } else if ($strvalue == 'F' || $strvalue == 'FEMALE' || $strvalue == 'MS' || $strvalue == 'MRS' || $strvalue == 'MISS') {
+                                $value = 'F';
+                            } else if (empty($value)) {
+                                $value = 'Unspecified';
+                            } else {
+                                $value = 'Other';
+                            }
+                            break;
 
             case 'status':  // Translate TIS blackbaud status types
                             if ($value == 'Current' || $value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
@@ -459,44 +494,17 @@ class importType
                             }
                             break;
 
-            case 'date':    // Handle various date formats
-                            if ( preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
-                                $date = strtotime($value);
-                                $value = date('Y-m-d', $date);
-                            }
-                            break;
-
-            case 'gender':  // Handle various gender formats
-                            $strvalue = str_replace('.', '', $strvalue);
-                            if ($strvalue == 'M' || $strvalue == 'MALE' || $strvalue == 'MR') {
-                                $value = 'M';
-                            } else if ($strvalue == 'F' || $strvalue == 'FEMALE' || $strvalue == 'MS' || $strvalue == 'MRS' || $strvalue == 'MISS') {
-                                $value = 'F';
-                            } else if (empty($value)) {
-                                $value = 'Unspecified';
-                            } else {
-                                $value = 'Other';
-                            }
-                            break;
-
-            case 'yesno':   // Translate generic boolean values into Y or N
-                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') {
-                                $value = 'Y';
-                            } else if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') {
-                                $value = 'N'; 
-                            }
-                            break;
-
-            case 'schoolyear': 
-                            // Change school years formated as 2015-16 to 2015-2016
-                            if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
-                                $value = substr($value, 0, 5) . substr($value, 0, 2) . substr($value, 5, 2);
-                            }
-                            break;
-
             case 'string':  
             default:        $value = strip_tags($value);   
 
+        }
+
+        $kind = $this->getField( $fieldName, 'kind' );
+
+        switch($kind) {
+            case 'integer': $value = intval($value); break;
+            case 'decimal': $value = floatval($value); break;
+            case 'boolean': $value = boolval($value); break;
         }
 
         return $value;

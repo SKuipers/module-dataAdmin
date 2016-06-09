@@ -351,7 +351,7 @@ class importer
                 }
 
                 // Required field is empty?
-                if ( (!isset($value) || $value == NULL) && $importType->isFieldRequired($fieldName) ) {
+                if ( (!isset($value) || $value === NULL) && $importType->isFieldRequired($fieldName) ) {
                     $this->log( $rowNum, importer::ERROR_REQUIRED_FIELD_MISSING, $fieldName, $fieldCount);
                     $partialFail = TRUE;
                 }
