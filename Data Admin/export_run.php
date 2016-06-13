@@ -89,7 +89,14 @@ else {
 	$tableName = $importType->getDetail('table');
 	$primaryKey = $importType->getPrimaryKey();
 
-	$tableFields = $importType->getTableFields();
+	$tableFieldsAll = $importType->getTableFields();
+	$tableFields = array();
+
+	foreach ($tableFieldsAll as $fieldName ) {
+		if ($importType->isFieldReadOnly($fieldName)) continue;
+		
+		$tableFields[] = $fieldName;
+	}
 
 	if ($dataExport && !empty($primaryKey)) {
 		$tableFields = array_merge( array($primaryKey), $tableFields);
