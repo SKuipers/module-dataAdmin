@@ -285,6 +285,7 @@ class importer
 				else if ($columnIndex == importer::COLUMN_DATA_CUSTOM) {
 					
 					$value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
+
 				}
 				// Run a user_func based on the function name defined for that field
 				else if ($columnIndex == importer::COLUMN_DATA_FUNCTION) {
@@ -300,6 +301,7 @@ class importer
 
                 // Filter
                 $value = $importType->filterFieldValue( $fieldName, $value );
+                //echo $fieldName.'='.$value.'<br/>';
 				
 				// Validate the value
 				if ( $importType->validateFieldValue( $fieldName, $value ) === false ) {
@@ -332,19 +334,16 @@ class importer
                         $relationalData = array( $fieldName => $value );
                         $relationalSQL = "SELECT $key FROM $table WHERE $field=:$fieldName";
                     }
-                    //print_r($relationalData);
-                    //print '<br/>'.$relationalSQL.'<br/>';
 
                     $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
                     if ($result->rowCount() > 0) {
                         $value = $result->fetchColumn(0);
-                        //echo $fieldName .'='. $value .'<br/>';
                     } else {
-                        // Missing relation for required field? Or missing relation for value provided?
+                        // Missing relation for required field? Or missing a relation when value is provided?
                         if (!empty($value) || $importType->isFieldRequired($fieldName)) {
                             $field = (is_array($field))? implode(', ', $field) : $field;
                             $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount, 
-                                array($importType->getField($fieldName, 'name'), $field, $table) );
+                                array($importType->getField($fieldName, 'name'), $value, $field, $table) );
                             $partialFail = TRUE;
                         }
                     }
@@ -374,6 +373,7 @@ class importer
 
             // Salt & hash passwords - then output them
             if ( isset($fields['password'] ) ) {
+                // Temporaily removed (different password displays in dry run :/)
                 //$this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
                 $salt=getSalt() ;
                 $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
@@ -738,7 +738,7 @@ class importer
     		case importer::ERROR_DATABASE_FAILED_UPDATE:
     			return __($this->config->get('guid'), "Failed to update database record."); break;
             case importer::ERROR_RELATIONAL_FIELD_MISMATCH: 
-                return __( $this->config->get('guid'), "%s value does not match an existing %s in %s"); break;
+                return __( $this->config->get('guid'), "%s: %s does not match an existing %s in %s"); break;
     		// WARNINGS
     		case importer::WARNING_DUPLICATE_KEY:
     			return __($this->config->get('guid'), "A duplicate entry already exists for this record. Record skipped."); break;

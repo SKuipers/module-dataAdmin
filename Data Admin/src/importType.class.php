@@ -288,7 +288,11 @@ class importType
         else {
             $this->setField( $fieldName, 'kind', $type );
         }
-       
+
+        if ( $this->isFieldRelational($fieldName) ) {
+            $this->setField( $fieldName, 'kind', 'char' );
+            $this->setField( $fieldName, 'length', 50 );
+        }
     }
 
     /**
@@ -419,8 +423,8 @@ class importType
      * Compares the value type, legth and properties with the expected values for the table column
      *
      * @access  public
-     * @version 29th April 2016
-     * @since   29th April 2016
+     * @version 10th June 2016
+     * @since   8th June 2016
      * @param   string  Field name
      * @param   var     Value to validate
      *
@@ -438,8 +442,11 @@ class importType
             case 'html':    // Filter valid tags? requres db connection, which we dont store :(
                             break;
                             
-            case 'url':     $value = filter_var( $value, FILTER_SANITIZE_URL); break;
-            case 'email':   $value = filter_var( $value, FILTER_SANITIZE_EMAIL); break;
+            case 'url':     if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_URL);
+                            break;
+
+            case 'email':   if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_EMAIL);
+                            break;
 
             case 'yesno':   // Translate generic boolean values into Y or N
                             if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') {
@@ -496,6 +503,7 @@ class importType
 
             case 'string':  
             default:        $value = strip_tags($value);   
+                            
 
         }
 
@@ -515,7 +523,7 @@ class importType
      * Compares the value type, legth and properties with the expected values for the table column
      *
      * @access  public
-     * @version 29th April 2016
+     * @version 10th June 2016
      * @since 	29th April 2016
      * @param   string  Field name
      * @param   var     Value to validate
@@ -535,8 +543,8 @@ class importType
 
         switch($filter) {
             
-            case 'url':         if (filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
-            case 'email':       if (filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false; break;
+            case 'url':         if (!empty($value) && filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
+            case 'email':       if (!empty($value) && filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false; break;
 
             case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
 
