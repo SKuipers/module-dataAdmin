@@ -113,7 +113,7 @@ table:
     phone1Type: 
         name: "Phone 1 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string, custom: true}
+        args: {filter: phonetype, custom: true}
     phone1CountryCode: 
         name: "Phone 1 (Country Code)"
         desc: "IDD code, without 00 or +"
@@ -126,7 +126,7 @@ table:
     phone2Type: 
         name: "Phone 2 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string, custom: true}
+        args: {filter: phonetype, custom: true}
     phone2CountryCode: 
         name: "Phone 2 (Country Code)"
         desc: "IDD code, without 00 or +"
@@ -139,7 +139,7 @@ table:
     phone3Type: 
         name: "Phone 3 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string, custom: true}
+        args: {filter: phonetype, custom: true}
     phone3CountryCode: 
         name: "Phone 3 (Country Code)"
         desc: "IDD code, without 00 or +"
@@ -152,7 +152,7 @@ table:
     phone4Type: 
         name: "Phone 4 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string, custom: true}
+        args: {filter: phonetype, custom: true}
     phone4CountryCode: 
         name: "Phone 4 (Country Code)"
         desc: "IDD code, without 00 or +"

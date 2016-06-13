@@ -483,6 +483,24 @@ class importType
                             }
                             break;
 
+            case 'numeric': // Handle phone numbers - strip all non-numeric chars
+                            //$value = preg_replace("/[^0-9]/", '', $value);
+                            break;
+
+            case 'phonetype': // Handle TIS phone types
+                            if (stripos($value, 'Mobile') !== false || stripos($value, 'Cellular') !== false ) {
+                                $value = 'Mobile';
+                            }
+                            else if (stripos($value, 'Home') !== false ) {
+                                $value = 'Home';
+                            }
+                            else if (stripos($value, 'Office') !== false || stripos($value, 'Business') !== false ) {
+                                $value = 'Work';
+                            } else {
+                                $value = 'Other';
+                            }
+                            break;
+
             case 'status':  // Translate TIS blackbaud status types
                             if ($value == 'Current' || $value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Full';
