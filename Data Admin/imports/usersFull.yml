@@ -335,4 +335,4 @@ table:
     receiveNotificationEmails: 
         name: "Receive Notifications"
         desc: ""
-        args: {filter: yesno}
+        args: {filter: yesno, custom: true}

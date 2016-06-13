@@ -1,8 +1,8 @@
 details:
-    type: usersParents
+    type: usersStaff
     category: Users
-    name: Parent Data
-    desc: User details for parents/guardians
+    name: Staff User Data
+    desc: Faculty & staff member users
     table: gibbonPerson
     modes: { update: true, insert: true }
 primaryKey:
@@ -64,12 +64,12 @@ table:
         args: {filter: yesno, custom: true}
     gibbonRoleIDPrimary: 
         name: "Primary Role"
-        desc: "Short Name"
+        desc: "Role Name"
         args: {filter: string, required: true, custom: true }
         relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
     gibbonRoleIDAll: 
         name: "Other Roles"
-        desc: "Short Names, Comma separated"
+        desc: "Role Names, Comma separated"
         args: {filter: string, custom: true }
     email: 
         name: "Email"
@@ -79,7 +79,10 @@ table:
         name: "Email (Alternate)"
         desc: ""
         args: {filter: email}
-
+    image_240: 
+        name: "Image"
+        desc: "Path from /uploads/ to medium portrait image (240px by 320px)"
+        args: {filter: string}
 
     address1: 
         name: "Address 1"
@@ -110,11 +113,11 @@ table:
     phone1Type: 
         name: "Phone 1 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone1CountryCode: 
         name: "Phone 1 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone1: 
         name: "Phone 1"
         desc: "No spaces or punctuation, just numbers"
@@ -123,11 +126,11 @@ table:
     phone2Type: 
         name: "Phone 2 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone2CountryCode: 
         name: "Phone 2 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone2: 
         name: "Phone 2"
         desc: "No spaces or punctuation, just numbers"
@@ -136,11 +139,11 @@ table:
     phone3Type: 
         name: "Phone 3 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone3CountryCode: 
         name: "Phone 3 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone3: 
         name: "Phone 3"
         desc: "No spaces or punctuation, just numbers"
@@ -149,11 +152,11 @@ table:
     phone4Type: 
         name: "Phone 4 (Type)"
         desc: "Mobile, Home, Work, Fax, Pager, Other"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone4CountryCode: 
         name: "Phone 4 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: string, custom: true}
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
@@ -225,31 +228,40 @@ table:
         desc: ""
         args: {filter: date}   
 
-    profession: 
-        name: "Profession"
-        desc: "For parents only"
+    emergency1Name: 
+        name: "Emergency 1 Name"
+        desc: "For students and staff only"
         args: {filter: string}
-    employer: 
-        name: "Employer"
-        desc: "For parents only"
+    emergency1Number1: 
+        name: "Emergency 1 Phone Number 1"
+        desc: "For students and staff only"
         args: {filter: string}
-    jobTitle: 
-        name: "Job Title"
-        desc: "For parents only"
+    emergency1Number2: 
+        name: "Emergency 1 Phone Number 2"
+        desc: "For students and staff only"
+        args: {filter: string}
+    emergency1Relationship: 
+        name: "Emergency 1 Relationship"
+        desc: "For students and staff only"
         args: {filter: string}
 
-    transport: 
-        name: "Transport"
-        desc: ""
+    emergency2Name: 
+        name: "Emergency 2 Name"
+        desc: "For students and staff only"
         args: {filter: string}
-    transportNotes: 
-        name: "Transport Notes"
-        desc: ""
+    emergency2Number1: 
+        name: "Emergency 2 Phone Number 1"
+        desc: "For students and staff only"
         args: {filter: string}
-    vehicleRegistration: 
-        name: "Vehicle Registration"
-        desc: ""
+    emergency2Number2: 
+        name: "Emergency 2 Phone Number 2"
+        desc: "For students and staff only"
         args: {filter: string}
+    emergency2Relationship: 
+        name: "Emergency 2 Relationship"
+        desc: "For students and staff only"
+        args: {filter: string}
+
     receiveNotificationEmails: 
         name: "Receive Notifications"
         desc: ""
