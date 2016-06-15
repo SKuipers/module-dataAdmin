@@ -335,6 +335,9 @@ class importer
                         $relationalSQL = "SELECT $key FROM $table WHERE $field=:$fieldName";
                     }
 
+                    //print_r($relationalData);
+                    //print '<br/>'.$relationalSQL.'<br/>';
+
                     $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
                     if ($result->rowCount() > 0) {
                         $value = $result->fetchColumn(0);
@@ -462,14 +465,17 @@ class importer
 				continue;
 			}
 
-            // Build the query field=:value associations
+            // Build the data and query field=:value associations
             $sqlFields = array();
-            foreach (array_keys($row) as $fieldName ) {
+            $sqlData = array();
+
+            foreach ($row as $fieldName => $fieldData ) {
 
                 if ( $importType->isFieldReadOnly($fieldName) ) {
                     continue;
                 } else {
                     $sqlFields[] = $fieldName."=:".$fieldName;
+                    $sqlData[ $fieldName ] = $fieldData;
                 }
             }
             $sqlFieldString = implode(", ", $sqlFields );
@@ -500,9 +506,9 @@ class importer
 				if (!$liveRun) continue;
 
 				try {
-					$row[ $primaryKey ] = $primaryKeyValue;
+					$sqlData[ $primaryKey ] = $primaryKeyValue;
 					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE $primaryKey=:$primaryKey" ;
-					$this->pdo->executeQuery($row, $sql);
+					$this->pdo->executeQuery($sqlData, $sql);
 				}
 				catch(PDOException $e) { 
 					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
@@ -529,7 +535,7 @@ class importer
 
 				try {
 					$sql="INSERT INTO $tableName SET ".$sqlFieldString;
-					$this->pdo->executeQuery($row, $sql);
+					$this->pdo->executeQuery($sqlData, $sql);
 				}
 				catch(PDOException $e) { 
 					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
