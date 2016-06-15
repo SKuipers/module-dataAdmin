@@ -522,23 +522,28 @@ else {
 								print "<option value='".DataAdmin\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
 							}
 
+							$selectCount = 0;
+
 							foreach ($headings as $i => $columnName) {
 
 								if ($columnOrder == 'linear' || $columnOrder == 'linearplus') {
 									$selected = ($columnOrder == 'linearplus')? ($i == $count+1) : ($i == $count);
 								}
-								else if ($columnOrder == 'guess') {
-									$selected = ($columnName == $fieldName) || ($columnName == $importType->getField($fieldName, 'name') );
-									if (!$selected) {
-										similar_text( strtoupper( $importType->getField($fieldName, 'name') ), strtoupper($columnName), $similarity);
-										$selected = ceil($similarity) > 85;
-									}
+								else if ($columnOrder == 'guess' ) {
+									$selected = ($columnName == $fieldName) || ($columnName == $importType->getField($fieldName, 'name') ) || (strtolower($columnName) == strtolower($fieldName) ) || (strtolower($columnName) == strtolower($importType->getField($fieldName, 'name')) );
+									// if (!$selected) {
+									// 	similar_text( strtoupper( $importType->getField($fieldName, 'name') ), strtoupper($columnName), $similarity);
+									// 	$selected = ceil($similarity) > 85;
+									// }
 								}
 								else if ($columnOrder == 'last' && isset($columnOrderLast[$count])) {
 									$selected = ($i == $columnOrderLast[$count]);
 								}
 
-								printf("<option value='%s' %s>%s</option>", $i, ($selected)? 'selected' : '', $columnName);
+								if ($selected) $selectCount++;
+
+
+								printf("<option value='%s' %s>%s</option>", $i, ($selected && $selectCount <= 1)? 'selected' : '', $columnName);
 							}
 							
 							print "</select>" ;
