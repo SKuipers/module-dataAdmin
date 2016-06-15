@@ -55,6 +55,8 @@ class importType
      */
 	protected $validated = false;
 
+    protected $yearGroups = array();
+
 	/**
      * Constructor
      *
@@ -222,6 +224,21 @@ class importType
                 echo '<div class="error">Invalid field '. $fieldName .'</div>';
             }
 		}
+
+        // Grab the year groups so we can translate Year Group Lists without a million queries
+        try {
+            $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
+            $result = $pdo->executeQuery(array(), $sql);   
+        }
+        catch(PDOException $e) {}
+
+        $this->yearGroups = array();
+
+        if ($result->rowCount() > 0) {
+            while ($yearGroup = $result->fetch() ) {
+                $this->yearGroups[ $yearGroup['nameShort'] ] = $yearGroup['gibbonYearGroupID'];
+            }
+        }
 
     	return ($validatedFields == count($this->table));
     }
@@ -445,21 +462,29 @@ class importType
             case 'url':     if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_URL);
                             break;
 
-            case 'email':   if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_EMAIL);
+            case 'email':   if (strpos($value, ',') !== false || strpos($value, '/') !== false || strpos($value, ' ') !== false ) {
+                                $emails = preg_split('/[\s,\/]*/', $value);
+                                $value = (isset($emails[0]))? $emails[0] : '';
+                            }
+
+                            if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_EMAIL);
                             break;
 
-            case 'yesno':   // Translate generic boolean values into Y or N
-                            if ($value == TRUE || $strvalue == 'TRUE' || $strvalue == 'YES') {
+            case 'yesno':   // Translate generic boolean values into Y or N, watch the === for TRUE/FALSE, otherwise it breaks!
+                            if ($strvalue == 'TRUE' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Y';
-                            } else if ($value == FALSE || $strvalue == 'FALSE' || $strvalue == 'NO') {
+                            } else if ($value === FALSE || $strvalue == 'FALSE' || $strvalue == 'NO' || $strvalue == 'N') {
                                 $value = 'N'; 
                             }
                             break;
 
             case 'date':    // Handle various date formats
-                            if ( preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
+                            if ( !empty($value) && preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
                                 $date = strtotime($value);
                                 $value = date('Y-m-d', $date);
+                            }
+                            if ($value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false) {
+                                $value = NULL;
                             }
                             break;
 
@@ -483,7 +508,18 @@ class importType
                             }
                             break;
 
-            case 'numeric': // Handle phone numbers - strip all non-numeric chars
+            case 'numeric': $value = preg_replace("/[^0-9]/", '', $value);
+                            break;
+
+            case 'phone':   $value = preg_replace("/[^0-9,\/]/", '', $value);
+
+                            if (strpos($value, ',') !== false || strpos($value, '/') !== false || strpos($value, ' ') !== false ) {
+                                //$value = preg_replace("/[^0-9,\/]/", '', $value);
+                                $numbers = preg_split("/[,\/]*/", $value);
+                                $value = (isset($numbers[0]))? $numbers[0] : '';
+                            }
+
+                            // Handle phone numbers - strip all non-numeric chars
                             //$value = preg_replace("/[^0-9]/", '', $value);
                             break;
 
@@ -501,11 +537,28 @@ class importType
                             }
                             break;
 
+            case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
+                            
+                            if (!empty($value)) {
+                                $yearGroupIDs = array();
+                                $yearGroupNames = explode(',', $value);
+
+                                foreach ( $yearGroupNames as $gradeLevel ) {
+                                    $gradeLevel = trim($gradeLevel);
+                                    if (isset($this->yearGroups[$gradeLevel])) {
+                                        $yearGroupIDs[] = $this->yearGroups[$gradeLevel];
+                                    }
+                                }
+                                
+                                $value = implode(',', $yearGroupIDs);
+                            }
+                            break;
+
             case 'status':  // Translate TIS blackbaud status types
-                            if ($value == 'Current' || $value == 'Current Student' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
+                            if ($value == 'Current' || $value == 'Current Student' || $value == 'Current Parent' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Full';
                             }
-                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $value == 'Previous Staff' || $strvalue == 'NO' || $strvalue == 'N') {
+                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $value == 'Previous Staff' || $strvalue == 'NO' || $strvalue == 'N' || $value == '') {
                                 $value = 'Left';
                             }
                             else if ($value == 'Accepted/Not Enrolled' ) {
@@ -515,7 +568,7 @@ class importType
                                 $value = 'Pending Approval';
                             }
                             else {
-                                $value = 'Full';
+                                $value = 'Left';
                             }
                             break;
 
@@ -531,6 +584,10 @@ class importType
             case 'integer': $value = intval($value); break;
             case 'decimal': $value = floatval($value); break;
             case 'boolean': $value = boolval($value); break;
+        }
+
+        if ($strvalue == 'NOT REQUIRED' || $value == 'N/A') {
+            $value = '';
         }
 
         return $value;
@@ -562,7 +619,8 @@ class importType
         switch($filter) {
             
             case 'url':         if (!empty($value) && filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
-            case 'email':       if (!empty($value) && filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false; break;
+            case 'email':       //if (!empty($value) && filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false;
+                                break;
 
             case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
 

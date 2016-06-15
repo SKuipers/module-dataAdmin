@@ -285,7 +285,7 @@ class importer
 				else if ($columnIndex == importer::COLUMN_DATA_CUSTOM) {
 					
 					$value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
-
+                    //echo $fieldName.'='.$value.'<br/>';
 				}
 				// Run a user_func based on the function name defined for that field
 				else if ($columnIndex == importer::COLUMN_DATA_FUNCTION) {
