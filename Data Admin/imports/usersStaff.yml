@@ -121,7 +121,7 @@ table:
     phone1: 
         name: "Phone 1"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone2Type: 
         name: "Phone 2 (Type)"
@@ -134,7 +134,7 @@ table:
     phone2: 
         name: "Phone 2"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone3Type: 
         name: "Phone 3 (Type)"
@@ -147,7 +147,7 @@ table:
     phone3: 
         name: "Phone 3"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone4Type: 
         name: "Phone 4 (Type)"
@@ -160,7 +160,7 @@ table:
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     website: 
         name: "Website"
@@ -235,11 +235,11 @@ table:
     emergency1Number1: 
         name: "Emergency 1 Phone Number 1"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: phone}
     emergency1Number2: 
         name: "Emergency 1 Phone Number 2"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: phone}
     emergency1Relationship: 
         name: "Emergency 1 Relationship"
         desc: "For students and staff only"
@@ -252,11 +252,11 @@ table:
     emergency2Number1: 
         name: "Emergency 2 Phone Number 1"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: phone}
     emergency2Number2: 
         name: "Emergency 2 Phone Number 2"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: phone}
     emergency2Relationship: 
         name: "Emergency 2 Relationship"
         desc: "For students and staff only"

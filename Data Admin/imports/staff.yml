@@ -9,7 +9,6 @@ primaryKey:
     gibbonStaffID
 uniqueKeys:
     - gibbonPersonID
-    - initials
 table:
     gibbonPersonID: 
         name: "Staff User"
@@ -19,7 +18,7 @@ table:
     type: 
         name: "Type"
         desc: "User role, or one of: Teaching, Support"
-        args: {filter: string, required: true}
+        args: {filter: string, required: true, custom: true}
     initials: 
         name: "Initials"
         desc: "Must be unique if set."

@@ -57,7 +57,7 @@ table:
     status: 
         name: "Status"
         desc: ""
-        args: {filter: status}
+        args: {filter: status, custom: true}
     canLogin: 
         name: "Can Login"
         desc: ""
@@ -80,6 +80,10 @@ table:
         desc: ""
         args: {filter: email}
 
+    studentID: 
+        name: "Import Record ID"
+        desc: "Must be unique if set."
+        args: {filter: string}
 
     address1: 
         name: "Address 1"
@@ -118,7 +122,7 @@ table:
     phone1: 
         name: "Phone 1"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone2Type: 
         name: "Phone 2 (Type)"
@@ -131,7 +135,7 @@ table:
     phone2: 
         name: "Phone 2"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone3Type: 
         name: "Phone 3 (Type)"
@@ -144,7 +148,7 @@ table:
     phone3: 
         name: "Phone 3"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     phone4Type: 
         name: "Phone 4 (Type)"
@@ -157,7 +161,7 @@ table:
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: numeric}
+        args: {filter: phone}
 
     website: 
         name: "Website"

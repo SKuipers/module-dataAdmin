@@ -7,6 +7,8 @@ details:
     modes: { update: true, insert: true }
 primaryKey:
     gibbonStringID
+uniqueKeys:
+    - original
 table:
     original: 
         name: "Original String"

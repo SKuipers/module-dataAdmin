@@ -15,6 +15,7 @@ table:
         name: "School Year"
         desc: "Must match an existing school year e.g. 2015-2016"
         args: { filter: schoolyear,  required: true }
+        relationship: { table: gibbonSchoolYear, key: gibbonSchoolYearID, field: name  }
     name: 
         name: "Form Group Name"
         desc: "Needs to be unique in school year."
@@ -45,7 +46,7 @@ table:
     gibbonRollGroupIDNext: 
         name: "Next Form Group"
         desc: "Sets student progression on rollover. Must be a Short Name."
-        relationship: { table: gibbonRollGroup, key: gibbonRollGroupID, field: shortName  }
+        relationship: { table: gibbonRollGroup, key: gibbonRollGroupID, field: nameShort  }
     website: 
         name: "Website"
         desc: "Include http://"
