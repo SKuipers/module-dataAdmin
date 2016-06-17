@@ -54,4 +54,13 @@ jQuery(function($){
 
 	}
 
+	$("#ignoreErrors").click( function() {
+		if ( $(this).is(':checked') ) {
+			$( "#submitStep3" ).prop( "disabled", false);
+			$( "#submitStep3" ).prop( "value", "Submit");
+		} else {
+			$( "#submitStep3" ).prop( "disabled", true);
+			$( "#submitStep3" ).prop( "value", "Cannot Continue");
+		}
+	});
 }); 

@@ -618,6 +618,8 @@ else {
 		$fieldDelimiter = (isset($_POST['fieldDelimiter']))? urldecode($_POST['fieldDelimiter']) : NULL;
 		$stringEnclosure = (isset($_POST['stringEnclosure']))? urldecode($_POST['stringEnclosure']) : NULL;
 
+		$ignoreErrors = (isset($_POST['ignoreErrors']))? $_POST['ignoreErrors'] : false;
+
 		if ( empty($csvData) || empty($columnOrder) ) {
 			print "<div class='error'>";
 			print __($guid, "Your request failed because your inputs were invalid.") ;
@@ -659,14 +661,13 @@ else {
 			// Check for database duplicates using unique keys
 
 			$importSuccess = $buildSuccess = $databaseSuccess = false;
-
 			$importSuccess = $importer->readCSVString( $csvData );
 
-			if ($importSuccess) {
+			if ($importSuccess || $ignoreErrors) {
 				$buildSuccess = $importer->buildTableData( $importType, $columnOrder, $columnText );
 			}
 
-			if ($buildSuccess) {
+			if ($buildSuccess || $ignoreErrors) {
 				$databaseSuccess = $importer->importIntoDatabase( $importType, ($step == 4) );
 			}
 
@@ -715,28 +716,6 @@ else {
 							print "<td>" . $log['info'] . "</td>";
 						print "</tr>" ;
 					}
-
-					// foreach ($importer->getErrors() as $error ) {
-					// 	print "<tr class='error'>" ;
-					// 		print "<td>" . $error['row'] . "</td>";
-					// 		print "<td>";
-					// 			print $error['field_name'];
-					// 			print ($error['field'] >= 0)? " (". $error['field'] .")" : "";
-					// 		print "</td>";
-					// 		print "<td>" . $error['info'] . "</td>";
-					// 	print "</tr>" ;
-					// }
-
-					// foreach ($importer->getWarnings() as $warning ) {
-					// 	print "<tr class='warning'>" ;
-					// 		print "<td>" . $warning['row'] . "</td>";
-					// 		print "<td>";
-					// 			print $warning['field_name'];
-					// 			print ($warning['field'] >= 0)? " (". $warning['field'] .")" : "";
-					// 		print "</td>";
-					// 		print "<td>" . $warning['info'] . "</td>";
-					// 	print "</tr>" ;
-					// }
 
 				print "</table><br/>" ;
 			}
@@ -865,12 +844,19 @@ else {
 
 				<table class='smallIntBorder fullWidth' cellspacing='0'>
 					<tr>
-						<td >
+						<td colspan=2>
 							<?php print __($guid, "CSV Data:") ; ?><br/>
 							<textarea name="csvData" cols="92" rows="5" readonly><?php print $csvData; ?></textarea>
 						</td>
 					</tr>
 					<tr>
+						<?php if (!$overallSuccess) : ?>
+							<td>
+								<input type="checkbox" id="ignoreErrors" name="ignoreErrors" value="<?php echo $ignoreErrors; ?>">
+								<span class="emphasis small"><?php echo __($guid, 'Ignore Errors? (Expert Only!)'); ?><span>
+							</td>	
+						<?php endif; ?>
+
 						<td class="right">
 							<input name="mode" id="mode" value="<?php print $mode; ?>" type="hidden">
 							<input name="syncField" id="syncField" value="<?php print $syncField; ?>" type="hidden">
@@ -880,7 +866,7 @@ else {
 							<input name="fieldDelimiter" id="fieldDelimiter" value="<?php print urlencode($fieldDelimiter); ?>" type="hidden">
 							<input name="stringEnclosure" id="stringEnclosure" value="<?php print urlencode($stringEnclosure); ?>" type="hidden">
 							<input name="address" type="hidden" value="<?php print $_SESSION[$guid]["address"] ?>">
-							<?php if (!$overallSuccess) : ?>
+							<?php if (!$overallSuccess && !$ignoreErrors) : ?>
 								<input id="submitStep3" type="submit" value="<?php print __($guid, "Cannot Continue") ; ?>" disabled>
 							<?php else : ?>
 								<input id="submitStep3" type="submit" value="<?php print __($guid, "Submit") ; ?>"  >
