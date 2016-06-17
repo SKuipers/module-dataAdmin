@@ -55,7 +55,21 @@ class importType
      */
 	protected $validated = false;
 
+    /**
+     * Relational data: System-wide (for filters)
+     * @var array
+     */
+    protected $useYearGroups = false;
     protected $yearGroups = array();
+
+    protected $useLanguages = false;
+    protected $languages = array();
+
+    protected $useCountries = false;
+    protected $countries = array();
+
+    protected $usePhoneCodes = false;
+    protected $phoneCodes = array();
 
 	/**
      * Constructor
@@ -102,11 +116,19 @@ class importType
                         $this->tablesUsed[] = $relationship['table'];
                     }
                 }
+
+                // Check the filters so we know if extra data is nessesary
+                $filter = $this->getField($fieldName, 'filter');
+                if ($filter == 'yearlist') $this->useYearGroups = true;
+                if ($filter == 'language') $this->useLanguages = true;
+                if ($filter == 'country') $this->useCountries = true;
+                if ($filter == 'phonecode') $this->usePhoneCodes = true;
             }
     	}
 
     	if ($pdo != NULL) {
     		$this->validated = $this->validateWithDatabase( $pdo );
+            $this->loadRelationalData( $pdo );
     	}
 
     	if ( empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table) ) {
@@ -184,14 +206,14 @@ class importType
      * Validate With Database
      * Compares the importType structure with the database table to ensure imports will succeed
      *
-     * @access  public
+     * @access  protected
      * @version 29th April 2016
      * @since 	29th April 2016
      * @param   Object  PDO Conenction
      *
      * @return  bool    true if all fields match existing table columns
      */
-    public function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
+    protected function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
 
     	try {
 			$sql="SHOW COLUMNS FROM " . $this->getDetail('table');
@@ -225,22 +247,59 @@ class importType
             }
 		}
 
+    	return ($validatedFields == count($this->table));
+    }
+
+    /**
+     * Load Relational Data
+     * @version 2016
+     * @since   2016
+     * @param   \Gibbon\sqlConnection $pdo
+     */
+    protected function loadRelationalData( \Gibbon\sqlConnection $pdo ) {
+
         // Grab the year groups so we can translate Year Group Lists without a million queries
-        try {
-            $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
-            $result = $pdo->executeQuery(array(), $sql);   
-        }
-        catch(PDOException $e) {}
+        if ($this->useYearGroups) {
+            try {
+                $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
+                $resultYearGroups = $pdo->executeQuery(array(), $sql);   
+            } catch(PDOException $e) {}
 
-        $this->yearGroups = array();
-
-        if ($result->rowCount() > 0) {
-            while ($yearGroup = $result->fetch() ) {
-                $this->yearGroups[ $yearGroup['nameShort'] ] = $yearGroup['gibbonYearGroupID'];
+            if ($resultYearGroups->rowCount() > 0) {
+                while ($yearGroup = $resultYearGroups->fetch() ) {
+                    $this->yearGroups[ $yearGroup['nameShort'] ] = $yearGroup['gibbonYearGroupID'];
+                }
             }
         }
 
-    	return ($validatedFields == count($this->table));
+        // Grab the Languages for system-wide relational data (filters)
+        if ($this->useLanguages) {
+            try {
+                $sql="SELECT name FROM gibbonLanguage";
+                $resultLanguages = $pdo->executeQuery(array(), $sql);   
+            } catch(PDOException $e) {}
+
+            if ($resultLanguages->rowCount() > 0) {
+                while ($languages = $resultLanguages->fetch() ) {
+                    $this->languages[ $languages['name'] ] = $languages['name'];
+                }
+            }
+        }
+
+        // Grab the Countries for system-wide relational data (filters)
+        if ($this->useCountries || $this->usePhoneCodes) {
+            try {
+                $sql="SELECT printable_name, iddCountryCode FROM gibbonCountry";
+                $resultCountries = $pdo->executeQuery(array(), $sql);   
+            } catch(PDOException $e) {}
+
+            if ($resultCountries->rowCount() > 0) {
+                while ($countries = $resultCountries->fetch() ) {
+                    if ($this->useCountries) $this->countries[ $countries['printable_name'] ] = $countries['printable_name'];
+                    if ($this->usePhoneCodes) $this->phoneCodes[ $countries['iddCountryCode'] ] = $countries['iddCountryCode'];
+                }
+            }
+        }
     }
 
     /**
@@ -523,6 +582,9 @@ class importType
                             //$value = preg_replace("/[^0-9]/", '', $value);
                             break;
 
+            case 'phonecode': $value = preg_replace("/[^0-9]/", '', $value);
+                            break;
+
             case 'phonetype': // Handle TIS phone types
                             if (stripos($value, 'Mobile') !== false || stripos($value, 'Cellular') !== false ) {
                                 $value = 'Mobile';
@@ -535,6 +597,17 @@ class importType
                             } else {
                                 $value = 'Other';
                             }
+                            break;
+
+            case 'country': if ($strvalue == "MACAU") $value = 'Macao';
+                            if ($strvalue == "HK") $value = 'Hong Kong';
+                            if ($strvalue == "USA") $value = 'United States';
+                            break;
+
+            case 'language': // Translate a few languages to gibbon-specific use
+                            if ($strvalue == "CANTONESE") $value = 'Chinese (Cantonese)';
+                            if ($strvalue == "MANDARIN") $value = 'Chinese (Mandarin)';
+                            if ($strvalue == "CHINESE") $value = 'Chinese (Mandarin)';
                             break;
 
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
@@ -621,6 +694,12 @@ class importType
             case 'url':         if (!empty($value) && filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
             case 'email':       //if (!empty($value) && filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false;
                                 break;
+
+            case 'country':     if ( !empty($value) && !isset($this->countries[ $value ]) ) return false; break;
+            
+            case 'language':    if ( !empty($value) && !isset($this->languages[ $value ]) ) return false; break;
+
+            case 'phonecode':   if ( !empty($value) && !isset($this->phoneCodes[ $value ]) ) return false; break;
 
             case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
 
