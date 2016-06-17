@@ -22,4 +22,4 @@ table:
     sequenceNumber: 
         name: "Order By"
         desc: "May be used to adjust arrangement of courses in reports. "
-        args: { filter: string }
+        args: { filter: numeric }

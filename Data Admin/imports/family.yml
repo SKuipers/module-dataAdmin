@@ -2,7 +2,7 @@ details:
     type: family
     category: Families
     name: Family Group
-    desc: 
+    desc: Once group per set of related children and adults
     table: gibbonFamily
     modes: { update: true, insert: true }
 primaryKey:
@@ -29,20 +29,20 @@ table:
     homeAddressCountry: 
         name: "Home Address Country"
         desc: ""
-        args: { filter: string }
+        args: { filter: country }
     status: 
-        name: "Status"
+        name: "Marital Status"
         desc: ""
-        args: { filter: string }
+        args: { filter: string, custom: true }
     languageHomePrimary: 
         name: "Home Language (Primary)"
         desc: ""
-        args: { filter: string }
+        args: { filter: language }
     languageHomeSecondary: 
         name: "Home Language (Secondary)"
         desc: ""
-        args: { filter: string }
+        args: { filter: language }
     familySync: 
         name: "Family Sync"
-        desc: ""
-        args: { filter: string }
+        desc: "Unique ID for family, according to source system."
+        args: { filter: string, custom: true }

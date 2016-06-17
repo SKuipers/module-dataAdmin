@@ -29,4 +29,4 @@ table:
     priority: 
         name: "Priority"
         desc: "Higher priorities are substituted first."
-        args: { filter: string, required: true }
+        args: { filter: numeric, required: true }

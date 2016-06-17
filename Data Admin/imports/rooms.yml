@@ -31,7 +31,7 @@ table:
     capacity: 
         name: "Capacity"
         desc: ""
-        args: { filter: string }
+        args: { filter: numeric }
     computer: 
         name: "Teacher's Computer"
         desc: ""
@@ -39,7 +39,7 @@ table:
     computerStudent: 
         name: "Student Computers"
         desc: "How many are there"
-        args: { filter: string, required: true, custom: true }
+        args: { filter: numeric, required: true, custom: true }
     projector: 
         name: "Projector"
         desc: ""

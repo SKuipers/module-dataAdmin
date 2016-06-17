@@ -34,4 +34,4 @@ table:
     rollOrder: 
         name: "Roll Order"
         desc: "Must be unique to roll group if set."
-        args: { filter: string, custom: true }
+        args: { filter: numeric, custom: true }

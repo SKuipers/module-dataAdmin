@@ -15,7 +15,6 @@ table:
         desc: "User account name & login"
         args: {filter: string, required: true}
 
-
     address1: 
         name: "Address 1"
         desc: "Unit, Building, Street"
@@ -27,8 +26,7 @@ table:
     address1Country: 
         name: "Address 1 (Country)"
         desc: ""
-        args: {filter: string}
-
+        args: {filter: country}
 
     address2: 
         name: "Address 2"
@@ -41,7 +39,7 @@ table:
     address2Country: 
         name: "Address 2 (Country)"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
 
 
     phone1Type: 
@@ -51,7 +49,7 @@ table:
     phone1CountryCode: 
         name: "Phone 1 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode }
     phone1: 
         name: "Phone 1"
         desc: "No spaces or punctuation, just numbers"
@@ -65,7 +63,7 @@ table:
     phone2CountryCode: 
         name: "Phone 2 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode }
     phone2: 
         name: "Phone 2"
         desc: "No spaces or punctuation, just numbers"
@@ -79,7 +77,7 @@ table:
     phone3CountryCode: 
         name: "Phone 3 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode }
     phone3: 
         name: "Phone 3"
         desc: "No spaces or punctuation, just numbers"
@@ -93,7 +91,7 @@ table:
     phone4CountryCode: 
         name: "Phone 4 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode }
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
@@ -107,11 +105,11 @@ table:
     emergency1Number1: 
         name: "Emergency 1 Phone Number 1"
         desc: "For students and staff only"
-        args: {filter: phone}
+        args: {filter: string}
     emergency1Number2: 
         name: "Emergency 1 Phone Number 2"
         desc: "For students and staff only"
-        args: {filter: phone}
+        args: {filter: string}
     emergency1Relationship: 
         name: "Emergency 1 Relationship"
         desc: "For students and staff only"
@@ -125,11 +123,11 @@ table:
     emergency2Number1: 
         name: "Emergency 2 Phone Number 1"
         desc: "For students and staff only"
-        args: {filter: phone}
+        args: {filter: string}
     emergency2Number2: 
         name: "Emergency 2 Phone Number 2"
         desc: "For students and staff only"
-        args: {filter: phone}
+        args: {filter: string}
     emergency2Relationship: 
         name: "Emergency 2 Relationship"
         desc: "For students and staff only"

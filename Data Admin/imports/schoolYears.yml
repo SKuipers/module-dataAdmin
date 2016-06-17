@@ -22,7 +22,7 @@ table:
     sequenceNumber: 
         name: "Sequence Number"
         desc: "Must be unique. Controls chronological ordering."
-        args: { filter: string, required: true }
+        args: { filter: numeric, required: true }
     firstDay: 
         name: "First Day"
         desc: "YYYY-MM-DD"

@@ -96,7 +96,7 @@ table:
     address1Country: 
         name: "Address 1 (Country)"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
 
     address2: 
         name: "Address 2"
@@ -109,7 +109,7 @@ table:
     address2Country: 
         name: "Address 2 (Country)"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
 
     phone1Type: 
         name: "Phone 1 (Type)"
@@ -118,7 +118,7 @@ table:
     phone1CountryCode: 
         name: "Phone 1 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode}
     phone1: 
         name: "Phone 1"
         desc: "No spaces or punctuation, just numbers"
@@ -131,7 +131,7 @@ table:
     phone2CountryCode: 
         name: "Phone 2 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode}
     phone2: 
         name: "Phone 2"
         desc: "No spaces or punctuation, just numbers"
@@ -144,7 +144,7 @@ table:
     phone3CountryCode: 
         name: "Phone 3 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode}
     phone3: 
         name: "Phone 3"
         desc: "No spaces or punctuation, just numbers"
@@ -157,7 +157,7 @@ table:
     phone4CountryCode: 
         name: "Phone 4 (Country Code)"
         desc: "IDD code, without 00 or +"
-        args: {filter: string}
+        args: {filter: phonecode}
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
@@ -166,24 +166,24 @@ table:
     website: 
         name: "Website"
         desc: "Must start with http:// or https://"
-        args: {filter: string}
+        args: {filter: url}
 
     languageFirst: 
         name: "First Language"
         desc: ""
-        args: {filter: string}
+        args: {filter: language }
     languageSecond: 
         name: "Second Language"
         desc: ""
-        args: {filter: string}
+        args: {filter: language }
     languageThird: 
         name: "Third Language"
         desc: ""
-        args: {filter: string}
+        args: {filter: language }
     countryOfBirth: 
         name: "Country of Birth"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
     ethnicity: 
         name: "Ethnicity"
         desc: ""
@@ -195,7 +195,7 @@ table:
     citizenship1: 
         name: "Citizenship 1"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
     citizenship1Passport: 
         name: "Citizenship 1 Passport"
         desc: ""
@@ -207,7 +207,7 @@ table:
     citizenship2: 
         name: "Citizenship 2"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
     citizenship2Passport: 
         name: "Citizenship 2 Passport"
         desc: ""

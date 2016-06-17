@@ -30,7 +30,7 @@ table:
     firstAidQualified: 
         name: "First Aid Qualified"
         desc: ""
-        args: {filter: string}
+        args: {filter: yesno, custom: true }
     firstAidExpiry: 
         name: "First Aid Expiry"
         desc: ""
@@ -38,7 +38,7 @@ table:
     countryOfOrigin: 
         name: "Country of Origin"
         desc: ""
-        args: {filter: string}
+        args: {filter: country}
     qualifications: 
         name: "Qualifications"
         desc: ""
