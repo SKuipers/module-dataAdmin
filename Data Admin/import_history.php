@@ -80,7 +80,7 @@ else {
 			print "</tr>" ;
 
 		while ($row=$result->fetch()) {
-			print "<tr>" ;
+			print "<tr class='".( $row['success'] == false? 'error' : '')."'>" ;
 				$importType = $importTypeList[ $row['type'] ];
 
 				print "<td>";
