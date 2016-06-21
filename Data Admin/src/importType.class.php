@@ -71,6 +71,9 @@ class importType
     protected $usePhoneCodes = false;
     protected $phoneCodes = array();
 
+    protected $useCustomFields = false;
+    protected $customFields = array();
+
 	/**
      * Constructor
      *
@@ -123,6 +126,7 @@ class importType
                 if ($filter == 'language') $this->useLanguages = true;
                 if ($filter == 'country') $this->useCountries = true;
                 if ($filter == 'phonecode') $this->usePhoneCodes = true;
+                if ($filter == 'customfield') $this->useCustomFields = true;
             }
     	}
 
@@ -297,6 +301,46 @@ class importType
                 while ($countries = $resultCountries->fetch() ) {
                     if ($this->useCountries) $this->countries[ $countries['printable_name'] ] = $countries['printable_name'];
                     if ($this->usePhoneCodes) $this->phoneCodes[ $countries['iddCountryCode'] ] = $countries['iddCountryCode'];
+                }
+            }
+        }
+
+        if ($this->useCustomFields) {
+            try {
+                $sql="SELECT gibbonPersonFieldID, name, type, options, required FROM gibbonPersonField where active = 'Y'";
+                $resultCustomFields = $pdo->executeQuery(array(), $sql);   
+            } catch(PDOException $e) {}
+
+            if ($resultCustomFields->rowCount() > 0) {
+                while ($fields = $resultCustomFields->fetch() ) {
+                    $this->customFields[ $fields['name'] ] = $fields;
+                }
+
+                foreach ($this->table as $fieldName => $field) {
+                    $customFieldName = $this->getField($fieldName, 'name');
+                    if ( !isset($this->customFields[$customFieldName]) ) continue;
+
+                    $type = $this->customFields[ $customFieldName ]['type'];
+                    if ($type == 'varchar') {
+                        $this->setField( $fieldName, 'kind', 'char');
+                        $this->setField( $fieldName, 'type', 'varchar');
+                        $this->setField( $fieldName, 'length', $this->customFields[ $customFieldName ]['options'] );
+                    } else if ($type == 'select') {
+                        $this->setField( $fieldName, 'kind', 'enum');
+                        $this->setField( $fieldName, 'type', 'enum');
+                        $elements = explode(',', $this->customFields[ $customFieldName ]['options']);
+                        $this->setField( $fieldName, 'elements', $elements );
+                        $this->setField( $fieldName, 'length', count($elements) );
+                    } else if ($type == 'text' || $type == 'date') { 
+                        $this->setField( $fieldName, 'kind', $type);
+                        $this->setField( $fieldName, 'type', $type);
+                    }
+
+                    $this->setField( $fieldName, 'customField', $this->customFields[ $customFieldName ]['gibbonPersonFieldID'] );
+
+                    $args = $this->getField( $fieldName, 'args');
+                    $args['required'] = ($this->customFields[ $customFieldName ]['required'] == 'Y');
+                    $this->setField( $fieldName, 'args', $args);
                 }
             }
         }
@@ -570,16 +614,14 @@ class importType
             case 'numeric': $value = preg_replace("/[^0-9]/", '', $value);
                             break;
 
-            case 'phone':   $value = preg_replace("/[^0-9,\/]/", '', $value);
+            case 'phone':   // Handle phone numbers - strip all non-numeric chars
+                            $value = preg_replace("/[^0-9,\/]/", '', $value);
 
                             if (strpos($value, ',') !== false || strpos($value, '/') !== false || strpos($value, ' ') !== false ) {
                                 //$value = preg_replace("/[^0-9,\/]/", '', $value);
                                 $numbers = preg_split("/[,\/]*/", $value);
                                 $value = (isset($numbers[0]))? $numbers[0] : '';
                             }
-
-                            // Handle phone numbers - strip all non-numeric chars
-                            //$value = preg_replace("/[^0-9]/", '', $value);
                             break;
 
             case 'phonecode': $value = preg_replace("/[^0-9]/", '', $value);
@@ -644,6 +686,8 @@ class importType
                                 $value = 'Left';
                             }
                             break;
+
+            case 'customfield': break;
 
             case 'string':  
             default:        $value = strip_tags($value);   

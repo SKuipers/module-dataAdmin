@@ -77,7 +77,7 @@ class importer
 	private $tableData = array();
     private $tableFields = array();
 
-    private $readonlyData = array();
+    private $serializeData = array();
 
     /**
      * Errors
@@ -358,7 +358,28 @@ class importer
                     $partialFail = TRUE;
                 }
 
-				$fields[ $fieldName ] = $value;
+                // Do we serialize this data?
+                $serialize = $importType->getField($fieldName, 'serialize');
+                if ( !empty($serialize) ) {
+
+                    // Is this the field we're serializing? Grab the array
+                    if ($serialize == $fieldName) {
+                        $value = serialize( $this->serializeData[ $serialize ] );
+                        $fields[ $fieldName ] = $value;
+                    }
+                    // Otherwise collect values in an array
+                    else {
+                        $customField = $importType->getField($fieldName, 'customField');
+                        $this->serializeData[ $serialize ][ $customField ] = $value;
+                    }
+
+                    
+                }
+                // Add the field to the field set for this row
+                else {
+
+				    $fields[ $fieldName ] = $value;
+                }
 
 				$fieldCount++;
 			}
@@ -471,7 +492,7 @@ class importer
 
             foreach ($row as $fieldName => $fieldData ) {
 
-                if ( $importType->isFieldReadOnly($fieldName) ) {
+                if ( $importType->isFieldReadOnly($fieldName) || ($this->mode == 'update' && $fieldName == $primaryKey) ) {
                     continue;
                 } else {
                     $sqlFields[] = $fieldName."=:".$fieldName;

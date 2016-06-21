@@ -8,18 +8,18 @@ details:
 primaryKey:
     gibbonPersonID
 uniqueKeys:
-    - username
+    - gibbonPersonID
 table:
     gibbonPersonID: 
-        name: "Staff Member"
+        name: "Person"
         desc: "Username"
         args: { filter: string, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    fields: 
-        name: "Custom Fields"
-        desc: ""
-        args: { filter: serialize }
     advisor:
         name: "Academic Advisor"
         desc: ""
-        args: { filter: string, serialize: fields }
+        args: { filter: string, readonly: true, serialize: fields }
+    fields: 
+        name: "Custom Fields"
+        desc: ""
+        args: { filter: customfield, serialize: fields, custom: true }

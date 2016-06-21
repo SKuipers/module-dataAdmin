@@ -578,6 +578,7 @@ else {
 						<input name="mode" id="mode" value="<?php print $mode; ?>" type="hidden">
 						<input name="fieldDelimiter" id="fieldDelimiter" value="<?php print urlencode($_POST["fieldDelimiter"]); ?>" type="hidden">
 						<input name="stringEnclosure" id="stringEnclosure" value="<?php print urlencode($_POST["stringEnclosure"]); ?>" type="hidden">
+						<input id="ignoreErrors" name="ignoreErrors" value="0" type="hidden">
 						<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
 						<input id="submitStep2" type="submit" value="<?php print __($guid, "Submit") ; ?>">
 					</td>
