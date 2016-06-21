@@ -576,7 +576,7 @@ class importType
             case 'yesno':   // Translate generic boolean values into Y or N, watch the === for TRUE/FALSE, otherwise it breaks!
                             if ($strvalue == 'TRUE' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Y';
-                            } else if ($value === FALSE || $strvalue == 'FALSE' || $strvalue == 'NO' || $strvalue == 'N') {
+                            } else if ($value === FALSE || $strvalue == 'FALSE' || $strvalue == 'NO' || $strvalue == 'N' || $strvalue == '') {
                                 $value = 'N'; 
                             }
                             break;
