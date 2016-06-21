@@ -2,7 +2,7 @@ details:
     type: usersContactInfo
     category: Users
     name: Contact Information
-    desc: Addresses, phone numbers, and emergency contacts
+    desc: Addresses, email, phone numbers, and emergency contacts
     table: gibbonPerson
     modes: { update: true, insert: false }
 primaryKey:
@@ -14,6 +14,15 @@ table:
         name: "Username"
         desc: "User account name & login"
         args: {filter: string, required: true}
+
+    email: 
+        name: "Email"
+        desc: ""
+        args: {filter: email}
+    emailAlternate: 
+        name: "Email (Alternate)"
+        desc: ""
+        args: {filter: email}
 
     address1: 
         name: "Address 1"
