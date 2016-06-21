@@ -56,9 +56,11 @@ jQuery(function($){
 
 	$("#ignoreErrors").click( function() {
 		if ( $(this).is(':checked') ) {
+			$(this).val( 1 );
 			$( "#submitStep3" ).prop( "disabled", false);
 			$( "#submitStep3" ).prop( "value", "Submit");
 		} else {
+			$(this).val( 0 );
 			$( "#submitStep3" ).prop( "disabled", true);
 			$( "#submitStep3" ).prop( "value", "Cannot Continue");
 		}
