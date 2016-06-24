@@ -9,7 +9,6 @@ primaryKey:
     gibbonPersonID
 uniqueKeys:
     - username
-#   - [ username, email ]
     - studentID
 table:
     title: 
@@ -73,6 +72,10 @@ table:
         name: "Email"
         desc: ""
         args: {filter: email}
+    studentID: 
+        name: "Student ID"
+        desc: "Must be unique if set."
+        args: {filter: string}
     image_240: 
         name: "Image"
         desc: "Path from /uploads/ to medium portrait image (240px by 320px)"

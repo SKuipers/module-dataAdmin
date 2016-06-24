@@ -186,7 +186,7 @@ table:
     ethnicity: 
         name: "Ethnicity"
         desc: ""
-        args: {filter: string}
+        args: {filter: ethnicity}
     religion: 
         name: "Religion"
         desc: ""

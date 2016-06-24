@@ -644,12 +644,18 @@ class importType
             case 'country': if ($strvalue == "MACAU") $value = 'Macao';
                             if ($strvalue == "HK") $value = 'Hong Kong';
                             if ($strvalue == "USA") $value = 'United States';
+                            $value = ucfirst($value);
                             break;
 
             case 'language': // Translate a few languages to gibbon-specific use
                             if ($strvalue == "CANTONESE") $value = 'Chinese (Cantonese)';
                             if ($strvalue == "MANDARIN") $value = 'Chinese (Mandarin)';
                             if ($strvalue == "CHINESE") $value = 'Chinese (Mandarin)';
+                            $value = ucfirst($value);
+                            break;
+
+            case 'ethnicity':
+                            $value = ucfirst($value);
                             break;
 
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
