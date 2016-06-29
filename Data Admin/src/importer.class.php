@@ -400,6 +400,7 @@ class importer
                 // Temporaily removed (different password displays in dry run :/)
                 //$this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
                 $salt=getSalt() ;
+                $value=$fields['password'];
                 $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
                 $fields[ 'passwordStrongSalt' ] = $salt;
                 $fields[ 'password' ] = '';
@@ -795,7 +796,7 @@ class importer
      */
     public function createImportLog( $gibbonPersonID, $type, $results = array(), $columnOrder = array() ) {
     	
-    	$success = ( $results['importSuccess'] && $results['buildSuccess'] && $results['databaseSuccess'] );
+    	$success = (( $results['importSuccess'] && $results['buildSuccess'] && $results['databaseSuccess'] ) || $results['ignoreErrors']);
 
 		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) ); 
 
