@@ -64,6 +64,12 @@ else {
 			<?php print __($guid, 'Import History'); ?>
 		</h1>
 
+		<?php if (!empty($importResults['ignoreErrors'])) : ?>
+			<div class="warning">
+				<?php print __($guid, "Imported with errors ignored."); ?>
+			</div>
+		<?php endif; ?>
+
 		<table class='blank fullWidth' cellspacing='0'>	
 			<tr>
 				<td width="50%">

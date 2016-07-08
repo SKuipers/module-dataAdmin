@@ -899,6 +899,7 @@ else {
 					'updates_skipped'	=> $importer->getDatabaseResult('updates_skipped'),
 					'executionTime'		=> $executionTime,
 					'memoryUsage'		=> $memoryUsage,
+					'ignoreErrors'		=> $ignoreErrors,
 				);
 				
 				$importer->createImportLog( $_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder );
