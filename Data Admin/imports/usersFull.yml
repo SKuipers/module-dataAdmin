@@ -10,7 +10,7 @@ primaryKey:
 uniqueKeys:
     - username
 #   - [ username, email ]
-    - studentID
+#    - studentID
 table:
     title: 
         name: "Title"
@@ -196,7 +196,7 @@ table:
     phone4: 
         name: "Phone 4"
         desc: "No spaces or punctuation, just numbers"
-        args: {filter: phonecode }
+        args: {filter: phone }
 
     website: 
         name: "Website"
@@ -292,7 +292,7 @@ table:
     emergency1Relationship: 
         name: "Emergency 1 Relationship"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: relation}
 
     emergency2Name: 
         name: "Emergency 2 Name"
@@ -309,7 +309,7 @@ table:
     emergency2Relationship: 
         name: "Emergency 2 Relationship"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: relation}
 
     gibbonHouseID: 
         name: "House"

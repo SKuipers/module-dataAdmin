@@ -658,6 +658,13 @@ class importType
                             $value = ucfirst($value);
                             break;
 
+            case 'relation': if ($strvalue == "MOTHER") $value = 'Parent';
+                            else if ($strvalue == "FATHER") $value = 'Parent';
+                            else if ($strvalue == "SISTER") $value = 'Other Relation';
+                            else if ($strvalue == "BROTHER") $value = 'Other Relation';
+                            else $value = 'Other';
+                            break;
+
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
                             
                             if (!empty($value)) {

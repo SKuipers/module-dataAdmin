@@ -243,7 +243,7 @@ table:
     emergency1Relationship: 
         name: "Emergency 1 Relationship"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: relation}
 
     emergency2Name: 
         name: "Emergency 2 Name"
@@ -260,7 +260,7 @@ table:
     emergency2Relationship: 
         name: "Emergency 2 Relationship"
         desc: "For students and staff only"
-        args: {filter: string}
+        args: {filter: relation}
 
     receiveNotificationEmails: 
         name: "Receive Notifications"
