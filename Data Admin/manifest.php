@@ -30,7 +30,7 @@ $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
 //Module tables
- $moduleTables[0]="CREATE TABLE IF NOT EXISTS `dataAdminImportLog` (
+ $moduleTables[0]="CREATE TABLE `dataAdminImportLog` (
   `importLogID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
