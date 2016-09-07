@@ -24,7 +24,7 @@ Installation instructions:
 1. Backup your database and installation files.
 2. Download and unzip the latest version of the module 
 3. Copy the module into your Gibbon modules folder
-3. Login to your Gibbon installation and got to Admin > Manage Modules and press the Install icon
+3. Login to your Gibbon installation and go to Admin > Manage Modules and press the Install icon
 
 For support contact sandra.kuipers [at] tis.edu.mo 
 
@@ -32,6 +32,6 @@ For support contact sandra.kuipers [at] tis.edu.mo
 In Development
 ==============
 
-* Excel file-types
+* Handle Excel file-types
 * Custom user-defined imports (advanced use only)
 * Record Admin: view record totals, spot missing/orphaned records
