@@ -499,7 +499,15 @@ class importer
                     $sqlFields[] = $fieldName."=:".$fieldName;
                     $sqlData[ $fieldName ] = $fieldData;
                 }
+
+                // Handle merging existing custom field data with partial custom field imports
+                if ($inputType->useCustomFields && $fieldName == 'fields') {
+                    if (isset($row['fields']) && !empty($row['fields'])) {
+                        $sqlData['fields'] = array_merge( $row['fields'], $fieldData );
+                    }
+                }
             }
+
             $sqlFieldString = implode(", ", $sqlFields );
 
 
@@ -614,6 +622,10 @@ class importer
         }
 
         $sqlKeyString = implode(' OR ', $sqlKeys );
+
+        if ($inputType->useCustomFields) {
+            $primaryKey = $primaryKey.", fields";
+        }
 
         return "SELECT $primaryKey FROM $tableName WHERE ". $sqlKeyString ;
     }
