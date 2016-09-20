@@ -480,7 +480,9 @@ class importer
                 //print_r( array_keys($row) );
 
 				$result = $this->pdo->executeQuery($data, $sqlKeyQueryString);
+                $keyRow = $result->fetch();
 			}
+
 			catch(PDOException $e) { 
 				$this->log( $rowNum, importer::ERROR_DATABASE_GENERIC );
 				$partialFail = TRUE;
@@ -501,9 +503,10 @@ class importer
                 }
 
                 // Handle merging existing custom field data with partial custom field imports
-                if ($inputType->useCustomFields && $fieldName == 'fields') {
-                    if (isset($row['fields']) && !empty($row['fields'])) {
-                        $sqlData['fields'] = array_merge( $row['fields'], $fieldData );
+                if ($importType->isUsingCustomFields() && $fieldName == 'fields') {
+                    if (isset($keyRow['fields']) && !empty($keyRow['fields'])) {
+                        $sqlData['fields'] = array_merge( unserialize($keyRow['fields']) , unserialize($fieldData) );
+                        $sqlData['fields'] = serialize($sqlData['fields']);
                     }
                 }
             }
@@ -514,7 +517,7 @@ class importer
 			// Handle Existing Records
 			if ($result->rowCount() == 1) {
 
-                $primaryKeyValue = $result->fetchColumn(0);
+                $primaryKeyValue = $keyRow[ $primaryKey ];
 
 				// Dont update records on INSERT ONLY mode
 				if ($this->mode == 'insert') {
@@ -623,7 +626,7 @@ class importer
 
         $sqlKeyString = implode(' OR ', $sqlKeys );
 
-        if ($inputType->useCustomFields) {
+        if ($importType->isUsingCustomFields()) {
             $primaryKey = $primaryKey.", fields";
         }
 

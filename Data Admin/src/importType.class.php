@@ -829,6 +829,20 @@ class importType
     }
 
     /**
+     * Is Using Custom Fields
+     *
+     * @access  public
+     * @version 20th September 2016
+     * @since   20th September 2016
+     *
+     * @return  bool
+     */
+    public function isUsingCustomFields() {
+
+        return $this->useCustomFields;
+    }
+
+    /**
      * Is Field Required
      *
      * @access  public
