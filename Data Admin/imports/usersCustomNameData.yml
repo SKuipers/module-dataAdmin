@@ -4,7 +4,7 @@ details:
     name: Student Custom Name Fields
     desc: TIS-specific
     table: gibbonPerson
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: false }
 primaryKey:
     gibbonPersonID
 uniqueKeys:
