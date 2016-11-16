@@ -140,6 +140,11 @@ class importType
     	}
     }
 
+    public static function getBaseDir() {
+        $baseDir = str_replace(array('modules/Data Admin', 'src'), '', dirname(__FILE__));
+        return rtrim($baseDir, '/ ');
+    }
+
     /**
      * Load Import Type List
      * Loads all YAML files from a folder and creates an importType object for each
@@ -153,7 +158,8 @@ class importType
      */
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
-    	$dir = glob( "./modules/Data Admin/imports/*.yml" );
+
+    	$dir = glob( self::getBaseDir() . "/modules/Data Admin/imports/*.yml" );
 
     	$yaml = new Yaml();
     	$importTypes = array();
@@ -197,7 +203,7 @@ class importType
      * @return 	[importType]
      */
     public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
-    	$path = "./modules/Data Admin/imports/" . $importTypeName .".yml";
+    	$path = self::getBaseDir() . "/modules/Data Admin/imports/" . $importTypeName .".yml";
     	if (!file_exists($path)) return NULL;
 
     	$yaml = new Yaml();
