@@ -153,7 +153,7 @@ class importType
      */
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
-    	$dir = glob( GIBBON_ROOT . "modules/Data Admin/imports/*.yml" );
+    	$dir = glob( "./modules/Data Admin/imports/*.yml" );
 
     	$yaml = new Yaml();
     	$importTypes = array();
@@ -197,7 +197,7 @@ class importType
      * @return 	[importType]
      */
     public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
-    	$path = GIBBON_ROOT . "modules/Data Admin/imports/" . $importTypeName .".yml";
+    	$path = "./modules/Data Admin/imports/" . $importTypeName .".yml";
     	if (!file_exists($path)) return NULL;
 
     	$yaml = new Yaml();
