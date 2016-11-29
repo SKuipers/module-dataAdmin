@@ -93,7 +93,7 @@ else {
 	$tableFields = array();
 
 	foreach ($tableFieldsAll as $fieldName ) {
-		if ($importType->isFieldReadOnly($fieldName)) continue;
+		//if ($importType->isFieldReadOnly($fieldName)) continue;
 		
 		$tableFields[] = $fieldName;
 	}
