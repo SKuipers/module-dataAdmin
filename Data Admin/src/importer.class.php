@@ -457,7 +457,7 @@ class importer
 		foreach ($this->tableData as $rowNum => $row) {
 
             // Ensure we have valid key(s)
-            if ( array_diff($importType->getUniqueKeyFields(), array_keys($row) ) != false ) {
+            if ( !empty($importType->getUniqueKeyFields()) && array_diff($importType->getUniqueKeyFields(), array_keys($row) ) != false ) {
                 $this->log( $rowNum, importer::ERROR_KEY_MISSING );
                 $partialFail = TRUE;
                 continue;
@@ -625,6 +625,8 @@ class importer
         }
 
         $sqlKeyString = implode(' OR ', $sqlKeys );
+
+        if (empty($sqlKeyString)) $sqlKeyString = "FALSE";
 
         if ($importType->isUsingCustomFields()) {
             $primaryKey = $primaryKey.", fields";
