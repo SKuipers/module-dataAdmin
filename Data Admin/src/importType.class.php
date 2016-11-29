@@ -26,34 +26,34 @@ use Library\Yaml\Yaml ;
 /**
  * Reads and holds the config info for a custom Import Type
  *
- * @version	25th April 2016
- * @since	25th April 2016
- * @author	Sandra Kuipers
+ * @version 25th April 2016
+ * @since   25th April 2016
+ * @author  Sandra Kuipers
  */
 class importType
 {
     /**
      * Information about the overall Import Type
      */
-	protected $details = array();
+    protected $details = array();
 
     /**
      * Values that can be used for sync & updates
      */
     protected $primaryKey;
-	protected $uniqueKeys = array();
+    protected $uniqueKeys = array();
     protected $keyFields = array();
 
     /**
      * Holds the table fields and information for each field
      */
-	protected $table = array();
+    protected $table = array();
     protected $tablesUsed = array();
 
     /**
      * Has the structure been checked against the database?
      */
-	protected $validated = false;
+    protected $validated = false;
 
     /**
      * Relational data: System-wide (for filters)
@@ -74,7 +74,7 @@ class importType
     protected $useCustomFields = false;
     protected $customFields = array();
 
-	/**
+    /**
      * Constructor
      *
      * @version 26th April 2016
@@ -84,16 +84,16 @@ class importType
      */
     public function __construct( $data, $pdo = NULL )
     {
-    	if (isset($data['details'])) {
-    		$this->details = $data['details'];
-    	}
+        if (isset($data['details'])) {
+            $this->details = $data['details'];
+        }
 
         if (isset($data['primaryKey'])) {
             $this->primaryKey = $data['primaryKey'];
         }
 
-    	if (isset($data['uniqueKeys'])) {
-    		$this->uniqueKeys = $data['uniqueKeys'];
+        if (isset($data['uniqueKeys'])) {
+            $this->uniqueKeys = $data['uniqueKeys'];
 
             //Grab the unique fields used in all keys
             foreach ($this->uniqueKeys as $key) {
@@ -105,10 +105,10 @@ class importType
                     if (!in_array($key, $this->keyFields)) $this->keyFields[] = $key;
                 }
             }
-    	}
+        }
 
-    	if (isset($data['table'])) {
-    		$this->table = $data['table'];
+        if (isset($data['table'])) {
+            $this->table = $data['table'];
             $this->tablesUsed[] = $this->details['table'];
 
             // Add relational tables to the tablesUsed array so they're locked
@@ -128,16 +128,16 @@ class importType
                 if ($filter == 'phonecode') $this->usePhoneCodes = true;
                 if ($filter == 'customfield') $this->useCustomFields = true;
             }
-    	}
+        }
 
-    	if ($pdo != NULL) {
-    		$this->validated = $this->validateWithDatabase( $pdo );
+        if ($pdo != NULL) {
+            $this->validated = $this->validateWithDatabase( $pdo );
             $this->loadRelationalData( $pdo );
-    	}
+        }
 
-    	if ( empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table) ) {
-    		return NULL;
-    	}
+        if ( empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table) ) {
+            return NULL;
+        }
     }
 
     public static function getBaseDir() {
@@ -159,22 +159,22 @@ class importType
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
 
 
-    	$dir = glob( self::getBaseDir() . "/modules/Data Admin/imports/*.yml" );
+        $dir = glob( self::getBaseDir() . "/modules/Data Admin/imports/*.yml" );
 
-    	$yaml = new Yaml();
-    	$importTypes = array();
-    	
-    	foreach ($dir as $file) {
-    		if (!file_exists($file)) continue;
-			$fileData = $yaml::parse( file_get_contents( $file ) );
-			if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
-				$importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo );
-			}
-    	}
+        $yaml = new Yaml();
+        $importTypes = array();
+        
+        foreach ($dir as $file) {
+            if (!file_exists($file)) continue;
+            $fileData = $yaml::parse( file_get_contents( $file ) );
+            if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
+                $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo );
+            }
+        }
 
         uasort($importTypes, array('self', 'sortImportTypes')); 
 
-    	return $importTypes;
+        return $importTypes;
     }
 
     protected static function sortImportTypes($a, $b) {
@@ -196,20 +196,20 @@ class importType
      *
      * @access  public
      * @version 29th April 2016
-     * @since 	29th April 2016
+     * @since   29th April 2016
      * @param   string  Filename of the Import Type
      * @param   Object  PDO Conenction
      *
-     * @return 	[importType]
+     * @return  [importType]
      */
     public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
-    	$path = self::getBaseDir() . "/modules/Data Admin/imports/" . $importTypeName .".yml";
-    	if (!file_exists($path)) return NULL;
+        $path = self::getBaseDir() . "/modules/Data Admin/imports/" . $importTypeName .".yml";
+        if (!file_exists($path)) return NULL;
 
-    	$yaml = new Yaml();
-    	$fileData = $yaml::parse( file_get_contents($path) );
+        $yaml = new Yaml();
+        $fileData = $yaml::parse( file_get_contents($path) );
 
-    	return new importType( $fileData, $pdo );
+        return new importType( $fileData, $pdo );
     }
 
     /**
@@ -218,46 +218,46 @@ class importType
      *
      * @access  protected
      * @version 29th April 2016
-     * @since 	29th April 2016
+     * @since   29th April 2016
      * @param   Object  PDO Conenction
      *
      * @return  bool    true if all fields match existing table columns
      */
     protected function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
 
-    	try {
-			$sql="SHOW COLUMNS FROM " . $this->getDetail('table');
-			$result = $pdo->executeQuery(array(), $sql);   
-		}
-		catch(PDOException $e) {
-			return false;
-		}
+        try {
+            $sql="SHOW COLUMNS FROM " . $this->getDetail('table');
+            $result = $pdo->executeQuery(array(), $sql);   
+        }
+        catch(PDOException $e) {
+            return false;
+        }
 
-		$columns = $result->fetchAll( \PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE );
+        $columns = $result->fetchAll( \PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE );
 
-		$validatedFields = 0;
-		foreach ($this->table as $fieldName => $field) {
+        $validatedFields = 0;
+        foreach ($this->table as $fieldName => $field) {
             if ($this->isFieldReadOnly($fieldName)) {
                 $validatedFields++;
                 continue;
             }
 
-			if ( isset($columns[$fieldName]) ) {
-				foreach ($columns[$fieldName] as $columnName => $columnField) {
+            if ( isset($columns[$fieldName]) ) {
+                foreach ($columns[$fieldName] as $columnName => $columnField) {
 
                     if ($columnName == 'Type') {
                         $this->parseTableValueType($fieldName, $columnField);
                     } else {
                         $this->setField($fieldName, strtolower($columnName), $columnField);
                     }
-				}
-				$validatedFields++;
-			} else {
+                }
+                $validatedFields++;
+            } else {
                 echo '<div class="error">Invalid field '. $fieldName .'</div>';
             }
-		}
+        }
 
-    	return ($validatedFields == count($this->table));
+        return ($validatedFields == count($this->table));
     }
 
     /**
@@ -426,14 +426,14 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      * @param   string  key - name of the detail to retrieve
      * @param   string  default - an optional value to return if key doesn't exist
      *
      * @return  var
      */
     public function getDetail($key, $default = "") {
-    	return ( isset($this->details[$key]) )? $this->details[$key] : $default;
+        return ( isset($this->details[$key]) )? $this->details[$key] : $default;
     }
 
     /**
@@ -454,12 +454,12 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      *
      * @return  array   2D array of available keys to sync with
      */
     public function getUniqueKeys() {
-    	return $this->uniqueKeys;
+        return $this->uniqueKeys;
     }
 
     /**
@@ -481,12 +481,12 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      *
      * @return  array   2D array of table names used in this import
      */
     public function getTables() {
-    	return $this->tablesUsed;
+        return $this->tablesUsed;
     }
 
     /**
@@ -494,12 +494,12 @@ class importType
      *
      * @access  public
      * @version 28th April 2016
-     * @since 	28th April 2016
+     * @since   28th April 2016
      *
      * @return  array   2D array of table field names used in this import
      */
     public function getTableFields() {
-    	return ( isset($this->table) )? array_keys($this->table) : array();
+        return ( isset($this->table) )? array_keys($this->table) : array();
     }
 
     /**
@@ -507,7 +507,7 @@ class importType
      *
      * @access  public
      * @version 28th April 2016
-     * @since 	28th April 2016
+     * @since   28th April 2016
      * @param   string  Field Name
      * @param   string  Key to retrieve
      * @param   string  Default value to return if key doesn't exist
@@ -516,13 +516,13 @@ class importType
      */
     public function getField( $fieldName, $key, $default = "" ) {
 
-    	if (isset($this->table[$fieldName][$key])) {
-    		return $this->table[$fieldName][$key];
-    	} else if (isset($this->table[$fieldName]['args'][$key])) {
-    		return $this->table[$fieldName]['args'][$key];
-    	} else {
-    		return $default;
-    	}
+        if (isset($this->table[$fieldName][$key])) {
+            return $this->table[$fieldName][$key];
+        } else if (isset($this->table[$fieldName]['args'][$key])) {
+            return $this->table[$fieldName]['args'][$key];
+        } else {
+            return $default;
+        }
     }
 
     /**
@@ -735,7 +735,7 @@ class importType
      *
      * @access  public
      * @version 10th June 2016
-     * @since 	29th April 2016
+     * @since   29th April 2016
      * @param   string  Field name
      * @param   var     Value to validate
      *
@@ -743,7 +743,7 @@ class importType
      */
     public function validateFieldValue( $fieldName, $value ) {
 
-    	if (!$this->validated) return false;
+        if (!$this->validated) return false;
 
         if ( $this->isFieldRelational($fieldName) ) {
             return true;
@@ -816,7 +816,7 @@ class importType
         //TODO: Handle relational table data
         //TODO: Sanitize
         
-    	return $value;
+        return $value;
     }
 
     /**
@@ -825,13 +825,13 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      *
      * @return  bool true if the importType has been validated
      */
     public function isValid() {
 
-    	return $this->validated;
+        return $this->validated;
     }
 
     /**
@@ -881,13 +881,13 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
-     * @param   string	Field name
+     * @since   27th April 2016
+     * @param   string  Field name
      *
      * @return  bool true if marked as a required field
      */
     public function isFieldRequired( $fieldName ) {
-    	return (isset( $this->table[$fieldName]['args']['required']))? $this->table[$fieldName]['args']['required'] : false;
+        return (isset( $this->table[$fieldName]['args']['required']))? $this->table[$fieldName]['args']['required'] : false;
     }
 
     /**
@@ -910,22 +910,22 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      * @param   string  Field name
      *
      * @return  string 
      */
     public function readableFieldType( $fieldName ) {
-    	$output = '';
-    	$kind = $this->getField($fieldName, 'kind');
+        $output = '';
+        $kind = $this->getField($fieldName, 'kind');
 
         if ($this->isFieldRelational($fieldName)) {
             extract( $this->getField($fieldName, 'relationship') );
             return $table.' '.( (is_array($field))? implode(', ', $field) : $field );
         }
 
-    	if (isset($kind)) {
-    		$length = $this->getField($fieldName, 'length');
+        if (isset($kind)) {
+            $length = $this->getField($fieldName, 'length');
 
             switch($kind) {
                 case 'char':    $output = "Text (" . $length . " chars)"; break;
@@ -938,8 +938,8 @@ class importType
                 case 'enum':    $output = "Options"; break;
                 default:        $output = ucfirst($kind);
             }
-		}
-		return $output;
+        }
+        return $output;
     }
 
     /**
@@ -948,20 +948,20 @@ class importType
      *
      * @access  public
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      * @param   string  Field name
      *
      * @return  var|NULL
      */
     public function doImportFunction( $fieldName ) {
 
-    	$method = $this->getField($fieldName, 'function');
+        $method = $this->getField($fieldName, 'function');
 
-    	if ( !empty($method) && method_exists($this, 'userFunc_'.$method)) {
-			return call_user_func( array($this, 'userFunc_'.$method) ); 
-		} else {
-			return NULL;
-		}
+        if ( !empty($method) && method_exists($this, 'userFunc_'.$method)) {
+            return call_user_func( array($this, 'userFunc_'.$method) ); 
+        } else {
+            return NULL;
+        }
     }
 
     /**
@@ -970,12 +970,12 @@ class importType
      *
      * @access  protected
      * @version 27th April 2016
-     * @since 	27th April 2016
+     * @since   27th April 2016
      *
      * @return  string  Random password, based on default Gibbon function
      */
     protected function userFunc_generatePassword() {
-    	return randomPassword(8);
+        return randomPassword(8);
     }
 
 }

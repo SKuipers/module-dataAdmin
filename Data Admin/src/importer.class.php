@@ -136,7 +136,7 @@ class importer
     public function __construct(\Gibbon\session $session = NULL, \Gibbon\config $config = NULL, \Gibbon\sqlConnection $pdo = NULL)
     {
         if ($session === NULL)
-            $this->session = new \Gibbon\session();
+            $this->session = new \Gibbon\Session();
         else
             $this->session = $session ;
 

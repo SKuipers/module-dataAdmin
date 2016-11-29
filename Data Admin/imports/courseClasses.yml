@@ -32,4 +32,8 @@ table:
     reportable: 
         name: "Reportable"
         desc: "Should this class show in reports?"
-        args: { filter: yesno }
+        args: { filter: yesno, custom: true }
+    attendance: 
+        name: "Track Attendance"
+        desc: "Should this class take attendance?"
+        args: { filter: yesno, custom: true }

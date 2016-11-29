@@ -2,7 +2,7 @@ details:
     type: usersCustomData
     category: Users
     name: Custom Field Data
-    desc: School-specific custom fields (included as an example)
+    desc: School-specific custom fields (Included as an example)
     table: gibbonPerson
     modes: { update: true, insert: false }
 primaryKey:
