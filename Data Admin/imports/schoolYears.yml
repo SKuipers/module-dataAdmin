@@ -1,10 +1,12 @@
 details:
     type: schoolYears
-    category: Dates
     name: School Years
     desc: 
     table: gibbonSchoolYear
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage School Years
 primaryKey:
     gibbonSchoolYearID
 uniqueKeys:

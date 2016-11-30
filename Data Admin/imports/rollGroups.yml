@@ -1,10 +1,12 @@
 details:
-    type: formGroups
-    category: Groupings
-    name: Form Groups
-    desc: Homerooms for each year level
+    type: rollGroups
+    name: Roll Groups
+    desc: Roll Groups for each year level
     table: gibbonRollGroup
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Roll Groups
 primaryKey:
     gibbonRollGroupID
 uniqueKeys:

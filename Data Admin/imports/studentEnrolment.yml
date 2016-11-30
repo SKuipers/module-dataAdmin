@@ -1,10 +1,12 @@
 details:
     type: studentEnrolment
-    category: Groupings
     name: Student Enrolment
     desc: Enrol students in form groups and year groups
     table: gibbonStudentEnrolment
     modes: { update: true, insert: true }
+access:
+    module: Students
+    action: Student Enrolment
 primaryKey:
     gibbonStudentEnrolmentID
 uniqueKeys:

@@ -1,10 +1,12 @@
 details:
     type: markbookEntry
-    category: Markbook
     name: Markbook Data
     desc: Student assessment, effort and comments (requires existing markbook column)
     table: gibbonMarkbookEntry
     modes: { update: true, insert: true }
+access:
+    module: Markbook
+    action: Edit Markbook_everything
 primaryKey:
     gibbonMarkbookEntryID
 uniqueKeys:

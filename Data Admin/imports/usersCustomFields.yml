@@ -1,10 +1,13 @@
 details:
     type: usersCustomFields
-    category: Users
     name: Custom Fields
     desc: Manages the fields themselves, not the data
+    category: Custom Fields
     table: gibbonPersonField
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage User Custom Fields
 primaryKey:
     gibbonPersonFieldID
 uniqueKeys:

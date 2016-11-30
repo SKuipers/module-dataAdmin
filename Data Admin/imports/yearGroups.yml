@@ -1,10 +1,12 @@
 details:
     type: yearGroups
-    category: Groupings
     name: Year Groups
     desc: 
     table: gibbonYearGroup
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Year Groups
 primaryKey:
     gibbonYearGroupID
 uniqueKeys:

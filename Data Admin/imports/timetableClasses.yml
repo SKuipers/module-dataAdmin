@@ -1,10 +1,12 @@
 details:
     type: timetableClasses
-    category: Timetable
     name: Timetable Classes
     desc: Assign classes to timetable days and rows
     table: gibbonTTDayRowClass
     modes: { update: true, insert: true }
+access:
+    module: Timetable Admin
+    action: Manage Timetables
 primaryKey:
     gibbonTTDayRowClassID
 uniqueKeys:

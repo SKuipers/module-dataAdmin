@@ -1,10 +1,12 @@
 details:
     type: courses
-    category: Courses
     name: Course Information
     desc: Course names and descriptions by School Year
     table: gibbonCourse
     modes: { update: true, insert: true }
+access:
+    module: Timetable Admin
+    action: Manage Courses & Classes
 primaryKey:
     gibbonCourseID
 uniqueKeys:

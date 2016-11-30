@@ -1,10 +1,13 @@
 details:
     type: familyRelationship
-    category: Families
     name: Family Relationships
     desc: How each child is related to each adult in the family
+    category: Families
     table: gibbonFamilyRelationship
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Families
 primaryKey:
     gibbonFamilyRelationshipID
 uniqueKeys:

@@ -1,10 +1,12 @@
 details:
     type: stringReplacements
-    category: System
     name: String Replacements
     desc: 
     table: gibbonString
     modes: { update: true, insert: true }
+access:
+    module: System Admin
+    action: String Replacement
 primaryKey:
     gibbonStringID
 uniqueKeys:

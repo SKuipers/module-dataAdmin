@@ -5,6 +5,9 @@ details:
     desc: Staff details (for existing users)
     table: gibbonStaff
     modes: { update: true, insert: true }
+access:
+    module: Staff
+    action: Manage Staff_confidential
 primaryKey:
     gibbonStaffID
 uniqueKeys:

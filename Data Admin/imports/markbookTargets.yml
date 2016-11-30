@@ -1,10 +1,12 @@
 details:
     type: markbookTargets
-    category: Markbook
     name: Markbook Targets
     desc: Student target marks (requires Target Scale set per class)
     table: gibbonMarkbookTarget
     modes: { update: true, insert: true }
+access:
+    module: Markbook
+    action: Edit Markbook_everything
 primaryKey:
     gibbonMarkbookTargetID
 uniqueKeys:

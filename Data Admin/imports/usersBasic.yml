@@ -1,10 +1,13 @@
 details:
     type: usersBasic
-    category: Users
     name: Basic User Data
     desc: Basic user names and details
+    category: Users
     table: gibbonPerson
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Users
 primaryKey:
     gibbonPersonID
 uniqueKeys:

@@ -1,10 +1,12 @@
 details:
     type: markbookPlannerLinks
-    category: Markbook
     name: Markbook Planner Links
     desc: Link markbook columns with planner Lessons and/or Units
     table: gibbonMarkbookColumn
     modes: { update: true, insert: false }
+access:
+    module: Markbook
+    action: Edit Markbook_everything
 primaryKey:
     gibbonMarkbookColumnID
 uniqueKeys:

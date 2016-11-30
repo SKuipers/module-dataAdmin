@@ -1,10 +1,12 @@
 details:
     type: rooms
-    category: Other
     name: Facilities
     desc: Rooms, Spaces and School Facilities
     table: gibbonSpace
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Facilities
 primaryKey:
     gibbonSpaceID
 uniqueKeys:

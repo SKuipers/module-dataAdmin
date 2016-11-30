@@ -1,10 +1,12 @@
 details:
     type: markbookTargetScale
-    category: Markbook
     name: Markbook Target Scale
     desc: Grade scale for student targets, per class
     table: gibbonCourseClass
     modes: { update: true, insert: false }
+access:
+    module: Markbook
+    action: Edit Markbook_everything
 primaryKey:
     gibbonCourseClassID
 uniqueKeys:

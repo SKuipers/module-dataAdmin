@@ -1,10 +1,13 @@
 details:
     type: familyAdult
-    category: Families
     name: Family Adults
     desc: 
+    category: Families
     table: gibbonFamilyAdult
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Families
 primaryKey:
     gibbonFamilyAdultID
 uniqueKeys:

@@ -1,10 +1,12 @@
 details:
     type: medicalForms
-    category: Medical
     name: Medical Forms
     desc: Student medical information
     table: gibbonPersonMedical
     modes: { update: true, insert: true }
+access:
+    module: Students
+    action: Manage Medical Forms
 primaryKey:
     gibbonPersonMedicalID
 uniqueKeys:

@@ -1,10 +1,13 @@
 details:
     type: usersContactInfo
-    category: Users
     name: Contact Information
     desc: Addresses, email, phone numbers, and emergency contacts
+    category: User Data
     table: gibbonPerson
     modes: { update: true, insert: false }
+access:
+    module: User Admin
+    action: Manage Users
 primaryKey:
     gibbonPersonID
 uniqueKeys:

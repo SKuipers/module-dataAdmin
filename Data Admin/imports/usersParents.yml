@@ -1,10 +1,13 @@
 details:
     type: usersParents
-    category: Users
     name: Parent Data
     desc: User details for parents/guardians
+    category: Users
     table: gibbonPerson
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Users
 primaryKey:
     gibbonPersonID
 uniqueKeys:

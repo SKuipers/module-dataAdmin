@@ -1,10 +1,12 @@
 details:
     type: departmentStaff
-    category: Groupings
     name: Department Staff
     desc: Staff Members for each Department/Learning Area
     table: gibbonDepartmentStaff
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Departments
 primaryKey:
     gibbonDepartmentStaffID
 uniqueKeys:

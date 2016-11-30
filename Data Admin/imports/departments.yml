@@ -1,10 +1,12 @@
 details:
     type: departments
-    category: Groupings
     name: Departments
     desc: Departments and Learning Areas
     table: gibbonDepartment
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Departments
 primaryKey:
     gibbonDepartmentID
 uniqueKeys:

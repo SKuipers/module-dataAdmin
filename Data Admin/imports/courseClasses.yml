@@ -1,10 +1,12 @@
 details:
     type: courseClasses
-    category: Courses
     name: Classes
     desc: Class records for each course
     table: gibbonCourseClass
     modes: { update: true, insert: true }
+access:
+    module: Timetable Admin
+    action: Manage Courses & Classes
 primaryKey:
     gibbonCourseClassID
 uniqueKeys:

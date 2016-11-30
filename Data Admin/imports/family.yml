@@ -1,10 +1,13 @@
 details:
     type: family
-    category: Families
     name: Family Group
-    desc: Once group per set of related children and adults
+    desc: One group per set of related children and adults
+    category: Families
     table: gibbonFamily
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Families
 primaryKey:
     gibbonFamilyID
 uniqueKeys:

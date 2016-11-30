@@ -1,10 +1,12 @@
 details:
     type: courseClassEnrolment
-    category: Courses
     name: Class Enrolment
     desc: Class enrolments for each course
     table: gibbonCourseClassPerson
     modes: { update: true, insert: true }
+access:
+    module: Timetable Admin
+    action: Course Enrolment by Class
 primaryKey:
     gibbonCourseClassPersonID
 uniqueKeys:

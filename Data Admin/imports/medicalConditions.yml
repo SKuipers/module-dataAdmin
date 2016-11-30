@@ -1,10 +1,12 @@
 details:
     type: medicalConditions
-    category: Medical
     name: Medical Conditions
     desc: Important medical conditions, requires an existing medical form
     table: gibbonPersonMedicalCondition
     modes: { update: true, insert: true }
+access:
+    module: Students
+    action: Manage Medical Forms
 primaryKey:
     gibbonPersonMedicalConditionID
 uniqueKeys:

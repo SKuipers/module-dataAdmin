@@ -232,6 +232,17 @@ class importType
         return new importType( $fileData, $pdo );
     }
 
+    /**
+     * Is Import Accessible
+     *
+     * @access  public
+     * @version 29th April 2016
+     * @since   29th April 2016
+     * @param   string  guid
+     * @param   Object  PDO Conenction
+     *
+     * @return  bool
+     */
     public function isImportAccessible( $guid, $connection2 ) {
        
         if ($this->getAccessDetail('protected') == false) return true;
@@ -319,7 +330,10 @@ class importType
 
             $this->access['protected'] = true;
             $this->access['entryURL'] = $action['entryURL'];
-            $this->details['category'] = $action['category'];
+            
+            if (empty($this->details['category'])) {
+                $this->details['category'] = $action['category'];
+            }
         }
     }
 

@@ -1,10 +1,12 @@
 details:
     type: markbookColumns
-    category: Markbook
     name: Markbook Columns
     desc: Setup markbook columns for student assessment, per class
     table: gibbonMarkbookColumn
     modes: { update: true, insert: true }
+access:
+    module: Markbook
+    action: Edit Markbook_everything
 primaryKey:
     gibbonMarkbookColumnID
 uniqueKeys:

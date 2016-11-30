@@ -1,10 +1,13 @@
 details:
     type: usersStaff
-    category: Users
     name: Staff User Data
     desc: Faculty & staff member users
+    category: Users
     table: gibbonPerson
     modes: { update: true, insert: true }
+access:
+    module: User Admin
+    action: Manage Users
 primaryKey:
     gibbonPersonID
 uniqueKeys:

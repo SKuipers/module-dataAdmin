@@ -1,10 +1,12 @@
 details:
     type: houses
-    category: Groupings
     name: Houses
     desc: 
     table: gibbonHouse
     modes: { update: true, insert: true }
+access:
+    module: School Admin
+    action: Manage Houses
 primaryKey:
     gibbonHouseID
 uniqueKeys:

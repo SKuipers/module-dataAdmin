@@ -40,10 +40,6 @@ else {
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
-	print "<h3>" ;
-	print __($guid, "Imports & Exports") ;
-	print "</h3>" ;
-
 	// Get a list of available import options
 	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
 
@@ -53,33 +49,39 @@ else {
 		print "</div>" ;
 	}
 	else {
-		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-			print "<tr class='head'>" ;
-				print "<th style='width: 90px;'>" ;
-					print __($guid, "Category") ;
-				print "</th>" ;
-				print "<th >" ;
-					print __($guid, "Name") ;
-				print "</th>" ;
-				print "<th >" ;
-					print __($guid, "Description") ;
-				print "</th>" ;
-				print "<th style='width: 100px;'>" ;
-					print __($guid, "Last Run") ;
-				print "</th>" ;
-				print "<th style='width: 80px!important'>" ;
-					print __($guid, "Actions") ;
-				print "</th>" ;
-			print "</tr>" ;
-
+		
+			
 		$module = '';
 		foreach ($importTypeList as $importTypeName => $importType) {
 
 			if ($module != $importType->getAccessDetail('module') ) {
+
+				if ($module != '') print "</table><br/>" ;
+
 				$module = $importType->getAccessDetail('module');
-				
+
 				print "<tr class='break'>" ;
-					print "<td colspan='5'><h4 style='border: none !important;margin:8px 0px 0px !important;'>".$module."</h4></td>" ;
+					print "<td colspan='5'><h4>".$module."</h4></td>" ;
+				print "</tr>" ;
+
+				print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+
+				print "<tr class='head'>" ;
+					print "<th style='width: 90px;padding: 5px 5px 5px 20px !important;'>" ;
+						print __($guid, "Category") ;
+					print "</th>" ;
+					print "<th style='padding: 5px !important;'>" ;
+						print __($guid, "Name") ;
+					print "</th>" ;
+					print "<th style='padding: 5px !important;'>" ;
+						print __($guid, "Description") ;
+					print "</th>" ;
+					print "<th style='width: 100px;padding: 5px !important;'>" ;
+						print __($guid, "Last Run") ;
+					print "</th>" ;
+					print "<th style='width: 80px!important;padding: 5px !important;'>" ;
+						print __($guid, "Actions") ;
+					print "</th>" ;
 				print "</tr>" ;
 			}
 
@@ -112,8 +114,8 @@ else {
 				print "</td>";
 			print "</tr>" ;
 		}
+		
 		print "</table><br/>" ;
-
 	}
 	
 }	
