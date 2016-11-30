@@ -588,11 +588,11 @@ class importType
                             break;
 
             case 'date':    // Handle various date formats
-                            if ( !empty($value) && preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false ) {
+                            if ( !empty($value) ) { // && preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false
                                 $date = strtotime($value);
                                 $value = date('Y-m-d', $date);
                             }
-                            if ($value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) == false) {
+                            if ($value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false) {
                                 $value = NULL;
                             }
                             break;
@@ -849,7 +849,7 @@ class importType
     }
 
     /**
-     * Is Field Required
+     * Is Field Relational
      *
      * @access  public
      * @version 27th April 2016
@@ -860,6 +860,20 @@ class importType
      */
     public function isFieldRelational( $fieldName ) {
         return ( isset($this->table[$fieldName]['relationship']) && !empty($this->table[$fieldName]['relationship']) );
+    }
+
+    /**
+     * Is Field Linked to another field (for relational reference)
+     *
+     * @access  public
+     * @version 28th November 2016
+     * @since   28th November 2016
+     * @param   string  Field name
+     *
+     * @return  bool true if marked as a linked field
+     */
+    public function isFieldLinked( $fieldName ) {
+        return (isset( $this->table[$fieldName]['args']['linked']))? $this->table[$fieldName]['args']['linked'] : false;
     }
 
     /**

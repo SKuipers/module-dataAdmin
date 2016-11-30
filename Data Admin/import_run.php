@@ -205,7 +205,7 @@ else {
 		print "<div class='linkTop'>" ;
 		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data (Experiemental)'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "</div>" ;
 	}
 
@@ -230,6 +230,11 @@ else {
 			$count = 1;
 			foreach ($importType->getTableFields() as $fieldName ) {
 
+				if ( $importType->isFieldLinked($fieldName) ) {
+					$count++;
+					continue;
+				}
+					
 				print "<tr>" ;
 					print "<td>" . $count. "</td>" ;
 					print "<td>";
@@ -405,6 +410,9 @@ else {
 			}
 
 			foreach ($importType->getTableFields() as $fieldName) {
+
+				if ( $importType->isFieldLinked($fieldName) ) continue; // Skip linked fields
+
 				if ($importType->isFieldRelational($fieldName)) {
 
 					extract( $importType->getField($fieldName, 'relationship') );
@@ -479,6 +487,12 @@ else {
 
 				$count = 0;
 				foreach ($importType->getTableFields() as $fieldName ) {
+
+					if ( $importType->isFieldLinked($fieldName) ) {
+						print "<input type='hidden' id='col[$count]' name='columnOrder[$count]' value='".DataAdmin\importer::COLUMN_DATA_LINKED."'>";
+						$count++;
+						continue;
+					}
 
 					print "<tr>" ;
 						print "<td>";

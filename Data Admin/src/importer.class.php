@@ -31,6 +31,7 @@ class importer
 	const COLUMN_DATA_SKIP = -1;
 	const COLUMN_DATA_CUSTOM = -2;
 	const COLUMN_DATA_FUNCTION = -3;
+    const COLUMN_DATA_LINKED = -4;
 
 	const ERROR_INVALID_INPUTS = 201;
 	const ERROR_REQUIRED_FIELD_MISSING = 205;
@@ -285,13 +286,20 @@ class importer
 				else if ($columnIndex == importer::COLUMN_DATA_CUSTOM) {
 					
 					$value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
-                    //echo $fieldName.'='.$value.'<br/>';
 				}
 				// Run a user_func based on the function name defined for that field
 				else if ($columnIndex == importer::COLUMN_DATA_FUNCTION) {
 					
 					$value = $importType->doImportFunction( $fieldName );
 				}
+                // Grab another field value for linked fields. Fields with values must always preceed the linked field.
+                else if ($columnIndex == importer::COLUMN_DATA_LINKED) {
+                    
+                    if ($importType->isFieldLinked($fieldName)) {
+                        $linkedFieldName = $importType->getField($fieldName, 'linked');
+                        $value = (isset($fields[ $linkedFieldName ]))? $fields[ $linkedFieldName ] : null;
+                    }
+                }
 				// Use the column index to grab to associated CSV value
 				else {
 					// Get the associative key from the CSV headers using the current index
@@ -316,27 +324,43 @@ class importer
                 // Handle relational table data
                 // Moved from Insert/Update queries so we can confirm on the dry run (and multi-key relationships)
                 if ( $importType->isFieldRelational($fieldName) ) {
+                    $join = ''; $on = '';
                     extract( $importType->getField($fieldName, 'relationship') );
+
+                    $table = $this->escapeIdentifier($table);
+                    $join = $this->escapeIdentifier($join);
+
+                    // Handle table joins
+                    $tableJoin = '';
+                    if (!empty($join) && !empty($on)) {
+                        if (is_array($on) && count($on) == 2) {
+                            $tableJoin = "JOIN $join ON ({$join}.{$on[0]}={$table}.{$on[1]})";
+                        }
+                    }
 
                     // Muli-key relationships
                     if (is_array($field) && count($field) > 0 ) {
-                        $fieldArray = array_slice($field, 1);
 
                         $relationalData = array( $fieldName => $value );
-                        $relationalSQL = "SELECT $key FROM $table WHERE ".$field[0]."=:$fieldName";
+                        $relationalSQL = "SELECT $key FROM $table $tableJoin WHERE ".$field[0]."=:$fieldName";
 
-                        foreach ($fieldArray as $relationalField) {
-                            $relationalData[ $relationalField ] = $fields[ $relationalField ];
-                            $relationalSQL .= " AND $relationalField=:$relationalField";
+                        for ($i=1; $i<count($field); $i++) {
+                            // Relational field from within current import data
+                            $relationalField = $field[$i];
+                            if (isset($fields[ $relationalField ])) {
+                                $relationalData[ $relationalField ] = $fields[ $relationalField ];
+                                $relationalSQL .= " AND ".$this->escapeIdentifier($relationalField)."=:$relationalField";
+                            }
                         }
                     // Single key/value relationship
                     } else {
+                        $field = $this->escapeIdentifier($field);
                         $relationalData = array( $fieldName => $value );
-                        $relationalSQL = "SELECT $key FROM $table WHERE $field=:$fieldName";
+                        $relationalSQL = "SELECT $key FROM $table $tableJoin WHERE $field=:$fieldName";
                     }
 
-                    //print_r($relationalData);
-                    //print '<br/>'.$relationalSQL.'<br/>';
+                    // print_r($relationalData);
+                    // print '<br/>'.$relationalSQL.'<br/>';
 
                     $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
                     if ($result->rowCount() > 0) {
@@ -447,7 +471,7 @@ class importer
 			return false;
 		}
 
-		$tableName = $importType->getDetail('table');
+		$tableName = $this->escapeIdentifier( $importType->getDetail('table') );
 		$primaryKey = $importType->getPrimaryKey();
 
         // Setup the query string for keys
@@ -498,7 +522,7 @@ class importer
                 if ( $importType->isFieldReadOnly($fieldName) || ($this->mode == 'update' && $fieldName == $primaryKey) ) {
                     continue;
                 } else {
-                    $sqlFields[] = $fieldName."=:".$fieldName;
+                    $sqlFields[] = $this->escapeIdentifier($fieldName) . "=:" . $fieldName;
                     $sqlData[ $fieldName ] = $fieldData;
                 }
 
@@ -540,7 +564,7 @@ class importer
 
 				try {
 					$sqlData[ $primaryKey ] = $primaryKeyValue;
-					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE $primaryKey=:$primaryKey" ;
+					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE `$primaryKey`=:$primaryKey" ;
 					$this->pdo->executeQuery($sqlData, $sql);
 				}
 				catch(PDOException $e) { 
@@ -594,8 +618,9 @@ class importer
 
     protected function getKeyQueryString( $importType ) {
 
-        $tableName = $importType->getDetail('table');
+        $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
         $primaryKey = $importType->getPrimaryKey();
+        $primaryKeyField = $this->escapeIdentifier($primaryKey);
 
         $sqlKeys = array();
         foreach ( $importType->getUniqueKeys() as $uniqueKey ) {
@@ -607,21 +632,23 @@ class importer
                 foreach ($uniqueKey as $fieldName) {
                     if (!in_array($fieldName, $this->tableFields) ) continue;
 
-                    $sqlKeysFields[] = "($fieldName=:$fieldName AND $fieldName IS NOT NULL)";
+                    $fieldNameField = $this->escapeIdentifier($fieldName);
+                    $sqlKeysFields[] = "($fieldNameField=:$fieldName AND $fieldNameField IS NOT NULL)";
                 }
                 $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields ) .')';
             } else {
                 // Skip key fields which dont exist in our imported data set
                 if (!in_array($uniqueKey, $this->tableFields) ) continue;
 
-                $sqlKeys[] = "($uniqueKey=:$uniqueKey AND $uniqueKey IS NOT NULL)";
+                $uniqueKeyField = $this->escapeIdentifier($uniqueKey);
+                $sqlKeys[] = "($uniqueKeyField=:$uniqueKey AND $uniqueKeyField IS NOT NULL)";
             }
             
         }
 
         // Add the primary key if database IDs is enabled
         if ($this->syncField == true) {
-            $sqlKeys[] = $primaryKey.'=:'.$primaryKey;
+            $sqlKeys[] = $primaryKeyField.'=:'.$primaryKey;
         }
 
         $sqlKeyString = implode(' OR ', $sqlKeys );
@@ -629,10 +656,14 @@ class importer
         if (empty($sqlKeyString)) $sqlKeyString = "FALSE";
 
         if ($importType->isUsingCustomFields()) {
-            $primaryKey = $primaryKey.", fields";
+            $primaryKeyField = $primaryKeyField.", fields";
         }
 
-        return "SELECT $primaryKey FROM $tableName WHERE ". $sqlKeyString ;
+        return "SELECT $primaryKeyField FROM $tableName WHERE ". $sqlKeyString ;
+    }
+
+    protected function escapeIdentifier($text) {
+        return "`".str_replace("`","``",$text)."`";
     }
 
     /**
