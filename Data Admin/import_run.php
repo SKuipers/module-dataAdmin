@@ -230,7 +230,7 @@ else {
 			$count = 1;
 			foreach ($importType->getTableFields() as $fieldName ) {
 
-				if ( $importType->isFieldLinked($fieldName) ) {
+				if ( $importType->isFieldHidden($fieldName) ) {
 					$count++;
 					continue;
 				}
@@ -411,7 +411,7 @@ else {
 
 			foreach ($importType->getTableFields() as $fieldName) {
 
-				if ( $importType->isFieldLinked($fieldName) ) continue; // Skip linked fields
+				if ( $importType->isFieldHidden($fieldName) ) continue; // Skip hidden fields
 
 				if ($importType->isFieldRelational($fieldName)) {
 
@@ -488,7 +488,7 @@ else {
 				$count = 0;
 				foreach ($importType->getTableFields() as $fieldName ) {
 
-					if ( $importType->isFieldLinked($fieldName) ) {
+					if ( $importType->isFieldHidden($fieldName) ) {
 						print "<input type='hidden' id='col[$count]' name='columnOrder[$count]' value='".DataAdmin\importer::COLUMN_DATA_LINKED."'>";
 						$count++;
 						continue;

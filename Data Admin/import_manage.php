@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isModuleAccessible($guid, $connection2)==FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -45,7 +45,7 @@ else {
 	print "</h3>" ;
 
 	// Get a list of available import options
-	$importTypeList = DataAdmin\importType::loadImportTypeList();
+	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;
@@ -55,7 +55,7 @@ else {
 	else {
 		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 			print "<tr class='head'>" ;
-				print "<th style='width: 80px;'>" ;
+				print "<th style='width: 90px;'>" ;
 					print __($guid, "Category") ;
 				print "</th>" ;
 				print "<th >" ;
@@ -72,7 +72,17 @@ else {
 				print "</th>" ;
 			print "</tr>" ;
 
+		$module = '';
 		foreach ($importTypeList as $importTypeName => $importType) {
+
+			if ($module != $importType->getAccessDetail('module') ) {
+				$module = $importType->getAccessDetail('module');
+				
+				print "<tr class='break'>" ;
+					print "<td colspan='5'><h4 style='border: none !important;margin:8px 0px 0px !important;'>".$module."</h4></td>" ;
+				print "</tr>" ;
+			}
+
 			print "<tr>" ;
 				print "<td>" . $importType->getDetail('category'). "</td>" ;
 				print "<td>" . $importType->getDetail('name'). "</td>" ;
@@ -90,9 +100,15 @@ else {
 
 				print "</td>";
 				print "<td>";
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __($guid, 'Import') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+
+					if ( $importType->isImportAccessible( $guid, $connection2 ) ) {
+						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __($guid, 'Import') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
+						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+					} else {
+						print "<img style='margin-left: 5px' title='" . __($guid, 'You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+					}
 		
+
 				print "</td>";
 			print "</tr>" ;
 		}

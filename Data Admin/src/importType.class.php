@@ -38,6 +38,11 @@ class importType
     protected $details = array();
 
     /**
+     * Permission information for user access
+     */
+    protected $access = array();
+
+    /**
      * Values that can be used for sync & updates
      */
     protected $primaryKey;
@@ -82,10 +87,14 @@ class importType
      * @param   array   importType information
      * @param   Object  PDO Connection
      */
-    public function __construct( $data, $pdo = NULL )
+    public function __construct( $data, $pdo = NULL, $validateStructure = true )
     {
         if (isset($data['details'])) {
             $this->details = $data['details'];
+        }
+
+        if (isset($data['access'])) {
+            $this->access = $data['access'];
         }
 
         if (isset($data['primaryKey'])) {
@@ -131,8 +140,13 @@ class importType
         }
 
         if ($pdo != NULL) {
-            $this->validated = $this->validateWithDatabase( $pdo );
-            $this->loadRelationalData( $pdo );
+
+            if ($validateStructure == true) {
+                $this->validated = $this->validateWithDatabase( $pdo );
+                $this->loadRelationalData( $pdo );
+            } 
+
+            $this->loadAccessData( $pdo );
         }
 
         if ( empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table) ) {
@@ -156,7 +170,7 @@ class importType
      *
      * @return  array   2D array of importType objects
      */
-    public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL ) {
+    public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL, $validateStructure = false ) {
 
 
         $dir = glob( self::getBaseDir() . "/modules/Data Admin/imports/*.yml" );
@@ -168,7 +182,7 @@ class importType
             if (!file_exists($file)) continue;
             $fileData = $yaml::parse( file_get_contents( $file ) );
             if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
-                $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo );
+                $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo, $validateStructure );
             }
         }
 
@@ -178,10 +192,16 @@ class importType
     }
 
     protected static function sortImportTypes($a, $b) {
+        if ($a->getAccessDetail('module') < $b->getAccessDetail('module'))
+            return -1;
+        else if ($a->getAccessDetail('module') > $b->getAccessDetail('module'))
+            return 1;
+
         if ($a->getDetail('category') < $b->getDetail('category'))
             return -1;
         else if ($a->getDetail('category') > $b->getDetail('category'))
             return 1;
+
         if ($a->getDetail('name') < $b->getDetail('name'))
             return -1;
         else if ($a->getDetail('name') > $b->getDetail('name'))
@@ -210,6 +230,14 @@ class importType
         $fileData = $yaml::parse( file_get_contents($path) );
 
         return new importType( $fileData, $pdo );
+    }
+
+    public function isImportAccessible( $guid, $connection2 ) {
+       
+        if ($this->getAccessDetail('protected') == false) return true;
+        if ($connection2 == null) return false;
+
+        return isActionAccessible($guid, $connection2, '/modules/' . $this->getAccessDetail('module').'/'.$this->getAccessDetail('entryURL') );
     }
 
     /**
@@ -258,6 +286,41 @@ class importType
         }
 
         return ($validatedFields == count($this->table));
+    }
+
+    /**
+     * Load Access Data - for user permission checking, and category names
+     * @version 2016
+     * @since   2016
+     * @param   \Gibbon\sqlConnection $pdo
+     */
+    protected function loadAccessData( \Gibbon\sqlConnection $pdo ) {
+
+        if ( empty($this->access['module']) || empty($this->access['action']) ) {
+            $this->access['protected'] = false;
+            $this->details['category'] = 'Gibbon';
+            return;
+        }
+
+        try {
+            $data = array('module' => $this->access['module'], 'action' => $this->access['action'] );
+            $sql = "SELECT gibbonAction.category, gibbonAction.entryURL 
+                    FROM gibbonAction 
+                    JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) 
+                    WHERE gibbonModule.name=:module 
+                    AND gibbonAction.name=:action 
+                    ORDER BY gibbonAction.precedence ASC
+                    LIMIT 1";
+            $result = $pdo->executeQuery($data, $sql);
+        } catch(PDOException $e) {}
+
+        if ($result->rowCount() > 0) {
+            $action = $result->fetch();
+
+            $this->access['protected'] = true;
+            $this->access['entryURL'] = $action['entryURL'];
+            $this->details['category'] = $action['category'];
+        }
     }
 
     /**
@@ -311,6 +374,7 @@ class importType
             }
         }
 
+        // Grab the user-defined Custom Fields
         if ($this->useCustomFields) {
             try {
                 $sql="SELECT gibbonPersonFieldID, name, type, options, required FROM gibbonPersonField where active = 'Y'";
@@ -434,6 +498,21 @@ class importType
      */
     public function getDetail($key, $default = "") {
         return ( isset($this->details[$key]) )? $this->details[$key] : $default;
+    }
+
+    /**
+     * Get Access Detail
+     *
+     * @access  public
+     * @version 27th April 2016
+     * @since   27th April 2016
+     * @param   string  key - name of the access key to retrieve
+     * @param   string  default - an optional value to return if key doesn't exist
+     *
+     * @return  var
+     */
+    public function getAccessDetail($key, $default = "") {
+        return ( isset($this->access[$key]) )? $this->access[$key] : $default;
     }
 
     /**
@@ -595,6 +674,10 @@ class importType
                             if ($value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false) {
                                 $value = NULL;
                             }
+                            break;
+
+            case 'timestamp':
+                            if (!empty($value)) $value = time();
                             break;
 
             case 'schoolyear': 
@@ -884,10 +967,24 @@ class importType
      * @since   27th April 2016
      * @param   string  Field name
      *
-     * @return  bool true if marked as a read only
+     * @return  bool true if marked as a read only field
      */
     public function isFieldReadOnly( $fieldName ) {
         return (isset( $this->table[$fieldName]['args']['readonly']))? $this->table[$fieldName]['args']['readonly'] : false;
+    }
+
+    /**
+     * Is Field Hidden
+     *
+     * @access  public
+     * @version 27th April 2016
+     * @since   27th April 2016
+     * @param   string  Field name
+     *
+     * @return  bool true if marked as a hidden field (or is linked)
+     */
+    public function isFieldHidden( $fieldName ) {
+        return ($this->isFieldLinked($fieldName) || isset( $this->table[$fieldName]['args']['hidden']))? $this->table[$fieldName]['args']['hidden'] : false;
     }
 
     /**

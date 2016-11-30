@@ -45,7 +45,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
 	// Get a list of available import options
-	$importTypeList = DataAdmin\importType::loadImportTypeList();
+	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
 
 	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);

@@ -93,8 +93,8 @@ else {
 	$tableFields = array();
 
 	foreach ($tableFieldsAll as $fieldName ) {
-		if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) continue;
-		if ($importType->isFieldLinked($fieldName)) continue;
+		if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) continue; // Skip readonly fields when exporting data
+		if ($importType->isFieldHidden($fieldName)) continue; // Skip hidden fields
 		
 		$tableFields[] = $fieldName;
 	}
