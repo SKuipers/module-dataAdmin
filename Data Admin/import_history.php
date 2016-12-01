@@ -80,6 +80,8 @@ else {
 			print "</tr>" ;
 
 		while ($row=$result->fetch()) {
+			if (!isset($importTypeList[ $row['type'] ])) continue; // Skip invalid import types
+
 			print "<tr class='".( $row['success'] == false? 'error' : '')."'>" ;
 				$importType = $importTypeList[ $row['type'] ];
 
