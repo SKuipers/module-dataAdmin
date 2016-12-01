@@ -690,8 +690,25 @@ class importType
                             }
                             break;
 
+            case 'time':    // Handle various time formats
+                            if ( !empty($value) ) { // && preg_match('/(^\d{2}[:]\d{2}$)/', $value) === false
+                                $time = strtotime($value);
+                                $value = date('H:i:s', $time);
+                            }
+                            if (empty($value) || $value == '00:00:00' || preg_match('/(^\d{2}[:]\d{2}$)/', $value) === false) {
+                                $value = NULL;
+                            }
+                            break;
+
             case 'timestamp':
-                            if (!empty($value)) $value = time();
+                            if ( !empty($value) ) {
+                                $time = strtotime($value);
+                                $value = date( 'Y-m-d H:i:s', $time );
+                            }
+                            if (empty($value) || $value == '0000-00-00 00:00:00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}[ ]+\d{2}[:]\d{2}[:]\d{2}$)/', $value) === false) {
+                                $value = NULL;
+                            }
+                            
                             break;
 
             case 'schoolyear': 
@@ -1103,6 +1120,18 @@ class importType
         return randomPassword(8);
     }
 
-}
+    /**
+     * Timestamp
+     * Custom function for run-time generation of timestamps
+     *
+     * @access  protected
+     * @version 1st December 2016
+     * @since   1st December 2016
+     *
+     * @return  string  current timestamp
+     */
+    protected function userFunc_timestamp() {
+        return date( 'Y-m-d H:i:s', time() );
+    }
 
-?>
+}
