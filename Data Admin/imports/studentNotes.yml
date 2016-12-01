@@ -28,7 +28,7 @@ table:
         desc: ""
         args: { filter: string, required: true }
     note: 
-        name: "Title"
+        name: "Note"
         desc: ""
         args: { filter: string, required: true }
     gibbonPersonIDCreator: 
@@ -39,4 +39,4 @@ table:
     timestamp: 
         name: "Timestamp"
         desc: ""
-        args: { filter: timestamp, hidden: true }
+        args: { filter: timestamp, hidden: true, function: timestamp }
