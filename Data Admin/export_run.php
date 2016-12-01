@@ -91,21 +91,26 @@ else {
 
 	$tableFieldsAll = $importType->getTableFields();
 	$tableFields = array();
+	$columnFields = array();
 
 	foreach ($tableFieldsAll as $fieldName ) {
-		if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) continue; // Skip readonly fields when exporting data
 		if ($importType->isFieldHidden($fieldName)) continue; // Skip hidden fields
+		
+		$columnFields[] = $fieldName;
+
+		if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) continue; // Skip readonly fields when exporting data
 		
 		$tableFields[] = $fieldName;
 	}
 
 	if ($dataExport && !empty($primaryKey)) {
 		$tableFields = array_merge( array($primaryKey), $tableFields);
+		$columnFields = array_merge( array($primaryKey), $columnFields);
 	}
 
 	// Create the header row
 	$count = 0;
-	foreach ($tableFields as $fieldName ) {
+	foreach ($columnFields as $fieldName ) {
 		
 		$excel->getActiveSheet()->setCellValue( num2alpha($count).'1', $importType->getField($fieldName, 'name', $fieldName ) );
 		$excel->getActiveSheet()->getStyle( num2alpha($count).'1')->applyFromArray($style_head_fill);
@@ -133,18 +138,68 @@ else {
 	if ($dataExport) {
  		try {
 			$data=array(); 
-			$sql="SELECT ".implode(', ', $tableFields)." FROM $tableName ORDER BY $primaryKey ASC" ;
+			$sql="SELECT ".implode(', ', $tableFields)." FROM $tableName" ;
+
+			// Limit all exports to the current school year by default, to avoid massive files
+			$gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
+			if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false ) {
+				$data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
+				$sql.= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
+			}
+
+			$sql.= " ORDER BY $primaryKey ASC";
 			$result = $pdo->executeQuery($data, $sql);
 		}
 		catch(PDOException $e) { print $e->getMessage(); }
 
-		if ($result->rowCount() > 0) {
+		if ($result && $result->rowCount() > 0) {
 			$rowCount = 2;
 			while ($row = $result->fetch()) {
 
 				$fieldCount = 0;
-				foreach ($tableFields as $fieldName ) {
-					$excel->getActiveSheet()->setCellValue( num2alpha($fieldCount).$rowCount, $row[ $fieldName ] );
+				//foreach ($tableFields as $fieldName ) {
+				
+				// Work backwards, so we can potentially fill in any relational read-only fields 
+				for ($i=count($columnFields)-1; $i >= 0; $i--) {
+
+					$fieldName = $columnFields[$i];
+					$value = (isset($row[ $fieldName ]))? $row[ $fieldName ] : null;
+
+					// Handle relational fields (going backwards)
+					if (!empty($value) && $importType->isFieldRelational($fieldName)) {
+						extract( $importType->getField($fieldName, 'relationship') );
+
+						$queryFields = (is_array($field))? implode(',', $field) : $field;
+
+						$relationalData = array( $key => $value );
+						$relationalSQL = "SELECT $queryFields FROM $table WHERE $key=:$key";
+						$resultRelation = $pdo->executeQuery($relationalData, $relationalSQL);
+
+						
+						if ($resultRelation->rowCount() == 1) {
+                        	if ( is_array($field) && count($field) > 1 ) {
+	                    		// Multi-key relational field
+								$relationalRow = $resultRelation->fetch();
+	                        	$value = $relationalRow[ $field[0] ];
+
+	                        	for ($n=1; $n < count($relationalRow); $n++) {
+	                        		$relationalField = $field[$n];
+
+
+	                        		// Does the field exist in the import definition but not in the current table?
+	                        		if ( $importType->isFieldReadOnly($relationalField) ) { //isset($columnFields[$relationalField]) && !isset($tableFields[$relationalField])
+	                        			$row[ $relationalField ] = $relationalRow[ $relationalField ];
+	                        		}
+	                        	}
+	                    	} else {
+	                    		// Single key relation
+	                    		$value = $resultRelation->fetchColumn(0);
+	                    	}
+                    	}
+					}
+
+					// Set the cell value
+					$excel->getActiveSheet()->setCellValue( num2alpha($i).$rowCount, $value );
 					$fieldCount++;
 				}
 
