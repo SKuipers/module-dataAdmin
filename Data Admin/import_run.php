@@ -34,6 +34,9 @@ else {
 	$resourceStart = getrusage();
 	$timeStart = microtime(true); 
 
+	// Include PHPExcel 
+	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
+
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
@@ -46,7 +49,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/parsecsv.lib.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
-	
+
 	$importer = new DataAdmin\importer( NULL, NULL, $pdo );
 
 	// Get the importType information
@@ -131,12 +134,12 @@ else {
 					</td>
 					<td class="right">
 						<select name="columnOrder" id="columnOrder" class="standardWidth">
-							<?php if ($result->rowCount() > 0) : ?>
-								<option value="last"><?php print __($guid, 'From Last Import') ?></option>
-							<?php endif; ?>
 							<option value="guess"><?php print __($guid, 'Best Guess') ?></option>
+							<?php if ($result->rowCount() > 0) : ?>
+								<option value="last" selected><?php print __($guid, 'From Last Import') ?></option>
+							<?php endif; ?>
+							<option value="linearplus"><?php print __($guid, 'From Export Data') ?></option>
 							<option value="linear"><?php print __($guid, 'Same as Below') ?></option>
-							<option value="linearplus"><?php print __($guid, 'Same as Below (skip first column)') ?></option>
 						</select>
 					</td>
 				</tr>
@@ -146,7 +149,7 @@ else {
 						<span class="emphasis small"><?php print __($guid, 'See Notes below for specification.') ?></span>
 					</td>
 					<td class="right">
-						<input type="file" name="file" id="file" size="chars" accept=".csv">
+						<input type="file" name="file" id="file" size="chars" accept=".csv,.xls,.xlsx">
 						<script type="text/javascript">
 							var file=new LiveValidation('file');
 							file.add(Validate.Presence);
@@ -205,7 +208,7 @@ else {
 		print "<div class='linkTop'>" ;
 		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data (Experiemental)'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data (Beta)') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data (Beta)'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "</div>" ;
 	}
 
@@ -282,7 +285,7 @@ else {
 		}
 		else if ($mode != "sync" AND $mode != "insert" AND $mode != "update") {
 			print "<div class='error'>";
-			print __($guid, 'Import cannot proceed, as the "Mode" field have been left blank.');
+			print __($guid, 'Import cannot proceed, as the "Mode" field has been left blank.');
 			print "<br/></div>";
 		}
 		else {
@@ -305,12 +308,12 @@ else {
 
 			$importer->fieldDelimiter = (!empty($_POST["fieldDelimiter"]))? stripslashes($_POST["fieldDelimiter"]) : ',';
     		$importer->stringEnclosure = (!empty($_POST["stringEnclosure"]))? stripslashes($_POST["stringEnclosure"]) : '"';
+			
+			// Load the CSV or Excel data from the uploaded file
+			$csvData = $importer->readFileIntoCSV();
 
-			if ($importer->openCSVFile( $_FILES['file']['tmp_name'] )) {
-				$headings = $importer->getCSVLine();
-				$firstLine = $importer->getCSVLine();
-				$importer->closeCSVFile();
-			}
+			$headings = $importer->getHeaderRow();
+			$firstLine = $importer->getFirstRow();
 
 			if ( empty($headings) || empty($firstLine) ) {
 				print "<div class='error'>";
@@ -331,8 +334,14 @@ else {
 
 			if ($mode == "sync" || $mode == "update") {
 
+
 				$lastFieldValue = ($columnOrder == 'last' && isset($columnOrderLast['syncField']))? $columnOrderLast['syncField'] : 'N';
 				$lastColumnValue = ($columnOrder == 'last' && isset($columnOrderLast['syncColumn']))? $columnOrderLast['syncColumn'] : '';
+
+				if ($columnOrder = 'linearplus') {
+					$lastFieldValue = 'Y';
+					$lastColumnValue = $importType->getPrimaryKey();
+				}
 
 				print "<table class='smallIntBorder fullWidth' cellspacing='0'>" ;
 
@@ -489,7 +498,12 @@ else {
 				foreach ($importType->getTableFields() as $fieldName ) {
 
 					if ( $importType->isFieldHidden($fieldName) ) {
-						print "<input type='hidden' id='col[$count]' name='columnOrder[$count]' value='".DataAdmin\importer::COLUMN_DATA_LINKED."'>";
+						$columnIndex = DataAdmin\importer::COLUMN_DATA_HIDDEN;
+
+						if ($importType->isFieldLinked($fieldName)) $columnIndex = DataAdmin\importer::COLUMN_DATA_LINKED;
+						if (!empty($importType->getField($fieldName, 'function'))) $columnIndex = DataAdmin\importer::COLUMN_DATA_FUNCTION;
+
+						print "<input type='hidden' id='col[$count]' name='columnOrder[$count]' value='".$columnIndex."'>";
 						$count++;
 						continue;
 					}
@@ -581,7 +595,7 @@ else {
 				<tr>
 					<td colspan="2">
 						<?php print __($guid, "CSV Data:") ; ?><br/>
-						<textarea name="csvData" cols="92" rows="5" readonly><?php print file_get_contents($_FILES['file']['tmp_name']); ?></textarea>
+						<textarea name="csvData" cols="92" rows="5" readonly><?php print $csvData; ?></textarea>
 					</td>
 				</tr>
 				<tr>

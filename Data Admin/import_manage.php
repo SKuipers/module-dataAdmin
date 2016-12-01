@@ -67,19 +67,19 @@ else {
 				print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 
 				print "<tr class='head'>" ;
-					print "<th style='width: 90px;padding: 5px 5px 5px 20px !important;'>" ;
+					print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
 						print __($guid, "Category") ;
 					print "</th>" ;
-					print "<th style='padding: 5px !important;'>" ;
+					print "<th style='width: 23%;padding: 5px !important;'>" ;
 						print __($guid, "Name") ;
 					print "</th>" ;
-					print "<th style='padding: 5px !important;'>" ;
+					print "<th style='width: 35%;padding: 5px !important;'>" ;
 						print __($guid, "Description") ;
 					print "</th>" ;
-					print "<th style='width: 100px;padding: 5px !important;'>" ;
+					print "<th style='width: 15%;padding: 5px !important;'>" ;
 						print __($guid, "Last Run") ;
 					print "</th>" ;
-					print "<th style='width: 80px!important;padding: 5px !important;'>" ;
+					print "<th style='width: 12%;padding: 5px !important;'>" ;
 						print __($guid, "Actions") ;
 					print "</th>" ;
 				print "</tr>" ;

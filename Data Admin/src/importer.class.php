@@ -32,6 +32,7 @@ class importer
 	const COLUMN_DATA_CUSTOM = -2;
 	const COLUMN_DATA_FUNCTION = -3;
     const COLUMN_DATA_LINKED = -4;
+    const COLUMN_DATA_HIDDEN = -5;
 
 	const ERROR_INVALID_INPUTS = 201;
 	const ERROR_REQUIRED_FIELD_MISSING = 205;
@@ -106,7 +107,7 @@ class importer
 	 * Valid import MIME types
 	 */
 	private $csvMimeTypes = array(
-		"text/csv", "text/comma-separated-values", "text/x-comma-separated-values", "application/vnd.ms-excel", "application/csv"
+		'text/csv', 'text/comma-separated-values', 'text/x-comma-separated-values', 'application/vnd.ms-excel', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'application/msexcel', 'application/x-msexcel', 'application/x-ms-excel', 'application/x-excel', 'application/x-dos_ms_excel', 'application/xls', 'application/x-xls'
 	);
 	
 	/**
@@ -123,6 +124,9 @@ class importer
 	 * Gibbon\config
 	 */
 	private $config ;
+
+    private $headerRow;
+    private $firstRow;
 
 	/**
      * Constructor
@@ -249,6 +253,52 @@ class importer
 		return (!empty($this->importHeaders) && count($this->importData) > 0 && count($this->importErrors) == 0 );
     }	
 
+
+    public function readFileIntoCSV() {
+
+        $data = '';
+
+        $fileType = substr($_FILES['file']['name'], strpos($_FILES['file']['name'], '.')+1);
+        $mimeType = $_FILES['file']['type'];
+
+        if ($fileType == 'csv') {
+            $data = file_get_contents($_FILES['file']['tmp_name']);
+
+            if ($this->openCSVFile( $_FILES['file']['tmp_name'] )) {
+                $this->headerRow = $this->getCSVLine();
+                $this->firstRow = $this->getCSVLine();
+                $this->closeCSVFile();
+            }
+
+        }
+        else if ($fileType == 'xlsx' || $fileType == 'xls') {
+
+            $filePath = $_FILES['file']['tmp_name'];
+
+            $objPHPExcel = \PHPExcel_IOFactory::load( $filePath );
+
+            \PHPExcel_Calculation_Functions::setReturnDateType(\PHPExcel_Calculation_Functions::RETURNDATE_PHP_NUMERIC);
+
+            $objWorksheet = $objPHPExcel->getActiveSheet();
+            $lastColumn = $objWorksheet->getHighestColumn();
+
+            foreach( $objWorksheet->getRowIterator(0, 2) as $rowIndex => $row ){
+                $array = $objWorksheet->rangeToArray('A'.$rowIndex.':'.$lastColumn.$rowIndex, null, true, true, false);
+
+                if ($rowIndex == 1) $this->headerRow = $array[0];
+                else if ($rowIndex == 2) $this->firstRow = $array[0];
+            }
+
+            $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
+
+            ob_start();
+            $objWriter->save('php://output');
+            $data = ob_get_clean();
+        }
+
+        return $data;
+    }
+
     /**
      * Build Table Data
      * Iterate over the imported records, validating and building table data for each one
@@ -301,7 +351,7 @@ class importer
                     }
                 }
 				// Use the column index to grab to associated CSV value
-				else {
+				else if ($columnIndex >= 0) {
 					// Get the associative key from the CSV headers using the current index
 					$columnKey = (isset($this->importHeaders[$columnIndex]))? $this->importHeaders[$columnIndex] : -1;
 					$value = (isset($row[ $columnKey ]))? $row[ $columnKey ] : NULL;
@@ -667,6 +717,33 @@ class importer
     }
 
     /**
+     * Get Header Row
+     *
+     * @access  public
+     * @version 1st December 2016
+     * @since   1st December 2016
+     *
+     * @return  array     Row data
+     */
+    public function getHeaderRow() {
+        return $this->headerRow;
+    }
+
+    /**
+     * Get First Row
+     *
+     * @access  public
+     * @version 1st December 2016
+     * @since   1st December 2016
+     *
+     * @return  array     Row data
+     */
+    public function getFirstRow() {
+        return $this->firstRow;
+    }
+
+
+    /**
      * Get Row Count
      *
      * @access  public
@@ -900,5 +977,3 @@ class importer
     }
 
 }
-
-?>
