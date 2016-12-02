@@ -149,7 +149,7 @@ else {
 						<span class="emphasis small"><?php print __($guid, 'See Notes below for specification.') ?></span>
 					</td>
 					<td class="right">
-						<input type="file" name="file" id="file" size="chars" accept=".csv,.xls,.xlsx">
+						<input type="file" name="file" id="file" size="chars" accept=".csv,.xls,.xlsx,.xml,.ods">
 						<script type="text/javascript">
 							var file=new LiveValidation('file');
 							file.add(Validate.Presence);
@@ -315,9 +315,9 @@ else {
 			$headings = $importer->getHeaderRow();
 			$firstLine = $importer->getFirstRow();
 
-			if ( empty($headings) || empty($firstLine) ) {
+			if ( empty($csvData) || empty($headings) || empty($firstLine) ) {
 				print "<div class='error'>";
-				print __($guid, 'Import cannot proceed, the CSV file cannot be read.');
+				print __($guid, 'Import cannot proceed, the file type cannot be read.');
 				print "<br/></div>";
 				return;
 			}

@@ -34,6 +34,7 @@ class importer
     const COLUMN_DATA_LINKED = -4;
     const COLUMN_DATA_HIDDEN = -5;
 
+    const ERROR_IMPORT_FILE = 200;
 	const ERROR_INVALID_INPUTS = 201;
 	const ERROR_REQUIRED_FIELD_MISSING = 205;
 	const ERROR_INVALID_FIELD_VALUE = 206;
@@ -107,7 +108,7 @@ class importer
 	 * Valid import MIME types
 	 */
 	private $csvMimeTypes = array(
-		'text/csv', 'text/comma-separated-values', 'text/x-comma-separated-values', 'application/vnd.ms-excel', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'application/msexcel', 'application/x-msexcel', 'application/x-ms-excel', 'application/x-excel', 'application/x-dos_ms_excel', 'application/xls', 'application/x-xls'
+		'text/csv', 'text/xml', 'text/comma-separated-values', 'text/x-comma-separated-values', 'application/vnd.ms-excel', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'application/msexcel', 'application/x-msexcel', 'application/x-ms-excel', 'application/x-excel', 'application/x-dos_ms_excel', 'application/xls', 'application/x-xls', 'application/vnd.oasis.opendocument.spreadsheet'
 	);
 	
 	/**
@@ -264,6 +265,7 @@ class importer
         if ($fileType == 'csv') {
             $data = file_get_contents($_FILES['file']['tmp_name']);
 
+            // Grab the header & first row for Step 1
             if ($this->openCSVFile( $_FILES['file']['tmp_name'] )) {
                 $this->headerRow = $this->getCSVLine();
                 $this->firstRow = $this->getCSVLine();
@@ -271,17 +273,27 @@ class importer
             }
 
         }
-        else if ($fileType == 'xlsx' || $fileType == 'xls') {
+        else if ($fileType == 'xlsx' || $fileType == 'xls' || $fileType == 'xml' || $fileType == 'ods') {
 
             $filePath = $_FILES['file']['tmp_name'];
 
-            $objPHPExcel = \PHPExcel_IOFactory::load( $filePath );
-
-            \PHPExcel_Calculation_Functions::setReturnDateType(\PHPExcel_Calculation_Functions::RETURNDATE_PHP_NUMERIC);
+            // Try to use the best reader if available, otherwise catch any read errors
+            try {
+                if ($fileType == 'xml') {
+                    $objReader = \PHPExcel_IOFactory::createReader('Excel2003XML');
+                    $objPHPExcel = $objReader->load( $filePath );
+                } else {
+                    $objPHPExcel = \PHPExcel_IOFactory::load( $filePath );
+                }
+            } catch(\PHPExcel_Reader_Exception $e) {
+                $this->errorID = importer::ERROR_IMPORT_FILE;
+                return false;
+            }
 
             $objWorksheet = $objPHPExcel->getActiveSheet();
             $lastColumn = $objWorksheet->getHighestColumn();
 
+            // Grab the header & first row for Step 1
             foreach( $objWorksheet->getRowIterator(0, 2) as $rowIndex => $row ){
                 $array = $objWorksheet->rangeToArray('A'.$rowIndex.':'.$lastColumn.$rowIndex, null, true, true, false);
 
@@ -291,6 +303,7 @@ class importer
 
             $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, 'CSV');
 
+            // Export back to CSV
             ob_start();
             $objWriter->save('php://output');
             $data = ob_get_clean();
@@ -384,7 +397,7 @@ class importer
                     $tableJoin = '';
                     if (!empty($join) && !empty($on)) {
                         if (is_array($on) && count($on) == 2) {
-                            $tableJoin = "JOIN $join ON ({$join}.{$on[0]}={$table}.{$on[1]})";
+                            $tableJoin = "JOIN {$join} ON ({$join}.{$on[0]}={$table}.{$on[1]})";
                         }
                     }
 
@@ -392,21 +405,21 @@ class importer
                     if (is_array($field) && count($field) > 0 ) {
 
                         $relationalData = array( $fieldName => $value );
-                        $relationalSQL = "SELECT $key FROM $table $tableJoin WHERE ".$field[0]."=:$fieldName";
+                        $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE ".$field[0]."=:{$fieldName}";
 
                         for ($i=1; $i<count($field); $i++) {
                             // Relational field from within current import data
                             $relationalField = $field[$i];
                             if (isset($fields[ $relationalField ])) {
                                 $relationalData[ $relationalField ] = $fields[ $relationalField ];
-                                $relationalSQL .= " AND ".$this->escapeIdentifier($relationalField)."=:$relationalField";
+                                $relationalSQL .= " AND ".$this->escapeIdentifier($relationalField)."=:{$relationalField}";
                             }
                         }
                     // Single key/value relationship
                     } else {
                         $field = $this->escapeIdentifier($field);
                         $relationalData = array( $fieldName => $value );
-                        $relationalSQL = "SELECT $key FROM $table $tableJoin WHERE $field=:$fieldName";
+                        $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$table}.{$field}=:{$fieldName}";
                     }
 
                     // print_r($relationalData);
@@ -614,7 +627,7 @@ class importer
 
 				try {
 					$sqlData[ $primaryKey ] = $primaryKeyValue;
-					$sql="UPDATE $tableName SET " . $sqlFieldString . " WHERE `$primaryKey`=:$primaryKey" ;
+					$sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
 					$this->pdo->executeQuery($sqlData, $sql);
 				}
 				catch(PDOException $e) { 
@@ -641,7 +654,7 @@ class importer
 				if (!$liveRun) continue;
 
 				try {
-					$sql="INSERT INTO $tableName SET ".$sqlFieldString;
+					$sql="INSERT INTO {$tableName} SET ".$sqlFieldString;
 					$this->pdo->executeQuery($sqlData, $sql);
 				}
 				catch(PDOException $e) { 
@@ -683,7 +696,7 @@ class importer
                     if (!in_array($fieldName, $this->tableFields) ) continue;
 
                     $fieldNameField = $this->escapeIdentifier($fieldName);
-                    $sqlKeysFields[] = "($fieldNameField=:$fieldName AND $fieldNameField IS NOT NULL)";
+                    $sqlKeysFields[] = "({$fieldNameField}=:{$fieldName} AND {$fieldNameField} IS NOT NULL)";
                 }
                 $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields ) .')';
             } else {
@@ -691,7 +704,7 @@ class importer
                 if (!in_array($uniqueKey, $this->tableFields) ) continue;
 
                 $uniqueKeyField = $this->escapeIdentifier($uniqueKey);
-                $sqlKeys[] = "($uniqueKeyField=:$uniqueKey AND $uniqueKeyField IS NOT NULL)";
+                $sqlKeys[] = "({$uniqueKeyField}=:{$uniqueKey} AND {$uniqueKeyField} IS NOT NULL)";
             }
             
         }
@@ -709,7 +722,7 @@ class importer
             $primaryKeyField = $primaryKeyField.", fields";
         }
 
-        return "SELECT $primaryKeyField FROM $tableName WHERE ". $sqlKeyString ;
+        return "SELECT {$tableName}.{$primaryKeyField} FROM {$tableName} WHERE ". $sqlKeyString ;
     }
 
     protected function escapeIdentifier($text) {
@@ -872,7 +885,9 @@ class importer
 
     	switch ($errorID) {
     		// ERRORS
-    		case importer::ERROR_REQUIRED_FIELD_MISSING: 
+    		case importer::ERROR_IMPORT_FILE:
+                return __($this->config->get('guid'), "There was an error reading the import file type %s"); break;
+            case importer::ERROR_REQUIRED_FIELD_MISSING: 
     			return __( $this->config->get('guid'), "Missing value for required field."); break;
     		case importer::ERROR_INVALID_FIELD_VALUE: 
     			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s"); break;
