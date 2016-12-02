@@ -22,7 +22,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 //Module includes
 require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
@@ -88,7 +88,10 @@ else {
 						print __($guid, "Table") ;
 					print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __($guid, "Rows") ;
+						print __($guid, "Total Rows") ;
+					print "</th>" ;
+					print "<th style='width: 12%;padding: 5px !important;'>" ;
+						print __($guid, "Current Year") ;
 					print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
 						print __($guid, "Duplicates") ;
@@ -96,7 +99,7 @@ else {
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
 						print __($guid, "Orphaned") ;
 					print "</th>" ;
-					print "<th style='width: 12%;padding: 5px !important;'>" ;
+					print "<th style='width: 8%;padding: 5px !important;'>" ;
 						print __($guid, "Actions") ;
 					print "</th>" ;
 				print "</tr>" ;
@@ -105,6 +108,7 @@ else {
 			$isImportAccessible = $importType->isImportAccessible( $guid, $connection2 );
 			$importTypeName = $importType->getDetail('type');
 			$recordCount = $databaseTools->getRecordCount($importType);
+			$recordYearCount = $databaseTools->getRecordCount($importType, true);
 			$duplicateCount = $databaseTools->getDuplicateRecords($importType, true);
 			$orphanCount = $databaseTools->getOrphanedRecords($importType, true);
 
@@ -114,6 +118,8 @@ else {
 				print "<td>".$importType->getDetail('table')."</td>" ;
 
 				print "<td>".$recordCount."</td>";
+
+				print "<td>".$recordYearCount."</td>";
 
 				if ($isImportAccessible && $recordCount > 0 && $duplicateCount > 0 && $duplicateCount != '-') {
 					print "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_duplicates.php&type=" . $importTypeName . "'>";

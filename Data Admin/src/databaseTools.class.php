@@ -60,13 +60,27 @@ class databaseTools
             $this->pdo = $pdo ;
     }
 
-    public function getRecordCount( \DataAdmin\importType $importType ) {
+    public function getRecordCount( \DataAdmin\importType $importType, $currentSchoolYear = false ) {
 
         $table = $this->escapeIdentifier( $importType->getDetail('table') );
 
         try {
+            $data = array();
             $sql = "SELECT COUNT(*) FROM $table";
-            $result = $this->pdo->executeQuery(array(), $sql);
+
+            if ($currentSchoolYear == true ) {
+                // Optionally limit the import to the current school year, if it applies to this type of import
+                $gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
+
+                // Skip import types that dont relate to school years
+                if ($gibbonSchoolYearID == null) return '';
+
+                if ($importType->isFieldReadOnly('gibbonSchoolYearID') == false ) {
+                    $data['gibbonSchoolYearID'] = $this->session->get('gibbonSchoolYearID');
+                    $sql.= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
+                }
+            }
+            $result = $this->pdo->executeQuery($data, $sql);
         } catch(PDOException $e) {
             return 'Error';
         }
@@ -91,6 +105,12 @@ class databaseTools
 
         $sqlSelect = ($countOnly)? array("COUNT(*) count") : array("COUNT(*) count", "GROUP_CONCAT({$tableName}.{$primaryKeyField}) list");
 
+        if (!$countOnly) {
+            foreach ($uniqueKeys as $uniqueKey) {
+                $sqlSelect[] = "{$tableName}.{$uniqueKey}";
+            }
+        }
+
         $sql = "SELECT " . implode(', ', $sqlSelect);
         $sql .= " FROM {$tableName}";
         $sql .= " GROUP BY ".implode(', ', $uniqueKeys);
@@ -106,7 +126,7 @@ class databaseTools
         }
 
         if ($countOnly) {
-            return ($result->rowCount() > 0)? $result->fetchColumn(0) : 0;
+            return ($result->rowCount() > 0)? array_sum($result->fetchAll(\PDO::FETCH_COLUMN, 0) ) : 0;
         } else {
             return ($result->rowCount() > 0)? $result->fetchAll() : array();
         }
@@ -131,8 +151,6 @@ class databaseTools
         // Non-relational tables cant have orphaned rows
         if (empty($relationships)) return '';
 
-        $sql = ($countOnly)? "SELECT COUNT(*) FROM {$tableName} " : "SELECT {$tableName}.{$primaryKey} FROM {$tableName} ";
-        
         $sqlSelect = ($countOnly)? array("COUNT(*)") : array("{$tableName}.{$primaryKey}");
         $sqlJoin = array();
         $sqlWhere = array();
