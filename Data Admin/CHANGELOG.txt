@@ -1,6 +1,22 @@
 CHANGELOG
 =========
 
-v0.0.00
+v1.1.00
 -------
-Version details here...
+	Headlines
+		Added support for importing Office Open XML (.xlsx) Excel 2007 and above
+		Added support for importing BIFF 5-8 (.xls) Excel 95 and above
+		Added support for importing SpreadsheetML (.xml) Excel 2003
+		Added support for importing Open Document Format/OASIS (.ods)
+
+	Significant Changes
+		Importing requires additional user permission based on the type of data
+		Export to Excel now handles relational data (eg: gives the unique name of courses, rather than the database ID)
+		New import types: Markbook, Medical forms, Timetable classes, Student Notes, Special days
+
+	Tweaks & Bug Fixes
+		Adjusted the Import & Export list to group by Module
+
+v1.0.00
+-------
+Initial 

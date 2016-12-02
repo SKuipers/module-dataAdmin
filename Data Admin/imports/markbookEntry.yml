@@ -36,7 +36,7 @@ table:
         name: "Student"
         desc: "Surname, Preferred Name"
         args: { filter: string, required: true }
-        relationship: { table: gibbonPerson, key: "gibbonPerson.gibbonPersonID", join: gibbonCourseClassPerson, on: [gibbonPersonID, gibbonPersonID], field: ["CONCAT(surname, ', ', preferredName)", gibbonCourseClassID] }
+        relationship: { table: gibbonPerson, key: gibbonPersonID, join: gibbonCourseClassPerson, on: [gibbonPersonID, gibbonPersonID], field: ["CONCAT(surname, ', ', preferredName)", gibbonCourseClassID] }
     attainmentValue: 
         name: "Attainment Value"
         desc: "Leave blank if attainment is not assessed."

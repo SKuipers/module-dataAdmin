@@ -10,7 +10,7 @@ access:
 primaryKey:
     gibbonPersonMedicalConditionID
 uniqueKeys:
-    - [ gibbonPersonMedicalID, name, gibbonAlertLevelID ]
+    - [ gibbonPersonMedicalID, name, gibbonAlertLevelID, triggers ]
 table:
     gibbonPersonMedicalID: 
         name: "Student"

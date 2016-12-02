@@ -20,16 +20,6 @@ table:
         name: "Type"
         desc: ""
         args: { filter: string, required: true, custom: true }
-    gibbonPersonID1: 
-        name: "User 1"
-        desc: "Username"
-        args: { filter: string }
-        relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    gibbonPersonID2: 
-        name: "User 2"
-        desc: "Username"
-        args: { filter: string }
-        relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
     capacity: 
         name: "Capacity"
         desc: ""
