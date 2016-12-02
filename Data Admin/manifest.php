@@ -96,6 +96,22 @@ $actionRows[2]["categoryPermissionStudent"]="N" ; //Should this action be availa
 $actionRows[2]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
 $actionRows[2]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
+$actionRows[3]["name"]="Manage Records" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[3]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
+$actionRows[3]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
+$actionRows[3]["description"]="Allows users to view databse table information." ; //Text description
+$actionRows[3]["URLList"]="records_manage.php,records_orphaned.php,records_duplicates.php" ; //List of pages included in this action
+$actionRows[3]["entryURL"]="records_manage.php" ; //The landing action for the page.
+$actionRows[3]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
+$actionRows[3]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
+$actionRows[3]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
+$actionRows[3]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
+$actionRows[3]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
+$actionRows[3]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
+$actionRows[3]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
+$actionRows[3]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
+$actionRows[3]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
 ?>

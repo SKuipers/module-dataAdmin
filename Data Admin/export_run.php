@@ -45,6 +45,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
 else {
 
 	$dataExport = (isset($_GET['data']) && $_GET['data'] == true);
+	$dataExportAll = (isset($_GET['all']) && $_GET['all'] == true);
 
 	//Class includes
 	require_once "./src/importType.class.php" ;
@@ -140,11 +141,13 @@ else {
 			$data=array(); 
 			$sql="SELECT ".implode(', ', $tableFields)." FROM $tableName" ;
 
+			if ($dataExportAll == false) {
 			// Limit all exports to the current school year by default, to avoid massive files
-			$gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
-			if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false ) {
-				$data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
-				$sql.= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
+				$gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
+				if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false ) {
+					$data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
+					$sql.= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
+				}
 			}
 
 			$sql.= " ORDER BY $primaryKey ASC";
