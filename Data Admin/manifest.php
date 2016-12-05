@@ -42,9 +42,10 @@ $url="https://github.com/SKuipers/" ; //Your URL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
 //gibbonSettings entries
-// $gibbonSetting[0]=""; //One array entry for every gibbonSetting entry you need to create. The scope field for the setting should be your module name.
-// $gibbonSetting[1]="";
-
+$gibbonSetting[0]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'enableUserLevelPermissions', 'Enable User-level Permissions', 'Restrict user import and export based on their user role permissions.', 'Y');";
+$gibbonSetting[1]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'importCustomFolderLocation', 'Custom Imports Folder', 'Path to custom import types folder, relative to uploads.', '/imports');";
+$gibbonSetting[2]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'exportSnapshotsFolderLocation', 'Snapshots Folder', 'Path to database snapshots folder, relative to uploads.', '/snapshots');";
+$gibbonSetting[3]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'exportDefaultFileType', 'Default Export File Type', '', 'Excel2007');";
 
 //Action rows 
 //One array per action
@@ -64,53 +65,69 @@ $actionRows[0]["categoryPermissionStudent"]="N" ; //Should this action be availa
 $actionRows[0]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
 $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
 
-$actionRows[1]["name"]="View Import History" ; //The name of the action (appears to user in the right hand side module menu)
-$actionRows[1]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[1]["category"]="Reports" ; //Optional: subgroups for the right hand side module menu
-$actionRows[1]["description"]="View a log of import activity." ; //Text description
-$actionRows[1]["URLList"]="import_history.php,import_history_view.php" ; //List of pages included in this action
-$actionRows[1]["entryURL"]="import_history.php" ; //The landing action for the page.
-$actionRows[1]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-$actionRows[1]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
-$actionRows[1]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-$actionRows[1]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-$actionRows[1]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[1]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
-$actionRows[1]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-$actionRows[1]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-$actionRows[1]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[1]["name"]="View Import History" ;
+$actionRows[1]["precedence"]="0";
+$actionRows[1]["category"]="Reports" ;
+$actionRows[1]["description"]="View a log of import activity." ;
+$actionRows[1]["URLList"]="import_history.php,import_history_view.php" ;
+$actionRows[1]["entryURL"]="import_history.php" ;
+$actionRows[1]["defaultPermissionAdmin"]="Y" ;
+$actionRows[1]["defaultPermissionTeacher"]="N" ;
+$actionRows[1]["defaultPermissionStudent"]="N" ;
+$actionRows[1]["defaultPermissionParent"]="N" ;
+$actionRows[1]["defaultPermissionSupport"]="N" ;
+$actionRows[1]["categoryPermissionStaff"]="Y" ;
+$actionRows[1]["categoryPermissionStudent"]="N" ;
+$actionRows[1]["categoryPermissionParent"]="N" ;
+$actionRows[1]["categoryPermissionOther"]="N" ;
 
-$actionRows[2]["name"]="Manage Snapshots" ; //The name of the action (appears to user in the right hand side module menu)
-$actionRows[2]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[2]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
-$actionRows[2]["description"]="Create and restore a mysqldump file." ; //Text description
-$actionRows[2]["URLList"]="snapshot_manage.php,snapshot_manage_add.php,snapshot_manage_delete.php,snapshot_manage_load.php" ; //List of pages included in this action
-$actionRows[2]["entryURL"]="snapshot_manage.php" ; //The landing action for the page.
-$actionRows[2]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-$actionRows[2]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
-$actionRows[2]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-$actionRows[2]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-$actionRows[2]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[2]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
-$actionRows[2]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-$actionRows[2]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-$actionRows[2]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[2]["name"]="Manage Snapshots" ;
+$actionRows[2]["precedence"]="0";
+$actionRows[2]["category"]="Actions" ;
+$actionRows[2]["description"]="Create and restore a mysqldump file." ;
+$actionRows[2]["URLList"]="snapshot_manage.php,snapshot_manage_add.php,snapshot_manage_delete.php,snapshot_manage_load.php" ;
+$actionRows[2]["entryURL"]="snapshot_manage.php" ;
+$actionRows[2]["defaultPermissionAdmin"]="Y" ;
+$actionRows[2]["defaultPermissionTeacher"]="N" ;
+$actionRows[2]["defaultPermissionStudent"]="N" ;
+$actionRows[2]["defaultPermissionParent"]="N" ;
+$actionRows[2]["defaultPermissionSupport"]="N" ;
+$actionRows[2]["categoryPermissionStaff"]="Y" ;
+$actionRows[2]["categoryPermissionStudent"]="N" ;
+$actionRows[2]["categoryPermissionParent"]="N" ;
+$actionRows[2]["categoryPermissionOther"]="N" ;
 
-$actionRows[3]["name"]="Manage Records" ; //The name of the action (appears to user in the right hand side module menu)
-$actionRows[3]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[3]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
-$actionRows[3]["description"]="Allows users to view databse table information." ; //Text description
-$actionRows[3]["URLList"]="records_manage.php,records_orphaned.php,records_duplicates.php" ; //List of pages included in this action
-$actionRows[3]["entryURL"]="records_manage.php" ; //The landing action for the page.
-$actionRows[3]["defaultPermissionAdmin"]="Y" ; //Default permission for built in role Admin
-$actionRows[3]["defaultPermissionTeacher"]="N" ; //Default permission for built in role Teacher
-$actionRows[3]["defaultPermissionStudent"]="N" ; //Default permission for built in role Student
-$actionRows[3]["defaultPermissionParent"]="N" ; //Default permission for built in role Parent
-$actionRows[3]["defaultPermissionSupport"]="N" ; //Default permission for built in role Support
-$actionRows[3]["categoryPermissionStaff"]="Y" ; //Should this action be available to user roles in the Staff category?
-$actionRows[3]["categoryPermissionStudent"]="N" ; //Should this action be available to user roles in the Student category?
-$actionRows[3]["categoryPermissionParent"]="N" ; //Should this action be available to user roles in the Parent category?
-$actionRows[3]["categoryPermissionOther"]="N" ; //Should this action be available to user roles in the Other category?
+$actionRows[3]["name"]="Manage Records" ;
+$actionRows[3]["precedence"]="0";
+$actionRows[3]["category"]="Actions" ;
+$actionRows[3]["description"]="Allows users to view database table information." ;
+$actionRows[3]["URLList"]="records_manage.php,records_orphaned.php,records_duplicates.php" ;
+$actionRows[3]["entryURL"]="records_manage.php" ;
+$actionRows[3]["defaultPermissionAdmin"]="Y" ;
+$actionRows[3]["defaultPermissionTeacher"]="N" ;
+$actionRows[3]["defaultPermissionStudent"]="N" ;
+$actionRows[3]["defaultPermissionParent"]="N" ;
+$actionRows[3]["defaultPermissionSupport"]="N" ;
+$actionRows[3]["categoryPermissionStaff"]="Y" ;
+$actionRows[3]["categoryPermissionStudent"]="N" ;
+$actionRows[3]["categoryPermissionParent"]="N" ;
+$actionRows[3]["categoryPermissionOther"]="N" ;
+
+$actionRows[4]["name"]="Data Admin Settings" ;
+$actionRows[4]["precedence"]="0";
+$actionRows[4]["category"]="Settings" ;
+$actionRows[4]["description"]="Allows adminitrators to configure import settings." ;
+$actionRows[4]["URLList"]="import_settings.php,import_settingsProcess.php" ;
+$actionRows[4]["entryURL"]="import_settings.php" ;
+$actionRows[4]["defaultPermissionAdmin"]="Y" ;
+$actionRows[4]["defaultPermissionTeacher"]="N" ;
+$actionRows[4]["defaultPermissionStudent"]="N" ;
+$actionRows[4]["defaultPermissionParent"]="N" ;
+$actionRows[4]["defaultPermissionSupport"]="N" ;
+$actionRows[4]["categoryPermissionStaff"]="Y" ;
+$actionRows[4]["categoryPermissionStudent"]="N" ;
+$actionRows[4]["categoryPermissionParent"]="N" ;
+$actionRows[4]["categoryPermissionOther"]="N" ;
 
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.

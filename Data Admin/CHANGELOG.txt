@@ -10,12 +10,17 @@ v1.1.00
 		Added support for importing Open Document Format/OASIS (.ods)
 
 	Significant Changes
-		Importing requires additional user permission based on the type of data
 		Export to Excel now handles relational data (eg: gives the unique name of courses, rather than the database ID)
-		New import types: Markbook, Medical forms, Timetable classes, Student Notes, Special days
+		Importing can require additional user permission based on the type of data (optional)
+		Added Manage Records page: View row counts & export whole tables
+		Added import types: Markbook, Medical forms, Timetable classes, Student Notes, Special days
 
 	Tweaks & Bug Fixes
 		Adjusted the Import & Export list to group by Module
+		Added custom imports folder path in Settings
+		Added snapshots folder path in Settings
+		Added default export file type in Settings
+		Settings page checks PHPExcel compatability
 
 v1.0.00
 -------
