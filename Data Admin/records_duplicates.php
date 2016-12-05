@@ -39,7 +39,7 @@ else {
 
 	// Info
 	print "<div class='warning'>" ;
-	print __($guid, 'Duplicate records could potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.');
+	print __($guid, 'Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.');
 	print "</div>" ;
 
 	//Class includes

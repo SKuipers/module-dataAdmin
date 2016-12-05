@@ -94,7 +94,7 @@ else {
 			<?php print __($guid, 'Step 1 - Select CSV Files') ?>
 		</h2>
 
-		<div class='warning'>
+		<div class='message'>
 			<?php print __($guid, 'Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there\'s no guaruntee the import won\'t change or overwrite important data.'); ?>
 		</div>
 		<p>

@@ -37,6 +37,11 @@ else {
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Records') . "</div>" ;
 	print "</div>" ;
 
+	// Info
+	print "<div class='message'>" ;
+	print __($guid, 'The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.');
+	print "</div>" ;
+
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/databaseTools.class.php" ;
