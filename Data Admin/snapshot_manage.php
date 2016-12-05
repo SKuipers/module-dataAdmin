@@ -50,12 +50,17 @@ else {
 		print "</div>" ;
 	}
 
-	$path=$_SESSION[$guid]["absolutePath"] ;
-	if (is_dir($path ."/uploads/snapshots")==FALSE) {
-		mkdir($path ."/uploads/snapshots", 0777, TRUE) ;
+
+	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+
+	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+
+	if (is_dir($snapshotFolderPath)==FALSE) {
+		mkdir($snapshotFolderPath, 0777, TRUE) ;
 	}
 
-	$snapshotList = glob( $path . "/uploads/snapshots/*.sql.gz" );
+	$snapshotList = glob( $snapshotFolderPath.'/*.sql.gz' );
 
 	usort($snapshotList, function($a,$b){
 	  return filemtime($b) - filemtime($a);

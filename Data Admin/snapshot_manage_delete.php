@@ -44,7 +44,12 @@ else {
 	}
 	else {
 
-		$filepath = $_SESSION[$guid]["absolutePath"] . "/uploads/snapshots/" . $filename;
+		$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+		$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+
+		$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+		$filepath = $snapshotFolderPath.'/'.$filename;
+
 		if ( !file_exists( $filepath ) ) {
 			print "<div class='error'>" ;
 				print __($guid, "The specified record cannot be found.") ;

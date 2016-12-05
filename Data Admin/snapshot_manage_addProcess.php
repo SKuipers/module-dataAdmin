@@ -39,8 +39,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 	//Proceed!
 	//Check if file exists
+	
+	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+
+	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+
 	$filename = "snapshot-" . date("d-m-Y-Hi") . ".sql.gz";
-	$filepath = $_SESSION[$guid]["absolutePath"] . "/uploads/snapshots/" . $filename;
+	$filepath = $snapshotFolderPath.'/'.$filename;
 
 	if (file_exists($filepath)) {
 		$URL.="&return=error1" ;
