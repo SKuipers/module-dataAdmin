@@ -63,7 +63,6 @@ else {
 		print "</div>" ;
 	}
 	else {
-		
 			
 		$module = '';
 		foreach ($importTables as $importType) {
@@ -90,9 +89,9 @@ else {
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
 						print __($guid, "Total Rows") ;
 					print "</th>" ;
-					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __($guid, "Current Year") ;
-					print "</th>" ;
+					// print "<th style='width: 12%;padding: 5px !important;'>" ;
+					// 	print __($guid, "Current Year") ;
+					// print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
 						print __($guid, "Duplicates") ;
 					print "</th>" ;
@@ -108,7 +107,7 @@ else {
 			$isImportAccessible = $importType->isImportAccessible( $guid, $connection2 );
 			$importTypeName = $importType->getDetail('type');
 			$recordCount = $databaseTools->getRecordCount($importType);
-			$recordYearCount = $databaseTools->getRecordCount($importType, true);
+			//$recordYearCount = $databaseTools->getRecordCount($importType, true);
 			$duplicateCount = $databaseTools->getDuplicateRecords($importType, true);
 			$orphanCount = $databaseTools->getOrphanedRecords($importType, true);
 
@@ -119,7 +118,7 @@ else {
 
 				print "<td>".$recordCount."</td>";
 
-				print "<td>".$recordYearCount."</td>";
+				//print "<td>".$recordYearCount."</td>";
 
 				if ($isImportAccessible && $recordCount > 0 && $duplicateCount > 0 && $duplicateCount != '-') {
 					print "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_duplicates.php&type=" . $importTypeName . "'>";

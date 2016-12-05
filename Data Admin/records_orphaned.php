@@ -37,6 +37,11 @@ else {
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Orphaned Records') . "</div>" ;
 	print "</div>" ;
 
+	// Info
+	print "<div class='warning'>" ;
+	print __($guid, 'Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.');
+	print "</div>" ;
+
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/databaseTools.class.php" ;
@@ -61,7 +66,6 @@ else {
             $relationships[$fieldName] = $importType->getField($fieldName, 'relationship');
         }
     }
-
 
 	if (count($orphanedRecords)<1) {
 		print "<div class='error'>" ;
@@ -88,6 +92,7 @@ else {
 				print "</th>" ;
 			print "</tr>" ;
 
+		$isImportAccessible = $importType->isImportAccessible( $guid, $connection2 );
 
 		foreach ($orphanedRecords as $row) {
 
@@ -107,7 +112,7 @@ else {
 				}
 				
 				print "<td>";
-					if ( $importType->isImportAccessible( $guid, $connection2 ) ) {
+					if ( $isImportAccessible ) {
 
 						
 
