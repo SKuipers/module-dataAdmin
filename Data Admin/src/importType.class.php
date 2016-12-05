@@ -1015,7 +1015,8 @@ class importType
      * @return  bool true if marked as a hidden field (or is linked)
      */
     public function isFieldHidden( $fieldName ) {
-        return ($this->isFieldLinked($fieldName) || isset( $this->table[$fieldName]['args']['hidden']))? $this->table[$fieldName]['args']['hidden'] : false;
+        if ($this->isFieldLinked($fieldName)) return true;
+        return (isset( $this->table[$fieldName]['args']['hidden']))? $this->table[$fieldName]['args']['hidden'] : false;
     }
 
     /**
