@@ -54,13 +54,14 @@ else {
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
 	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
 
-	if ($importType->isImportAccessible($guid, $connection2) == false) {
+	$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+
+	if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
 		print "<div class='error'>" ;
 		print __($guid, "You do not have access to this action.") ;
 		print "</div>" ;
 		return;
-	}
-	else if ( empty($importType)  ) {
+	} else if ( empty($importType)  ) {
 		print "<div class='error'>" ;
 		print __($guid, "Your request failed because your inputs were invalid.") ;
 		print "</div>" ;
@@ -243,13 +244,27 @@ else {
 
 	$filename = ($dataExport)? __($guid, "DataExport").'-'.$tableName : __($guid, "DataStructure").'-'.$type;
 
+	$exportFileType = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+	if (empty($exportFileType)) $exportFileType = 'Excel2007';
+
+	switch($exportFileType) {
+		case 'Excel2007': 		$filename .= '.xlsx'; 
+								$mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; break;
+		case 'Excel5': 			$filename .= '.xls';  
+								$mimetype = 'application/vnd.ms-excel'; break;
+		case 'OpenDocument': 	$filename .= '.ods';  
+								$mimetype = 'application/vnd.oasis.opendocument.spreadsheet'; break;
+		case 'CSV': 			$filename .= '.csv';  
+								$mimetype = 'text/csv'; break;
+	}
+
 	//FINALISE THE DOCUMENT SO IT IS READY FOR DOWNLOAD
 	// Set active sheet index to the first sheet, so Excel opens this as the first sheet
 	$excel->setActiveSheetIndex(0);
 
 	// Redirect output to a client’s web browser (Excel2007)
-	header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-	header('Content-Disposition: attachment;filename="'.$filename.'.xlsx"');
+	header('Content-Type: '.$mimetype);
+	header('Content-Disposition: attachment;filename="'.$filename.'"');
 	header('Cache-Control: max-age=0');
 	// If you're serving to IE 9, then the following may be needed
 	header('Cache-Control: max-age=1');
@@ -260,7 +275,7 @@ else {
 	header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 	header ('Pragma: public'); // HTTP/1.0
 
-	$objWriter = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+	$objWriter = PHPExcel_IOFactory::createWriter($excel, $exportFileType);
 	$objWriter->save('php://output');
 	exit;
 }	

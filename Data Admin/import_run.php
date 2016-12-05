@@ -56,7 +56,14 @@ else {
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
 	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
 
-	if ( empty($importType)  ) {
+	$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+
+	if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
+		print "<div class='error'>" ;
+		print __($guid, "You do not have access to this action.") ;
+		print "</div>" ;
+		return;
+	} else if ( empty($importType)  ) {
 		print "<div class='error'>" ;
 		print __($guid, "Your request failed because your inputs were invalid.") ;
 		print "</div>" ;

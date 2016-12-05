@@ -50,7 +50,8 @@ else {
 	}
 	else {
 		
-			
+		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+
 		$module = '';
 		foreach ($importTypeList as $importTypeName => $importType) {
 
@@ -103,7 +104,7 @@ else {
 				print "</td>";
 				print "<td>";
 
-					if ( $importType->isImportAccessible( $guid, $connection2 ) ) {
+					if ( $checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) ) {
 						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __($guid, 'Import') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
 						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 					} else {

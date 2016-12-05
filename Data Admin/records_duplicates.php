@@ -96,7 +96,8 @@ else {
 				print "</th>" ;
 			print "</tr>" ;
 
-		$isImportAccessible = $importType->isImportAccessible( $guid, $connection2 );
+		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+		$isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) != false);
 
 		foreach ($duplicateRecords as $row) {
 

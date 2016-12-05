@@ -68,7 +68,9 @@ else {
 		print "</div>" ;
 	}
 	else {
-			
+		
+		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+
 		$module = '';
 		foreach ($importTables as $importType) {
 
@@ -109,7 +111,7 @@ else {
 				print "</tr>" ;
 			}
 
-			$isImportAccessible = $importType->isImportAccessible( $guid, $connection2 );
+			$isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) != false);
 			$importTypeName = $importType->getDetail('type');
 			$recordCount = $databaseTools->getRecordCount($importType);
 			//$recordYearCount = $databaseTools->getRecordCount($importType, true);
