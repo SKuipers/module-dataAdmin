@@ -57,7 +57,7 @@ else {
 	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
 
 	if (is_dir($snapshotFolderPath)==FALSE) {
-		mkdir($snapshotFolderPath, 0777, TRUE) ;
+		mkdir($snapshotFolderPath, 0755, TRUE) ;
 	}
 
 	$snapshotList = glob( $snapshotFolderPath.'/*.sql.gz' );

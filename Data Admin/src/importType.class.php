@@ -202,6 +202,10 @@ class importType
         // Get the user-defined custom definitions
         $customFiles = glob( self::getCustomImportTypeDir($pdo) . "/*.yml" );
 
+        if (is_dir(self::getCustomImportTypeDir($pdo))==FALSE) {
+            mkdir(self::getCustomImportTypeDir($pdo), 0755, TRUE) ;
+        }
+
         foreach ( $customFiles as $file) {
             $fileData = $yaml::parse( file_get_contents( $file ) );
 
