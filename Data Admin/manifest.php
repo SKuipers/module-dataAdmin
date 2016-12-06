@@ -42,10 +42,10 @@ $url="https://github.com/SKuipers/" ; //Your URL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
 
 //gibbonSettings entries
-$gibbonSetting[0]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'enableUserLevelPermissions', 'Enable User-level Permissions', 'Restrict user import and export based on their user role permissions.', 'Y');";
-$gibbonSetting[1]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'importCustomFolderLocation', 'Custom Imports Folder', 'Path to custom import types folder, relative to uploads.', '/imports');";
-$gibbonSetting[2]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'exportSnapshotsFolderLocation', 'Snapshots Folder', 'Path to database snapshots folder, relative to uploads.', '/snapshots');";
-$gibbonSetting[3]="INSERT INTO `gibbonSetting` (`gibbonSettingID` ,`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES (NULL , 'Data Admin', 'exportDefaultFileType', 'Default Export File Type', '', 'Excel2007');";
+$gibbonSetting[0]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'enableUserLevelPermissions', 'Enable User-level Permissions', 'Restrict user import and export based on their user role permissions.', 'Y');";
+$gibbonSetting[1]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'importCustomFolderLocation', 'Custom Imports Folder', 'Path to custom import types folder, relative to uploads.', '/imports');";
+$gibbonSetting[2]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'exportSnapshotsFolderLocation', 'Snapshots Folder', 'Path to database snapshots folder, relative to uploads.', '/snapshots');";
+$gibbonSetting[3]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'exportDefaultFileType', 'Default Export File Type', '', 'Excel2007');";
 
 //Action rows 
 //One array per action
