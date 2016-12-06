@@ -51,7 +51,7 @@ else {
 	}
 
 
-	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
 	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
