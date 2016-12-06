@@ -62,7 +62,7 @@ else {
 			<td class="right">
 				<?php
 					echo '<span style="margin-right:20px;">Gibbon '.$version.'</span>';
-					echo (version_compare($version, $gibbonVersionRequired, '>'))? $trueIcon : $falseIcon;
+					echo (version_compare($version, $gibbonVersionRequired, '>='))? $trueIcon : $falseIcon;
 				?>
 			</td>
 		</tr>
@@ -76,7 +76,7 @@ else {
 					$phpVersion = phpversion();
 
 					echo '<span style="margin-right:20px;">PHP '.$phpVersion.'</span>';
-					echo (version_compare($phpVersion, $phpVersionRequired, '>'))? $trueIcon : $falseIcon;
+					echo (version_compare($phpVersion, $phpVersionRequired, '>='))? $trueIcon : $falseIcon;
 					
 				?>
 			</td>
@@ -91,7 +91,7 @@ else {
 					$mysqlVersion = $pdo->executeQuery(array(), 'select version()')->fetchColumn();
 
 					echo '<span style="margin-right:20px;">MySQL '.$mysqlVersion.'</span>';
-					echo (version_compare($mysqlVersion, $mysqlVersionRequired, '>'))? $trueIcon : $falseIcon;
+					echo (version_compare($mysqlVersion, $mysqlVersionRequired, '>='))? $trueIcon : $falseIcon;
 					
 				?>
 			</td>
