@@ -57,7 +57,7 @@ else {
 		$table = $importType->getDetail('table');
 		$modes = $importType->getDetail('modes');
 
-		if ($modes['update'] == true && $modes['insert'] == true) {
+		if ( (isset($modes['export']) && $modes['export'] == true) && $modes['update'] == true && $modes['insert'] == true) {
 			$importTables[$table] = $importType;
 		}
 	}
@@ -71,17 +71,17 @@ else {
 		
 		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
-		$module = '';
+		$grouping = '';
 		foreach ($importTables as $importType) {
 
-			if ($module != $importType->getAccessDetail('module') ) {
+			if ($grouping != $importType->getDetail('grouping') ) {
 
-				if ($module != '') print "</table><br/>" ;
+				if ($grouping != '') print "</table><br/>" ;
 
-				$module = $importType->getAccessDetail('module');
+				$grouping = $importType->getDetail('grouping');
 
 				print "<tr class='break'>" ;
-					print "<td colspan='5'><h4>".$module."</h4></td>" ;
+					print "<td colspan='5'><h4>".$grouping."</h4></td>" ;
 				print "</tr>" ;
 
 				print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;

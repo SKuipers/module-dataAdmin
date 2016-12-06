@@ -214,8 +214,6 @@ else {
 	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php") ) {
 		print "<div class='linkTop'>" ;
 		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __($guid, 'Export Structure') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
-		print "&nbsp;&nbsp;|&nbsp;&nbsp;";
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type&data=1'>" .  __($guid, 'Export Data (Beta)') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Data (Beta)'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "</div>" ;
 	}
 

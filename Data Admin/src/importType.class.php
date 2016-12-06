@@ -156,7 +156,18 @@ class importType
 
     public static function getBaseDir() {
         $baseDir = str_replace(array('modules/Data Admin', 'src'), '', dirname(__FILE__));
+
         return rtrim($baseDir, '/ ');
+    }
+
+    public static function getImportTypeDir() {
+        return self::getBaseDir() . "/modules/Data Admin/imports";
+    }
+
+    public static function getCustomImportTypeDir(\Gibbon\sqlConnection $pdo) {
+        $customFolder = getSettingByScope($pdo->getConnection(), 'Data Admin', 'importCustomFolderLocation');
+
+        return self::getBaseDir().'/uploads/'.trim($customFolder, '/ ');
     }
 
     /**
@@ -172,16 +183,31 @@ class importType
      */
     public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL, $validateStructure = false ) {
 
-
-        $dir = glob( self::getBaseDir() . "/modules/Data Admin/imports/*.yml" );
-
         $yaml = new Yaml();
         $importTypes = array();
+
+        // Get the built-in import definitions
+        $defaultFiles = glob( self::getImportTypeDir() . "/*.yml" );
         
-        foreach ($dir as $file) {
-            if (!file_exists($file)) continue;
+        // Create importType objects for each file
+        foreach ( $defaultFiles as $file) {
             $fileData = $yaml::parse( file_get_contents( $file ) );
+
             if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
+                $fileData['details']['grouping'] = (isset($fileData['access']['module']))? $fileData['access']['module'] : 'General';
+                $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo, $validateStructure );
+            }
+        }
+
+        // Get the user-defined custom definitions
+        $customFiles = glob( self::getCustomImportTypeDir($pdo) . "/*.yml" );
+
+        foreach ( $customFiles as $file) {
+            $fileData = $yaml::parse( file_get_contents( $file ) );
+
+            if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
+                $fileData['details']['grouping'] = '* Custom Imports';
+                $fileData['details']['custom'] = true;
                 $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo, $validateStructure );
             }
         }
@@ -192,9 +218,9 @@ class importType
     }
 
     protected static function sortImportTypes($a, $b) {
-        if ($a->getAccessDetail('module') < $b->getAccessDetail('module'))
+        if ($a->getDetail('grouping') < $b->getDetail('grouping'))
             return -1;
-        else if ($a->getAccessDetail('module') > $b->getAccessDetail('module'))
+        else if ($a->getDetail('grouping') > $b->getDetail('grouping'))
             return 1;
 
         if ($a->getDetail('category') < $b->getDetail('category'))
@@ -223,8 +249,16 @@ class importType
      * @return  [importType]
      */
     public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
-        $path = self::getBaseDir() . "/modules/Data Admin/imports/" . $importTypeName .".yml";
-        if (!file_exists($path)) return NULL;
+
+        // Check custom first, this allows for local overrides
+        $path = self::getCustomImportTypeDir($pdo).'/'.$importTypeName.'.yml';
+        if (!file_exists($path)) {
+            // Next check the built-in import types folder
+            $path = self::getImportTypeDir().'/'.$importTypeName.'.yml';
+
+            // Finally fail if nothing is found
+            if (!file_exists($path)) return NULL;
+        }
 
         $yaml = new Yaml();
         $fileData = $yaml::parse( file_get_contents($path) );
