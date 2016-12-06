@@ -34,11 +34,11 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import History') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import History', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	print "<h3>" ;
-	print __($guid, "Import History") ;
+	print __($guid, "Import History", 'Data Admin') ;
 	print "</h3>" ;
 
 	//Class includes
@@ -69,7 +69,7 @@ else {
 					print __($guid, "Category") ;
 				print "</th>" ;
 				print "<th >" ;
-					print __($guid, "Import Type") ;
+					print __($guid, "Import Type", 'Data Admin') ;
 				print "</th>" ;
 				print "<th>" ;
 					print __($guid, "Details") ;

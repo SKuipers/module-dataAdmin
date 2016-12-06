@@ -34,12 +34,12 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Duplicate Records') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Duplicate Records', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	// Info
 	print "<div class='warning'>" ;
-	print __($guid, 'Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.');
+	print __($guid, 'Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	print "</div>" ;
 
 	//Class includes
@@ -116,7 +116,7 @@ else {
 					if (!empty($row[ $uniqueKey ])) {
 						print "<td>" .$row[ $uniqueKey ]."</td>";
 					} else {
-						print "<td class='error'>" .__($guid, 'Missing')."</td>";
+						print "<td class='error'>" .__($guid, 'Missing', 'Data Admin')."</td>";
 					}
 				}
 				

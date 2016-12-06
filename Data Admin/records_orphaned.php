@@ -34,12 +34,12 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Orphaned Records') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Orphaned Records', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	// Info
 	print "<div class='warning'>" ;
-	print __($guid, 'Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.');
+	print __($guid, 'Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	print "</div>" ;
 
 	//Class includes
@@ -108,7 +108,7 @@ else {
 					if (!empty($row[ $relationship['key'] ])) {
 						print "<td>" .$row[ $relationship['key'] ]."</td>";
 					} else {
-						print "<td class='error'>" .__($guid, 'Missing')."</td>";
+						print "<td class='error'>" .__($guid, 'Missing', 'Data Admin')."</td>";
 					}
 				}
 				

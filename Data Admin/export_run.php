@@ -68,7 +68,7 @@ else {
 		return;
 	} else if ( !$importType->isValid() ) {
 		print "<div class='error'>";
-		printf( __($guid, 'Import cannot proceed, as the selected Import Type "%s" did not validate with the database.'), $type) ;
+		printf( __($guid, 'Import cannot proceed, as the selected Import Type "%s" did not validate with the database.', 'Data Admin'), $type) ;
 		print "<br/></div>";
 		return;
 	}
@@ -242,7 +242,7 @@ else {
 
 	}
 
-	$filename = ($dataExport)? __($guid, "DataExport").'-'.$tableName : __($guid, "DataStructure").'-'.$type;
+	$filename = ($dataExport)? __($guid, "DataExport", 'Data Admin').'-'.$tableName : __($guid, "DataStructure", 'Data Admin').'-'.$type;
 
 	$exportFileType = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
 	if (empty($exportFileType)) $exportFileType = 'Excel2007';

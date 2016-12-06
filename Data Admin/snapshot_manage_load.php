@@ -28,17 +28,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 
 	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Load Snapshot') . "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Load Snapshot', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	print "<h3>" ;
-	print __($guid, "Load Snapshot") ;
+	print __($guid, "Load Snapshot", 'Data Admin') ;
 	print "</h3>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 
 	print "<div class='warning'>" ;
-	print __($guid, 'Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.');
+	print __($guid, 'Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.', 'Data Admin');
 	print "</div>" ;
 	
 	//Check if file exists
@@ -68,7 +68,7 @@ else {
 				<table class='smallIntBorder fullWidth' cellspacing='0'>	
 					<tr>
 						<td> 
-							<b><?php print __($guid, 'Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.') ; ?></b><br/>&nbsp;<br/>
+							<b><?php print __($guid, 'Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin') ; ?></b><br/>&nbsp;<br/>
 							<span style="font-size: 120%; color: #cc0000"><i><?php print __($guid, 'This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
 						</td>
 						<td class="right">

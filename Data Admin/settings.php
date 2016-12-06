@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 else {
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import Settings') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import Settings', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	if (isset($_GET['return'])) {
@@ -48,18 +48,15 @@ else {
 	<table class='smallIntBorder' cellspacing='0' style='width:60%;margin:0 auto;'>
 		<tr class="break" style="line-height:20px;">
 			<td>
-				<?php echo __($guid, 'Compatability Check'); ?>
+				<?php echo __($guid, 'Compatability Check', 'Data Admin'); ?>
 			</td>
 			<td class="right">
-				<?php 
-					
-					echo $_SESSION[$guid]['module'].' '.$moduleVersion;
-				?>
+				<?php echo $_SESSION[$guid]['module'].' '.$moduleVersion; ?>
 			</td>
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php printf( __($guid, '%s version %s or higher'), 'Gibbon', strstr($gibbonVersionRequired, '.', true) ); ?></b><br>
+				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'Gibbon', strstr($gibbonVersionRequired, '.', true) ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -71,7 +68,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php printf( __($guid, '%s version %s or higher'), 'PHP', $phpVersionRequired); ?></b><br>
+				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'PHP', $phpVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -86,7 +83,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php printf( __($guid, '%s version %s or higher'), 'MySQL', $mysqlVersionRequired); ?></b><br>
+				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'MySQL', $mysqlVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -102,7 +99,7 @@ else {
 
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php echo __($guid, ''); ?>Extension php_zip enabled</b><br>
+				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_zip'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -111,7 +108,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php echo __($guid, ''); ?>Extension php_xml enabled</b><br>
+				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_xml'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -120,7 +117,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php echo __($guid, ''); ?>Extension php_gd enabled</b><br>
+				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_gd'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -129,7 +126,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php echo __($guid, ''); ?>Custom Import folder is writeable</b><br>
+				<b><?php printf( __($guid, '%s is writeable', 'Data Admin'), __($guid,'Custom Imports Folder', 'Data Admin') ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -143,7 +140,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b><?php echo __($guid, ''); ?>Snapshot folder is writeable</b><br>
+				<b><?php printf( __($guid, '%s is writeable', 'Data Admin'), __($guid,'Snapshots Folder', 'Data Admin') ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -160,12 +157,6 @@ else {
 
 	<form method="post" action="<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/settingsProcess.php' ?>">
 		<table class='smallIntBorder fullWidth' cellspacing='0'>
-			<!-- 			
-			<tr class='break'>
-				<td colspan=2>
-					<h3><?php echo __($guid, 'Access'); ?></h3>
-				</td>
-			</tr> -->
 			<tr>
 				<?php
                 try {
@@ -177,15 +168,15 @@ else {
                 $row = $result->fetch();
                 ?>
 				<td style='width: 275px'> 
-					<b><?php echo __($guid, $row['nameDisplay']) ?></b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description']);}?></span>
+					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?></b><br/>
+					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
 				<td class="right">
                     <select name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" class="standardWidth">
-                    	<option <?php if ($row['value'] == 'Excel2007') { echo 'selected '; } ?>value="Excel2007"><?php echo __($guid, 'Excel 2007 and above (.xlsx)') ?></option>
-                        <option <?php if ($row['value'] == 'Excel5') { echo 'selected '; } ?>value="Excel5"><?php echo __($guid, 'Excel 95 and above (.xls)') ?></option>
-                        <option <?php if ($row['value'] == 'OpenDocument') { echo 'selected '; } ?>value="OpenDocument"><?php echo __($guid, 'OpenDocument (.ods)') ?></option>
-                        <option <?php if ($row['value'] == 'CSV') { echo 'selected '; } ?>value="CSV"><?php echo __($guid, 'Comma Separated (.csv)') ?></option>
+                    	<option <?php if ($row['value'] == 'Excel2007') { echo 'selected '; } ?>value="Excel2007"><?php echo __($guid, 'Excel 2007 and above (.xlsx)', 'Data Admin') ?></option>
+                        <option <?php if ($row['value'] == 'Excel5') { echo 'selected '; } ?>value="Excel5"><?php echo __($guid, 'Excel 95 and above (.xls)', 'Data Admin') ?></option>
+                        <option <?php if ($row['value'] == 'OpenDocument') { echo 'selected '; } ?>value="OpenDocument"><?php echo __($guid, 'OpenDocument (.ods)', 'Data Admin') ?></option>
+                        <option <?php if ($row['value'] == 'CSV') { echo 'selected '; } ?>value="CSV"><?php echo __($guid, 'Comma Separated (.csv)', 'Data Admin') ?></option>
                     </select>
                 </td>
 			</tr>
@@ -200,8 +191,8 @@ else {
                 $row = $result->fetch();
                 ?>
 				<td style='width: 275px'> 
-					<b><?php echo __($guid, $row['nameDisplay']) ?></b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description']);}?></span>
+					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?></b><br/>
+					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
 				<td class="right">
                     <select name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" class="standardWidth">
@@ -221,8 +212,8 @@ else {
                 $row = $result->fetch();
                 ?>
 				<td style='width: 275px'> 
-					<b><?php echo __($guid, $row['nameDisplay']) ?> *</b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description']);}?></span>
+					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?> *</b><br/>
+					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
 				<td class="right">
 					<input type='text' name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" value="<?php echo $row['value'] ?>" class="standardWidth">
@@ -243,8 +234,8 @@ else {
                 $row = $result->fetch();
                 ?>
 				<td style='width: 275px'> 
-					<b><?php echo __($guid, $row['nameDisplay']) ?> *</b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description']);}?></span>
+					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?> *</b><br/>
+					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
 				<td class="right">
 					<input type='text' name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" value="<?php echo $row['value'] ?>" class="standardWidth">

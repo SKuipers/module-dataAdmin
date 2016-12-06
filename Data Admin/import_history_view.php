@@ -58,10 +58,10 @@ else {
 			return;
 		}
 
-		$importType = DataAdmin\importType::loadImportType( $importLog['type'] );
+		$importType = DataAdmin\importType::loadImportType( $importLog['type'], $pdo );
 	?>
 		<h1>
-			<?php print __($guid, 'Import History'); ?>
+			<?php print __($guid, 'Import History', 'Data Admin'); ?>
 		</h1>
 
 		<?php if (!empty($importResults['ignoreErrors'])) : ?>
@@ -73,7 +73,7 @@ else {
 		<table class='blank fullWidth' cellspacing='0'>	
 			<tr>
 				<td width="50%">
-					<?php print __($guid, "Import Type").": "; ?><br/>
+					<?php print __($guid, "Import Type", 'Data Admin').": "; ?><br/>
 					<?php print $importType->getDetail('name'); ?>
 				</td>
 				<td width="50%">
@@ -97,15 +97,15 @@ else {
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
 			<tr <?php print "class='". ( ($importResults['importSuccess'])? 'current' : 'error' ) ."'"; ?>>
 				<td class="right"  width="50%">
-					<?php print __($guid, "Reading CSV file").": "; ?>
+					<?php print __($guid, "Reading CSV file", 'Data Admin').": "; ?>
 				</td>
 				<td>
-					<?php print ($importResults['importSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+					<?php print ($importResults['importSuccess'])? __($guid, "Success", 'Data Admin') : __($guid, "Failed", 'Data Admin'); ?>
 				</td>
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Execution time").": "; ?>
+					<?php print __($guid, "Execution time", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['executionTime']; ?>
@@ -113,7 +113,7 @@ else {
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Memory usage").": "; ?>
+					<?php print __($guid, "Memory usage", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['memoryUsage']; ?>
@@ -123,15 +123,15 @@ else {
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
 			<tr <?php print "class='". ( ($importResults['buildSuccess'])? 'current' : 'error' ) ."'"; ?>>
 				<td class="right" width="50%">
-					<?php print __($guid, "Validating data").": "; ?>
+					<?php print __($guid, "Validating data", 'Data Admin').": "; ?>
 				</td>
 				<td>
-					<?php print ($importResults['buildSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+					<?php print ($importResults['buildSuccess'])? __($guid, "Success", 'Data Admin') : __($guid, "Failed", 'Data Admin'); ?>
 				</td>
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Rows processed").": "; ?>
+					<?php print __($guid, "Rows processed", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['rows']; ?>
@@ -139,7 +139,7 @@ else {
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Rows with errors").": "; ?>
+					<?php print __($guid, "Rows with errors", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['rowerrors']; ?>
@@ -147,7 +147,7 @@ else {
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Total errors").": "; ?>
+					<?php print __($guid, "Total errors", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['errors']; ?>
@@ -156,7 +156,7 @@ else {
 			<?php if ($importResults['warnings'] > 0) : ?>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Total warnings").": "; ?>
+					<?php print __($guid, "Total warnings", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php print $importResults['warnings']; ?>
@@ -168,21 +168,21 @@ else {
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
 			<tr <?php print "class='". ( ($importResults['databaseSuccess'])? 'current' : 'error' ) ."'"; ?>>
 				<td class="right" width="50%">
-					<?php print __($guid, "Querying database").": "; ?>
+					<?php print __($guid, "Querying database", 'Data Admin').": "; ?>
 				</td>
 				<td>
-					<?php print ($importResults['databaseSuccess'])? __($guid, "Success") : __($guid, "Failed"); ?>
+					<?php print ($importResults['databaseSuccess'])? __($guid, "Success", 'Data Admin') : __($guid, "Failed", 'Data Admin'); ?>
 				</td>
 			</tr>
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Database Inserts").": ";?>
+					<?php print __($guid, "Database Inserts", 'Data Admin').": ";?>
 				</td>
 				<td>
 				<?php 
 					print $importResults['inserts'];
 					if ($importResults['inserts_skipped'] > 0) {
-						print " (". $importResults['inserts_skipped'] ." ". __($guid, "skipped") .")";
+						print " (". $importResults['inserts_skipped'] ." ". __($guid, "skipped", 'Data Admin') .")";
 					}
 				?>
 				</td>
@@ -190,13 +190,13 @@ else {
 
 			<tr>
 				<td class="right">
-					<?php print __($guid, "Database Updates").": "; ?>
+					<?php print __($guid, "Database Updates", 'Data Admin').": "; ?>
 				</td>
 				<td>
 				<?php 
 					print $importResults['updates'];
 					if ($importResults['updates_skipped'] > 0) {
-						print " (". $importResults['updates_skipped'] ." ". __($guid, "skipped") .")";
+						print " (". $importResults['updates_skipped'] ." ". __($guid, "skipped", 'Data Admin') .")";
 					}
 				?>
 				</td>

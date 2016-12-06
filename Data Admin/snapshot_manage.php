@@ -31,22 +31,22 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Snapshots') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Snapshots', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	print "<h3>" ;
-	print __($guid, "Database Snapshots") ;
+	print __($guid, "Manage Snapshots", 'Data Admin') ;
 	print "</h3>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 
 	print "<div class='warning'>" ;
-	print __($guid, 'Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.');
+	print __($guid, 'Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
 	print "</div>" ;
 	
 	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php") ) {
 		print "<div class='linkTop'>" ;
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __($guid, 'Create Snapshot') . "<img style='margin-left: 5px' title='" . __($guid, 'Create Snapshot'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __($guid, 'Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __($guid, 'Create Snapshot', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
 		print "</div>" ;
 	}
 
