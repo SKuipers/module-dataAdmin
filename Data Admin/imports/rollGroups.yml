@@ -3,7 +3,7 @@ details:
     name: Roll Groups
     desc: Roll Groups for each year level
     table: gibbonRollGroup
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Roll Groups

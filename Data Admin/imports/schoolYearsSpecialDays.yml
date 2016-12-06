@@ -3,7 +3,7 @@ details:
     name: Special Days
     desc: School closures and timing changes
     table: gibbonSchoolYearSpecialDay
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Special Days

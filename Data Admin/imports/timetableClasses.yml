@@ -3,7 +3,7 @@ details:
     name: Timetable Classes
     desc: Assign classes to timetable days and rows
     table: gibbonTTDayRowClass
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Timetable Admin
     action: Manage Timetables

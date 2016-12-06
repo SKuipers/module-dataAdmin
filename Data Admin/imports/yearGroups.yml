@@ -3,7 +3,7 @@ details:
     name: Year Groups
     desc: 
     table: gibbonYearGroup
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Year Groups

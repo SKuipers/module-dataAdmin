@@ -4,7 +4,7 @@ details:
     name: Staff / Faculty
     desc: Staff details (for existing users)
     table: gibbonStaff
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Staff
     action: Manage Staff_confidential

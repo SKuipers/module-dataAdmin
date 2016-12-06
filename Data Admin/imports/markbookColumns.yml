@@ -3,7 +3,7 @@ details:
     name: Markbook Columns
     desc: Setup markbook columns for student assessment, per class
     table: gibbonMarkbookColumn
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Markbook
     action: Edit Markbook_everything

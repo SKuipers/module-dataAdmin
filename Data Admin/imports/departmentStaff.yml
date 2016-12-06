@@ -3,7 +3,7 @@ details:
     name: Department Staff
     desc: Staff Members for each Department/Learning Area
     table: gibbonDepartmentStaff
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Departments

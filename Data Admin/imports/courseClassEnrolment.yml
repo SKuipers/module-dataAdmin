@@ -3,7 +3,7 @@ details:
     name: Class Enrolment
     desc: Class enrolments for each course
     table: gibbonCourseClassPerson
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Timetable Admin
     action: Course Enrolment by Class

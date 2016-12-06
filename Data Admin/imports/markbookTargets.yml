@@ -3,7 +3,7 @@ details:
     name: Markbook Targets
     desc: Student target marks (requires Target Scale set per class)
     table: gibbonMarkbookTarget
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Markbook
     action: Edit Markbook_everything

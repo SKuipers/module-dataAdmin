@@ -3,7 +3,7 @@ details:
     name: Medical Forms
     desc: Student medical information
     table: gibbonPersonMedical
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Students
     action: Manage Medical Forms

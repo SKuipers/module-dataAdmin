@@ -4,7 +4,7 @@ details:
     desc: 
     category: Families
     table: gibbonFamilyChild
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: User Admin
     action: Manage Families

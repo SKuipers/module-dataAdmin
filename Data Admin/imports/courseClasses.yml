@@ -3,7 +3,7 @@ details:
     name: Classes
     desc: Class records for each course
     table: gibbonCourseClass
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Timetable Admin
     action: Manage Courses & Classes

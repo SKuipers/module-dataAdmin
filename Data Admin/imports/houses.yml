@@ -3,7 +3,7 @@ details:
     name: Houses
     desc: 
     table: gibbonHouse
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Houses

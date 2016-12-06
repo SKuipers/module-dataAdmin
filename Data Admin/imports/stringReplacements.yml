@@ -3,7 +3,7 @@ details:
     name: String Replacements
     desc: 
     table: gibbonString
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: System Admin
     action: String Replacement

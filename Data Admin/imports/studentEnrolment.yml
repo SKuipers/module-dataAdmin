@@ -3,7 +3,7 @@ details:
     name: Student Enrolment
     desc: Enrol students in form groups and year groups
     table: gibbonStudentEnrolment
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Students
     action: Student Enrolment

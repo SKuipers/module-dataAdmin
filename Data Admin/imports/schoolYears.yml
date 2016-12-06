@@ -3,7 +3,7 @@ details:
     name: School Years
     desc: 
     table: gibbonSchoolYear
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage School Years

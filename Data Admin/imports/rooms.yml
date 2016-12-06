@@ -3,7 +3,7 @@ details:
     name: Facilities
     desc: Rooms, Spaces and School Facilities
     table: gibbonSpace
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Facilities

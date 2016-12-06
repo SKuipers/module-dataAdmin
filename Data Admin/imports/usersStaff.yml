@@ -4,7 +4,7 @@ details:
     desc: Faculty & staff member users
     category: Users
     table: gibbonPerson
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: false }
 access:
     module: User Admin
     action: Manage Users

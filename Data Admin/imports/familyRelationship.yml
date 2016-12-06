@@ -4,7 +4,7 @@ details:
     desc: How each child is related to each adult in the family
     category: Families
     table: gibbonFamilyRelationship
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: User Admin
     action: Manage Families

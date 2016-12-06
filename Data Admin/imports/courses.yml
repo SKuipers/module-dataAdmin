@@ -3,7 +3,7 @@ details:
     name: Course Information
     desc: Course names and descriptions by School Year
     table: gibbonCourse
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: Timetable Admin
     action: Manage Courses & Classes

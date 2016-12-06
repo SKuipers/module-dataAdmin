@@ -3,7 +3,7 @@ details:
     name: Departments
     desc: Departments and Learning Areas
     table: gibbonDepartment
-    modes: { update: true, insert: true }
+    modes: { update: true, insert: true, export: true }
 access:
     module: School Admin
     action: Manage Departments
