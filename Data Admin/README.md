@@ -1,20 +1,38 @@
 # Gibbon Module: Data Admin
-Provides extended import and export functionality for migrating data. Also adds a database snapshot function.
+Provides extended import and export functionality for migrating data.
 
 Features
 ========
 
-* A multi-part import form for improved control over incoming data
-* Performs a dry-run before importing to see the anticipated results
-* Handles relational fields (eg: transforms usernames into gibbonPersonID on import)
-* Filters and validates many types of data (dates, emails, urls, roles, etc)
-* Assign columns to database values ad-hoc and can skip non-required columns
-* Choose to Update & Insert, Update Only or Insert Only when importing
-* Create a database snapshot before importing to rollback changes if needed
-* Keeps import logs tracking the user who made them and the results of the import
-* Remebers the column order from the last import to speed up future imports
-* Choose to export an excel file with all importable columns pre-filled
-* Imports defined with a flexible YML syntax
+* Importing:
+  - Multi-part import form for improved control over incoming data
+  - Assign columns to database values ad-hoc and can skip non-required columns
+  - Performs a dry-run before importing to see the anticipated results
+  - Filters and validates many types of data (dates, emails, urls, roles, etc)
+  - Handles relational fields (eg: transforms usernames into gibbonPersonID on import)
+  - Remebers the column order from the last import to speed up future imports
+
+* Exporting:
+  - Export the structure of a table with all importable columns pre-filled
+  - Export an entire table of data (beta)
+  - Exports include ID fields which can be synced when re-importing
+
+* File Types:
+  - Comma-Separated Values (.csv)
+  - Office Open XML (.xlsx) Excel 2007 and above
+  - BIFF 5-8 (.xls) Excel 95 and above
+  - Open Document Format/OASIS (.ods)
+  - SpreadsheetML (.xml) Excel 2003 (import only)
+
+* Database & Logging:
+  - Create a database snapshot before importing to rollback changes if needed
+  - Records page helps identify duplicate and orphaned rows
+  - Keeps import logs tracking the user who made them and the results of the import
+  
+* Custom Imports _(advanced)_:
+   - Imports defined with a flexible .yml syntax (modify or write your own)
+   - Set a custom import directory in settings
+
 
 Installation & Support
 ======================
@@ -29,9 +47,21 @@ Installation instructions:
 For support contact sandra.kuipers [at] tis.edu.mo 
 
 
-In Development
+Change Log
 ==============
 
-* Handle Excel file-types
-* Custom user-defined imports (advanced use only)
-* Record Admin: view record totals, spot missing/orphaned records
+All notable changes to this project will be documented here.
+
+## [1.1.0] - 2016-12-06
+### Added
+- Importing and exporting Excel and OpenDocument file types
+- Settings page: compatability check, also customize file paths and permissions
+- Manage Records page: table row counts, view duplicate and orphaned records
+- New import types: Markbook, Medical forms, Timetable classes, Student Notes, Special days
+
+## [1.0.0] - 2016-11-07
+### Initial release
+
+[Unreleased]: https://github.com/SKuipers/module-dataAdmin/compare/v1.1...HEAD
+[1.1.0]: https://github.com/SKuipers/module-dataAdmin/compare/v1.0...v1.1
+[1.0.0]: https://github.com/SKuipers/module-dataAdmin/releases/tag/v1.0
