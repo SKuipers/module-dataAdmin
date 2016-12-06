@@ -41,23 +41,37 @@ else {
 	$trueIcon = "<img title='" . __($guid, 'Yes'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png' width=16 height=16 />";
 	$falseIcon = "<img title='" . __($guid, 'No'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png' width=16 height=16 />";
 
+	// Include the module version info, with required versions
+	include $_SESSION[$guid]['absolutePath'].'/modules/'.$_SESSION[$guid]['module'].'/version.php';
 	?>
 
 	<table class='smallIntBorder' cellspacing='0' style='width:60%;margin:0 auto;'>
 		<tr class="break" style="line-height:20px;">
 			<td>
-				Compatability Check
+				<?php echo __($guid, 'Compatability Check'); ?>
 			</td>
 			<td class="right">
 				<?php 
-					include $_SESSION[$guid]['absolutePath'].'/modules/'.$_SESSION[$guid]['module'].'/version.php';
+					
 					echo $_SESSION[$guid]['module'].' '.$moduleVersion;
 				?>
 			</td>
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b>PHP version 5.5.0 or higher</b><br>
+				<b><?php printf( __($guid, '%s version %s or higher'), 'Gibbon', strstr($gibbonVersionRequired, '.', true) ); ?></b><br>
+				<span class="emphasis small"></span>
+			</td>
+			<td class="right">
+				<?php
+					echo '<span style="margin-right:20px;">Gibbon '.$version.'</span>';
+					echo (version_compare($version, $gibbonVersionRequired, '>'))? $trueIcon : $falseIcon;
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 275px"> 
+				<b><?php printf( __($guid, '%s version %s or higher'), 'PHP', $phpVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -65,14 +79,14 @@ else {
 					$phpVersion = phpversion();
 
 					echo '<span style="margin-right:20px;">PHP '.$phpVersion.'</span>';
-					echo (version_compare($phpVersion, '5.5.00', '>'))? $trueIcon : $falseIcon;
+					echo (version_compare($phpVersion, $phpVersionRequired, '>'))? $trueIcon : $falseIcon;
 					
 				?>
 			</td>
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b>MySQL version 5 or higher</b><br>
+				<b><?php printf( __($guid, '%s version %s or higher'), 'MySQL', $mysqlVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -80,14 +94,15 @@ else {
 					$mysqlVersion = $pdo->executeQuery(array(), 'select version()')->fetchColumn();
 
 					echo '<span style="margin-right:20px;">MySQL '.$mysqlVersion.'</span>';
-					echo (version_compare($mysqlVersion, '5.0.00', '>'))? $trueIcon : $falseIcon;
+					echo (version_compare($mysqlVersion, $mysqlVersionRequired, '>'))? $trueIcon : $falseIcon;
 					
 				?>
 			</td>
 		</tr>
+
 		<tr>
 			<td style="width: 275px"> 
-				<b>Extension php_zip enabled</b><br>
+				<b><?php echo __($guid, ''); ?>Extension php_zip enabled</b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -96,7 +111,7 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b>Extension php_xml enabled</b><br>
+				<b><?php echo __($guid, ''); ?>Extension php_xml enabled</b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -105,11 +120,39 @@ else {
 		</tr>
 		<tr>
 			<td style="width: 275px"> 
-				<b>Extension php_gd enabled</b><br>
+				<b><?php echo __($guid, ''); ?>Extension php_gd enabled</b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
 				<?php echo (extension_loaded('gd'))? $trueIcon : $falseIcon; ?>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 275px"> 
+				<b><?php echo __($guid, ''); ?>Custom Import folder is writeable</b><br>
+				<span class="emphasis small"></span>
+			</td>
+			<td class="right">
+				<?php 
+					$importsFolder = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation');
+					$importsFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($importsFolder, '/ ');
+
+					echo (is_writable($importsFolderPath))? $trueIcon : $falseIcon; 
+				?>
+			</td>
+		</tr>
+		<tr>
+			<td style="width: 275px"> 
+				<b><?php echo __($guid, ''); ?>Snapshot folder is writeable</b><br>
+				<span class="emphasis small"></span>
+			</td>
+			<td class="right">
+				<?php 
+					$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+					$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($snapshotFolder, '/ ');
+
+					echo (is_writable($snapshotFolderPath))? $trueIcon : $falseIcon; 
+				?>
 			</td>
 		</tr>
 
