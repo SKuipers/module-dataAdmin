@@ -342,7 +342,7 @@ else {
 				$lastFieldValue = ($columnOrder == 'last' && isset($columnOrderLast['syncField']))? $columnOrderLast['syncField'] : 'N';
 				$lastColumnValue = ($columnOrder == 'last' && isset($columnOrderLast['syncColumn']))? $columnOrderLast['syncColumn'] : '';
 
-				if ($columnOrder = 'linearplus') {
+				if ($columnOrder == 'linearplus') {
 					$lastFieldValue = 'Y';
 					$lastColumnValue = $importType->getPrimaryKey();
 				}
