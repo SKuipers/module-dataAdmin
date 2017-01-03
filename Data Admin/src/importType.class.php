@@ -723,7 +723,7 @@ class importType
                                 $date = strtotime($value);
                                 $value = date('Y-m-d', $date);
                             }
-                            if ($value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false) {
+                            if ( empty($value) || $value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false) {
                                 $value = NULL;
                             }
                             break;
@@ -840,21 +840,18 @@ class importType
                             }
                             break;
 
-            case 'status':  // Translate TIS blackbaud status types
-                            if ($value == 'Current' || $value == 'Current Student' || $value == 'Current Parent' || $value == 'Enrolled/Not Current' || $strvalue == 'YES' || $strvalue == 'Y') {
+            case 'status':  // Transform positive values into Full and negative into Left
+                            if ($strvalue == 'FULL' || $strvalue == 'YES' || $strvalue == 'Y' || $value === '1') {
                                 $value = 'Full';
                             }
-                            else if ($value == 'Withdrawn' || $value == 'Graduated' || $value == 'Declined' || $value == 'Previous Staff' || $strvalue == 'NO' || $strvalue == 'N' || $value == '') {
+                            else if ($strvalue == 'LEFT' || $strvalue == 'NO' || $strvalue == 'N' || $value == '' || $value === '0') {
                                 $value = 'Left';
                             }
-                            else if ($value == 'Accepted/Not Enrolled' ) {
+                            else if ($strvalue == 'EXPECTED') {
                                 $value = 'Expected';
                             }
-                            else if ($value == 'Inquiry' || $value == 'Applicant' ) {
+                            else if ($strvalue == 'PENDING APPROVAL') {
                                 $value = 'Pending Approval';
-                            }
-                            else {
-                                $value = 'Left';
                             }
                             break;
 
