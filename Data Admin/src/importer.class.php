@@ -263,7 +263,14 @@ class importer
         $mimeType = $_FILES['file']['type'];
 
         if ($fileType == 'csv') {
-            $data = file_get_contents($_FILES['file']['tmp_name']);
+
+            $opts = array('http' => array('header' => "Accept-Charset: utf-8;q=0.7,*;q=0.7\r\n"."Content-Type: text/html; charset =utf-8\r\n"));
+            $context = stream_context_create($opts);
+
+            $data = file_get_contents($_FILES['file']['tmp_name'], false, $context);
+            if ( mb_check_encoding($data, 'UTF-8') == false ) {
+                $data = mb_convert_encoding($data,'UTF-8');
+            }
 
             // Grab the header & first row for Step 1
             if ($this->openCSVFile( $_FILES['file']['tmp_name'] )) {
