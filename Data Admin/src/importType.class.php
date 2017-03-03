@@ -703,7 +703,7 @@ class importType
                             break;
 
             case 'email':   if (mb_strpos($value, ',') !== false || mb_strpos($value, '/') !== false || mb_strpos($value, ' ') !== false ) {
-                                $emails = preg_split('/[\s,\/]*/', $value);
+                                $emails = preg_split('/[\s,\/]*/u', $value);
                                 $value = (isset($emails[0]))? $emails[0] : '';
                             }
 
@@ -719,21 +719,21 @@ class importType
                             break;
 
             case 'date':    // Handle various date formats
-                            if ( !empty($value) ) { // && preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false
+                            if ( !empty($value) ) { // && preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/u', $value) === false
                                 $date = strtotime($value);
                                 $value = date('Y-m-d', $date);
                             }
-                            if ( empty($value) || $value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/', $value) === false) {
+                            if ( empty($value) || $value == '0000-00-00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}$)/u', $value) === false) {
                                 $value = NULL;
                             }
                             break;
 
             case 'time':    // Handle various time formats
-                            if ( !empty($value) ) { // && preg_match('/(^\d{2}[:]\d{2}$)/', $value) === false
+                            if ( !empty($value) ) { // && preg_match('/(^\d{2}[:]\d{2}$)/u', $value) === false
                                 $time = strtotime($value);
                                 $value = date('H:i:s', $time);
                             }
-                            if (empty($value) || $value == '00:00:00' || preg_match('/(^\d{2}[:]\d{2}$)/', $value) === false) {
+                            if (empty($value) || $value == '00:00:00' || preg_match('/(^\d{2}[:]\d{2}$)/u', $value) === false) {
                                 $value = NULL;
                             }
                             break;
@@ -743,7 +743,7 @@ class importType
                                 $time = strtotime($value);
                                 $value = date( 'Y-m-d H:i:s', $time );
                             }
-                            if (empty($value) || $value == '0000-00-00 00:00:00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}[ ]+\d{2}[:]\d{2}[:]\d{2}$)/', $value) === false) {
+                            if (empty($value) || $value == '0000-00-00 00:00:00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}[ ]+\d{2}[:]\d{2}[:]\d{2}$)/u', $value) === false) {
                                 $value = NULL;
                             }
 
@@ -751,7 +751,7 @@ class importType
 
             case 'schoolyear':
                             // Change school years formated as 2015-16 to 2015-2016
-                            if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
+                            if ( preg_match('/(^\d{4}[-]\d{2}$)/u', $value) > 0 ) {
                                 $value = mb_substr($value, 0, 5) . mb_substr($value, 0, 2) . mb_substr($value, 5, 2);
                             }
                             break;
@@ -769,20 +769,20 @@ class importType
                             }
                             break;
 
-            case 'numeric': $value = preg_replace("/[^0-9]/", '', $value);
+            case 'numeric': $value = preg_replace("/[^0-9]/u", '', $value);
                             break;
 
             case 'phone':   // Handle phone numbers - strip all non-numeric chars
-                            $value = preg_replace("/[^0-9,\/]/", '', $value);
+                            $value = preg_replace("/[^0-9,\/]/u", '', $value);
 
                             if (mb_strpos($value, ',') !== false || mb_strpos($value, '/') !== false || mb_strpos($value, ' ') !== false ) {
-                                //$value = preg_replace("/[^0-9,\/]/", '', $value);
-                                $numbers = preg_split("/[,\/]*/", $value);
+                                //$value = preg_replace("/[^0-9,\/]/u", '', $value);
+                                $numbers = preg_split("/[,\/]*/u", $value);
                                 $value = (isset($numbers[0]))? $numbers[0] : '';
                             }
                             break;
 
-            case 'phonecode': $value = preg_replace("/[^0-9]/", '', $value);
+            case 'phonecode': $value = preg_replace("/[^0-9]/u", '', $value);
                             break;
 
             case 'phonetype': // Handle TIS phone types
@@ -913,7 +913,7 @@ class importType
 
             case 'phonecode':   if ( !empty($value) && !isset($this->phoneCodes[ $value ]) ) return false; break;
 
-            case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
+            case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/u', $value) > 1 ) return false; break;
 
             default:            if (mb_substr($filter, 0, 1) == '/') {
                                     if ( preg_match($filter, $value) == false ) {

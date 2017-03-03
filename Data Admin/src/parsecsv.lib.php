@@ -438,7 +438,7 @@ class parseCSV {
         }
 
         $mode = ($append) ? 'at' : 'wt';
-        $is_php = (preg_match('/\.php$/i', $file)) ? true : false;
+        $is_php = (preg_match('/\.php$/iu', $file)) ? true : false;
 
         return $this->_wfile($file, $this->unparse($data, $fields, $append, $is_php), $mode);
     }
@@ -468,7 +468,7 @@ class parseCSV {
 
         if (!is_null($filename)) {
             header('Content-type: application/csv');
-            header('Content-Length: ' . mb_strlen($data));
+            header('Content-Length: ' . strlen($data));
             header('Cache-Control: no-cache, must-revalidate');
             header('Pragma: no-cache');
             header('Expires: 0');
@@ -541,7 +541,7 @@ class parseCSV {
         }
 
         $chars = array();
-        $strlen = mb_strlen($data);
+        $strlen = strlen($data);
         $enclosed = false;
         $n = 1;
         $to_end = true;
@@ -571,7 +571,7 @@ class parseCSV {
 
                 // count character
             } elseif (!$enclosed) {
-                if (!preg_match('/[' . preg_quote($this->auto_non_chars, '/') . ']/i', $ch)) {
+                if (!preg_match('/[' . preg_quote($this->auto_non_chars, '/') . ']/iu', $ch)) {
                     if (!isset($chars[$ch][$n])) {
                         $chars[$ch][$n] = 1;
                     } else {
@@ -655,7 +655,7 @@ class parseCSV {
         $col = 0;
         $enclosed = false;
         $was_enclosed = false;
-        $strlen = mb_strlen($data);
+        $strlen = strlen($data);
 
         // force the parser to process end of data as a character (false) when
         // data does not end with a line feed or carriage return character.
@@ -880,7 +880,7 @@ class parseCSV {
                 $this->file = $file;
             }
 
-            if (preg_match('/\.php$/i', $file) && preg_match('/<\?.*?\?>(.*)/ims', $data, $strip)) {
+            if (preg_match('/\.php$/i', $file) && preg_match('/<\?.*?\?>(.*)/iums', $data, $strip)) {
                 $data = ltrim($strip[1]);
             }
 
@@ -970,12 +970,12 @@ class parseCSV {
 
         $operators_regex = implode('|', $operators_regex);
 
-        if (preg_match('/^(.+) (' . $operators_regex . ') (.+)$/i', trim($condition), $capture)) {
+        if (preg_match('/^(.+) (' . $operators_regex . ') (.+)$/iu', trim($condition), $capture)) {
             $field = $capture[1];
             $op = $capture[2];
             $value = $capture[3];
 
-            if (preg_match('/^([\'\"]{1})(.*)([\'\"]{1})$/i', $value, $capture)) {
+            if (preg_match('/^([\'\"]{1})(.*)([\'\"]{1})$/iu', $value, $capture)) {
                 if ($capture[1] == $capture[3]) {
                     $value = $capture[2];
                     $value = str_replace("\\n", "\n", $value);
@@ -998,9 +998,9 @@ class parseCSV {
                     return '1';
                 } elseif (($op == '>=' || $op == 'is greater than or equals') && $row[$field] >= $value) {
                     return '1';
-                } elseif ($op == 'contains' && preg_match('/' . preg_quote($value, '/') . '/i', $row[$field])) {
+                } elseif ($op == 'contains' && preg_match('/' . preg_quote($value, '/') . '/iu', $row[$field])) {
                     return '1';
-                } elseif ($op == 'does not contain' && !preg_match('/' . preg_quote($value, '/') . '/i', $row[$field])) {
+                } elseif ($op == 'does not contain' && !preg_match('/' . preg_quote($value, '/') . '/iu', $row[$field])) {
                     return '1';
                 } else {
                     return '0';
@@ -1043,7 +1043,7 @@ class parseCSV {
         if ($value !== null && $value != '') {
             $delimiter_quoted = preg_quote($delimiter, '/');
             $enclosure_quoted = preg_quote($this->enclosure, '/');
-            if (preg_match("/" . $delimiter_quoted . "|" . $enclosure_quoted . "|\n|\r/i", $value) || ($value{0} == ' ' || mb_substr($value, -1) == ' ') || $this->enclose_all) {
+            if (preg_match("/" . $delimiter_quoted . "|" . $enclosure_quoted . "|\n|\r/iu", $value) || ($value{0} == ' ' || mb_substr($value, -1) == ' ') || $this->enclose_all) {
                 $value = str_replace($this->enclosure, $this->enclosure . $this->enclosure, $value);
                 $value = $this->enclosure . $value . $this->enclosure;
             }
