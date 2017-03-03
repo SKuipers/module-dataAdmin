@@ -32,9 +32,9 @@ else {
 	// Some script performace tracking
 	$memoryStart = memory_get_usage();
 	$resourceStart = getrusage();
-	$timeStart = microtime(true); 
+	$timeStart = microtime(true);
 
-	// Include PHPExcel 
+	// Include PHPExcel
 	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
 
 	//New PDO DB connection
@@ -83,18 +83,18 @@ else {
 		printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", __($guid, "Dry Run", 'Data Admin') );
 		printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", __($guid, "Live Run", 'Data Admin') );
 	print "</ul>";
-	
+
 
 	//STEP 1, SELECT TERM -----------------------------------------------------------------------------------
 	if ($step==1) {
 
 		try {
-			$data=array( 'type' => $type, 'success' => '1' ); 
+			$data=array( 'type' => $type, 'success' => '1' );
 			$sql="SELECT importLogID FROM dataAdminImportLog as importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
 			$result = $pdo->executeQuery($data, $sql);
 		}
-		catch(PDOException $e) { 
-			print "<div class='error'>" . $e->getMessage() . "</div>" ; 
+		catch(PDOException $e) {
+			print "<div class='error'>" . $e->getMessage() . "</div>" ;
 		}
 	?>
 		<h2>
@@ -107,9 +107,9 @@ else {
 		<p>
 		</p>
 		<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=2" ?>" enctype="multipart/form-data">
-			<table class='smallIntBorder fullWidth' cellspacing='0'>	
+			<table class='smallIntBorder fullWidth' cellspacing='0'>
 				<tr>
-					<td> 
+					<td>
 						<b><?php print __($guid, "Mode", 'Data Admin'); ?> *</b><br/>
 						<span class="emphasis small"><?php print __($guid, "Options available depend on the import type.", 'Data Admin'); ?></span>
 					</td>
@@ -134,7 +134,7 @@ else {
 					</td>
 				</tr>
 				<tr>
-					<td> 
+					<td>
 						<b><?php print __($guid, "Column Order", 'Data Admin'); ?></b><br/>
 						<span class="emphasis small"></span>
 					</td>
@@ -150,7 +150,7 @@ else {
 					</td>
 				</tr>
 				<tr>
-					<td style='width: 275px'> 
+					<td style='width: 275px'>
 						<b><?php print __($guid, 'CSV File', 'Data Admin') ?> *</b><br/>
 						<span class="emphasis small"><?php print __($guid, 'See Notes below for specification.', 'Data Admin') ?></span>
 					</td>
@@ -163,7 +163,7 @@ else {
 					</td>
 				</tr>
 				<tr>
-					<td> 
+					<td>
 						<b><?php print __($guid, 'Field Delimiter', 'Data Admin') ?> *</b><br/>
 					</td>
 					<td class="right">
@@ -175,7 +175,7 @@ else {
 					</td>
 				</tr>
 				<tr>
-					<td> 
+					<td>
 						<b><?php print __($guid, 'String Enclosure', 'Data Admin') ?> *</b><br/>
 						<span class="emphasis small"></span>
 					</td>
@@ -241,7 +241,7 @@ else {
 					$count++;
 					continue;
 				}
-					
+
 				print "<tr>" ;
 					print "<td>" . $count. "</td>" ;
 					print "<td>";
@@ -298,12 +298,12 @@ else {
 
 			if ($columnOrder == 'last') {
 				try {
-					$data=array( 'type' => $type, 'success' => '1' ); 
+					$data=array( 'type' => $type, 'success' => '1' );
 					$sql="SELECT columnOrder FROM dataAdminImportLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
 					$columnResult = $pdo->executeQuery($data, $sql);
 				}
-				catch(PDOException $e) { 
-					print "<div class='error'>" . $e->getMessage() . "</div>" ; 
+				catch(PDOException $e) {
+					print "<div class='error'>" . $e->getMessage() . "</div>" ;
 				}
 
 				$columnOrderLast = $columnResult->fetch();
@@ -312,7 +312,7 @@ else {
 
 			$importer->fieldDelimiter = (!empty($_POST["fieldDelimiter"]))? stripslashes($_POST["fieldDelimiter"]) : ',';
     		$importer->stringEnclosure = (!empty($_POST["stringEnclosure"]))? stripslashes($_POST["stringEnclosure"]) : '"';
-			
+
 			// Load the CSV or Excel data from the uploaded file
 			$csvData = $importer->readFileIntoCSV();
 
@@ -360,7 +360,7 @@ else {
 						print "</span>";
 					print "</td>";
 					print "<td class='right standardWidth'>";
-					
+
 					print "<input type='radio' name='syncField' value='Y' ". (($lastFieldValue == 'Y')? 'checked' : '') ."> " . __($guid, 'Yes') .' ';
 					print "<input type='radio' name='syncField' value='N' ". (($lastFieldValue == 'N')? 'checked' : '') ."> " . __($guid, 'No');
 
@@ -393,7 +393,7 @@ else {
 
 						$("input[name=syncField]").click(function(){
 							if ($('input[name=syncField]:checked').val()=="Y" ) {
-								$(".syncDetails").slideDown("slow", $(".syncDetails").css("display","table-row")); 
+								$(".syncDetails").slideDown("slow", $(".syncDetails").css("display","table-row"));
 
 							} else {
 								$(".syncDetails").css("display","none");
@@ -430,16 +430,16 @@ else {
 
 					extract( $importType->getField($fieldName, 'relationship') );
 					$field = (is_array($field))? implode(', ', $field) : $field;
-					
-					$importRestrictions[] = sprintf( __($guid, 'Each %s should match the %s of a %s', 'Data Admin'), 
+
+					$importRestrictions[] = sprintf( __($guid, 'Each %s should match the %s of a %s', 'Data Admin'),
 						$importType->getField($fieldName, 'name'), $field, $table
 					);
 				}
 
 				if ($importType->getField($fieldName, 'type') == 'enum') {
 
-					$importRestrictions[] = sprintf( __($guid, '%s must be one of: %s', 'Data Admin'), 
-						$importType->getField($fieldName, 'name'), 
+					$importRestrictions[] = sprintf( __($guid, '%s must be one of: %s', 'Data Admin'),
+						$importType->getField($fieldName, 'name'),
 						implode(', ', $importType->getField($fieldName, 'elements'))
 					);
 
@@ -493,9 +493,9 @@ else {
 				print "<th style='width:185px;'>" ;
 					print __($guid, "Sample", 'Data Admin') ;
 				print "</th>" ;
-				
+
 			print "</tr>" ;
-			
+
 			if ( !empty($importType->getTableFields()) ) {
 
 				$count = 0;
@@ -562,9 +562,9 @@ else {
 									$selected = ($columnOrder == 'linearplus')? ($i == $count+1) : ($i == $count);
 								}
 								else if ($columnOrder == 'guess' ) {
-									$selected = ($columnName == $fieldName) || ($columnName == $importType->getField($fieldName, 'name') ) || (strtolower($columnName) == strtolower($fieldName) ) || (strtolower($columnName) == strtolower($importType->getField($fieldName, 'name')) );
+									$selected = ($columnName == $fieldName) || ($columnName == $importType->getField($fieldName, 'name') ) || (mb_strtolower($columnName) == mb_strtolower($fieldName) ) || (mb_strtolower($columnName) == mb_strtolower($importType->getField($fieldName, 'name')) );
 									// if (!$selected) {
-									// 	similar_text( strtoupper( $importType->getField($fieldName, 'name') ), strtoupper($columnName), $similarity);
+									// 	similar_text( mb_strtoupper( $importType->getField($fieldName, 'name') ), mb_strtoupper($columnName), $similarity);
 									// 	$selected = ceil($similarity) > 85;
 									// }
 								}
@@ -577,7 +577,7 @@ else {
 
 								printf("<option value='%s' %s>%s</option>", $i, ($selected && $selectCount <= 1)? 'selected' : '', $columnName);
 							}
-							
+
 							print "</select>" ;
 
 							print "<input type='text' class='columnText' name='columnText[$count]' readonly disabled/>";
@@ -586,7 +586,7 @@ else {
 							print "var col$count = new LiveValidation('col[$count]'); col$count.add(Validate.Presence);";
 							print "</script>";
 						print "</td>" ;
-						
+
 					print "</tr>" ;
 					$count++;
 				}
@@ -717,7 +717,7 @@ else {
 				print "</div>";
 
 			} else {
-			
+
 				print "<div class='error'>";
 					print $importer->getLastError();
 				print "</div>";
@@ -753,12 +753,12 @@ else {
 				print "</table><br/>" ;
 			}
 
-			$executionTime = substr( microtime(true) - $timeStart, 0, 6 ).' sec';
+			$executionTime = mb_substr( microtime(true) - $timeStart, 0, 6 ).' sec';
     		$memoryUsage = readableFileSize(  max( 0, memory_get_usage() - $memoryStart )  );
-				
+
 			?>
 
-			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">	
+			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php print "class='". ( ($importSuccess)? 'current' : 'error' ) ."'"; ?>>
 					<td class="right"  width="50%">
 						<?php print __($guid, "Reading CSV file", 'Data Admin').": "; ?>
@@ -780,9 +780,9 @@ else {
 						<?php print __($guid, "Memory usage", 'Data Admin').": "; ?>
 					</td>
 					<td>
-						<?php 
-						
-						print $memoryUsage; 
+						<?php
+
+						print $memoryUsage;
 						?>
 					</td>
 				</tr>
@@ -846,7 +846,7 @@ else {
 						<?php print __($guid, "Database Inserts", 'Data Admin').": ";?>
 					</td>
 					<td>
-					<?php 
+					<?php
 						print $importer->getDatabaseResult('inserts');
 						if ($importer->getDatabaseResult('inserts_skipped') > 0) {
 							print " (". $importer->getDatabaseResult('inserts_skipped') ." ". __($guid, "skipped", 'Data Admin') .")";
@@ -868,7 +868,7 @@ else {
 					</td>
 				</tr>
 
-				
+
 			</table><br/>
 
 			<?php if ($step==3) : ?>
@@ -887,7 +887,7 @@ else {
 							<td>
 								<input type="checkbox" id="ignoreErrors" name="ignoreErrors" value="<?php echo $ignoreErrors; ?>">
 								<span class="emphasis small"><?php echo __($guid, 'Ignore Errors? (Expert Only!)', 'Data Admin'); ?><span>
-							</td>	
+							</td>
 						<?php endif; ?>
 
 						<td class="right">
@@ -933,12 +933,12 @@ else {
 					'memoryUsage'		=> $memoryUsage,
 					'ignoreErrors'		=> $ignoreErrors,
 				);
-				
+
 				$importer->createImportLog( $_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder );
 			}
 		}
 
 	}
-	
-}	
+
+}
 ?>

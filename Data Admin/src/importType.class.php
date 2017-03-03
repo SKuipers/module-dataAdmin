@@ -144,7 +144,7 @@ class importType
             if ($validateStructure == true) {
                 $this->validated = $this->validateWithDatabase( $pdo );
                 $this->loadRelationalData( $pdo );
-            } 
+            }
 
             $this->loadAccessData( $pdo );
         }
@@ -188,7 +188,7 @@ class importType
 
         // Get the built-in import definitions
         $defaultFiles = glob( self::getImportTypeDir() . "/*.yml" );
-        
+
         // Create importType objects for each file
         foreach ( $defaultFiles as $file) {
             $fileData = $yaml::parse( file_get_contents( $file ) );
@@ -216,7 +216,7 @@ class importType
             }
         }
 
-        uasort($importTypes, array('self', 'sortImportTypes')); 
+        uasort($importTypes, array('self', 'sortImportTypes'));
 
         return $importTypes;
     }
@@ -236,7 +236,7 @@ class importType
             return -1;
         else if ($a->getDetail('name') > $b->getDetail('name'))
             return 1;
-        
+
         return 0;
     }
 
@@ -282,7 +282,7 @@ class importType
      * @return  bool
      */
     public function isImportAccessible( $guid, $connection2 ) {
-       
+
         if ($this->getAccessDetail('protected') == false) return true;
         if ($connection2 == null) return false;
 
@@ -304,7 +304,7 @@ class importType
 
         try {
             $sql="SHOW COLUMNS FROM " . $this->getDetail('table');
-            $result = $pdo->executeQuery(array(), $sql);   
+            $result = $pdo->executeQuery(array(), $sql);
         }
         catch(PDOException $e) {
             return false;
@@ -325,7 +325,7 @@ class importType
                     if ($columnName == 'Type') {
                         $this->parseTableValueType($fieldName, $columnField);
                     } else {
-                        $this->setField($fieldName, strtolower($columnName), $columnField);
+                        $this->setField($fieldName, mb_strtolower($columnName), $columnField);
                     }
                 }
                 $validatedFields++;
@@ -353,11 +353,11 @@ class importType
 
         try {
             $data = array('module' => $this->access['module'], 'action' => $this->access['action'] );
-            $sql = "SELECT gibbonAction.category, gibbonAction.entryURL 
-                    FROM gibbonAction 
-                    JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) 
-                    WHERE gibbonModule.name=:module 
-                    AND gibbonAction.name=:action 
+            $sql = "SELECT gibbonAction.category, gibbonAction.entryURL
+                    FROM gibbonAction
+                    JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID)
+                    WHERE gibbonModule.name=:module
+                    AND gibbonAction.name=:action
                     ORDER BY gibbonAction.precedence ASC
                     LIMIT 1";
             $result = $pdo->executeQuery($data, $sql);
@@ -368,7 +368,7 @@ class importType
 
             $this->access['protected'] = true;
             $this->access['entryURL'] = $action['entryURL'];
-            
+
             if (empty($this->details['category'])) {
                 $this->details['category'] = $action['category'];
             }
@@ -387,7 +387,7 @@ class importType
         if ($this->useYearGroups) {
             try {
                 $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
-                $resultYearGroups = $pdo->executeQuery(array(), $sql);   
+                $resultYearGroups = $pdo->executeQuery(array(), $sql);
             } catch(PDOException $e) {}
 
             if ($resultYearGroups->rowCount() > 0) {
@@ -401,7 +401,7 @@ class importType
         if ($this->useLanguages) {
             try {
                 $sql="SELECT name FROM gibbonLanguage";
-                $resultLanguages = $pdo->executeQuery(array(), $sql);   
+                $resultLanguages = $pdo->executeQuery(array(), $sql);
             } catch(PDOException $e) {}
 
             if ($resultLanguages->rowCount() > 0) {
@@ -415,7 +415,7 @@ class importType
         if ($this->useCountries || $this->usePhoneCodes) {
             try {
                 $sql="SELECT printable_name, iddCountryCode FROM gibbonCountry";
-                $resultCountries = $pdo->executeQuery(array(), $sql);   
+                $resultCountries = $pdo->executeQuery(array(), $sql);
             } catch(PDOException $e) {}
 
             if ($resultCountries->rowCount() > 0) {
@@ -430,7 +430,7 @@ class importType
         if ($this->useCustomFields) {
             try {
                 $sql="SELECT gibbonPersonFieldID, name, type, options, required FROM gibbonPersonField where active = 'Y'";
-                $resultCustomFields = $pdo->executeQuery(array(), $sql);   
+                $resultCustomFields = $pdo->executeQuery(array(), $sql);
             } catch(PDOException $e) {}
 
             if ($resultCustomFields->rowCount() > 0) {
@@ -453,7 +453,7 @@ class importType
                         $elements = explode(',', $this->customFields[ $customFieldName ]['options']);
                         $this->setField( $fieldName, 'elements', $elements );
                         $this->setField( $fieldName, 'length', count($elements) );
-                    } else if ($type == 'text' || $type == 'date') { 
+                    } else if ($type == 'text' || $type == 'date') {
                         $this->setField( $fieldName, 'kind', $type);
                         $this->setField( $fieldName, 'type', $type);
                     }
@@ -481,11 +481,11 @@ class importType
     protected function parseTableValueType( $fieldName, $columnField ) {
 
         // Split the info from inside the outer brackets, eg int(3)
-        $firstBracket = strpos($columnField, '(');
-        $lastBracket = strrpos($columnField, ')');
+        $firstBracket = mb_strpos($columnField, '(');
+        $lastBracket = mb_strrpos($columnField, ')');
 
-        $type = ($firstBracket !== false)? substr($columnField, 0, $firstBracket) : $columnField;
-        $details = ($firstBracket !== false)? substr($columnField, $firstBracket+1, $lastBracket-$firstBracket-1 ) : '';
+        $type = ($firstBracket !== false)? mb_substr($columnField, 0, $firstBracket) : $columnField;
+        $details = ($firstBracket !== false)? mb_substr($columnField, $firstBracket+1, $lastBracket-$firstBracket-1 ) : '';
 
         // Cancel out if the type is not valid
         if (!isset($type)) return;
@@ -692,17 +692,17 @@ class importType
         $value = trim($value);
 
         $filter = $this->getField( $fieldName, 'filter' );
-        $strvalue = strtoupper($value);
+        $strvalue = mb_strtoupper($value);
 
         switch($filter) {
-            
+
             case 'html':    // Filter valid tags? requres db connection, which we dont store :(
                             break;
-                            
+
             case 'url':     if (!empty($value)) $value = filter_var( $value, FILTER_SANITIZE_URL);
                             break;
 
-            case 'email':   if (strpos($value, ',') !== false || strpos($value, '/') !== false || strpos($value, ' ') !== false ) {
+            case 'email':   if (mb_strpos($value, ',') !== false || mb_strpos($value, '/') !== false || mb_strpos($value, ' ') !== false ) {
                                 $emails = preg_split('/[\s,\/]*/', $value);
                                 $value = (isset($emails[0]))? $emails[0] : '';
                             }
@@ -714,7 +714,7 @@ class importType
                             if ($strvalue == 'TRUE' || $strvalue == 'YES' || $strvalue == 'Y') {
                                 $value = 'Y';
                             } else if ($value === FALSE || $strvalue == 'FALSE' || $strvalue == 'NO' || $strvalue == 'N' || $strvalue == '') {
-                                $value = 'N'; 
+                                $value = 'N';
                             }
                             break;
 
@@ -746,13 +746,13 @@ class importType
                             if (empty($value) || $value == '0000-00-00 00:00:00' || preg_match('/(^\d{4}[-]\d{2}[-]\d{2}[ ]+\d{2}[:]\d{2}[:]\d{2}$)/', $value) === false) {
                                 $value = NULL;
                             }
-                            
+
                             break;
 
-            case 'schoolyear': 
+            case 'schoolyear':
                             // Change school years formated as 2015-16 to 2015-2016
                             if ( preg_match('/(^\d{4}[-]\d{2}$)/', $value) > 0 ) {
-                                $value = substr($value, 0, 5) . substr($value, 0, 2) . substr($value, 5, 2);
+                                $value = mb_substr($value, 0, 5) . mb_substr($value, 0, 2) . mb_substr($value, 5, 2);
                             }
                             break;
 
@@ -775,7 +775,7 @@ class importType
             case 'phone':   // Handle phone numbers - strip all non-numeric chars
                             $value = preg_replace("/[^0-9,\/]/", '', $value);
 
-                            if (strpos($value, ',') !== false || strpos($value, '/') !== false || strpos($value, ' ') !== false ) {
+                            if (mb_strpos($value, ',') !== false || mb_strpos($value, '/') !== false || mb_strpos($value, ' ') !== false ) {
                                 //$value = preg_replace("/[^0-9,\/]/", '', $value);
                                 $numbers = preg_split("/[,\/]*/", $value);
                                 $value = (isset($numbers[0]))? $numbers[0] : '';
@@ -786,13 +786,13 @@ class importType
                             break;
 
             case 'phonetype': // Handle TIS phone types
-                            if (stripos($value, 'Mobile') !== false || stripos($value, 'Cellular') !== false ) {
+                            if (mb_stripos($value, 'Mobile') !== false || mb_stripos($value, 'Cellular') !== false ) {
                                 $value = 'Mobile';
                             }
-                            else if (stripos($value, 'Home') !== false ) {
+                            else if (mb_stripos($value, 'Home') !== false ) {
                                 $value = 'Home';
                             }
-                            else if (stripos($value, 'Office') !== false || stripos($value, 'Business') !== false ) {
+                            else if (mb_stripos($value, 'Office') !== false || mb_stripos($value, 'Business') !== false ) {
                                 $value = 'Work';
                             } else {
                                 $value = 'Other';
@@ -824,7 +824,7 @@ class importType
                             break;
 
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
-                            
+
                             if (!empty($value)) {
                                 $yearGroupIDs = array();
                                 $yearGroupNames = explode(',', $value);
@@ -835,7 +835,7 @@ class importType
                                         $yearGroupIDs[] = $this->yearGroups[$gradeLevel];
                                     }
                                 }
-                                
+
                                 $value = implode(',', $yearGroupIDs);
                             }
                             break;
@@ -857,9 +857,9 @@ class importType
 
             case 'customfield': break;
 
-            case 'string':  
-            default:        $value = strip_tags($value);   
-                            
+            case 'string':
+            default:        $value = strip_tags($value);
+
 
         }
 
@@ -902,49 +902,49 @@ class importType
         $filter = $this->getField( $fieldName, 'filter' );
 
         switch($filter) {
-            
+
             case 'url':         if (!empty($value) && filter_var( $value, FILTER_VALIDATE_URL) === false) return false; break;
             case 'email':       //if (!empty($value) && filter_var( $value, FILTER_VALIDATE_EMAIL) === false) return false;
                                 break;
 
             case 'country':     if ( !empty($value) && !isset($this->countries[ $value ]) ) return false; break;
-            
+
             case 'language':    if ( !empty($value) && !isset($this->languages[ $value ]) ) return false; break;
 
             case 'phonecode':   if ( !empty($value) && !isset($this->phoneCodes[ $value ]) ) return false; break;
 
             case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/', $value) > 1 ) return false; break;
 
-            default:            if (substr($filter, 0, 1) == '/') {
+            default:            if (mb_substr($filter, 0, 1) == '/') {
                                     if ( preg_match($filter, $value) == false ) {
                                         return false;
                                     }
-                                };   
+                                };
         }
-                            
+
         // Validate based on value type (from db)
         $kind = $this->getField( $fieldName, 'kind' );
-        
+
         switch($kind) {
             case 'char':    $length = $this->getField( $fieldName, 'length' );
-                            if ( strlen($value) > $length ) return false;
+                            if ( mb_strlen($value) > $length ) return false;
                             break;
 
             case 'text':    break;
 
             case 'integer': $value = intval($value);
                             $length = $this->getField( $fieldName, 'length' );
-                            if ( strlen($value) > $length ) return false;
+                            if ( mb_strlen($value) > $length ) return false;
                             break;
 
             case 'decimal': $value = floatval($value);
                             $length = $this->getField( $fieldName, 'length' );
 
-                            if (strpos($value, '.') !== false) {
-                                $number = strstr($value, '.', true);
-                                if ( strlen($number) > $length ) return false;
+                            if (mb_strpos($value, '.') !== false) {
+                                $number = mb_strstr($value, '.', true);
+                                if ( mb_strlen($number) > $length ) return false;
                             } else {
-                                if ( strlen($value) > $length ) return false;
+                                if ( mb_strlen($value) > $length ) return false;
                             }
                             break;
 
@@ -964,7 +964,7 @@ class importType
         //TODO: More value validation
         //TODO: Handle relational table data
         //TODO: Sanitize
-        
+
         return $value;
     }
 
@@ -1091,7 +1091,7 @@ class importType
      * @since   27th April 2016
      * @param   string  Field name
      *
-     * @return  string 
+     * @return  string
      */
     public function readableFieldType( $fieldName ) {
         $output = '';
@@ -1136,7 +1136,7 @@ class importType
         $method = $this->getField($fieldName, 'function');
 
         if ( !empty($method) && method_exists($this, 'userFunc_'.$method)) {
-            return call_user_func( array($this, 'userFunc_'.$method) ); 
+            return call_user_func( array($this, 'userFunc_'.$method) );
         } else {
             return NULL;
         }

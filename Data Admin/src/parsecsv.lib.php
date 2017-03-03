@@ -468,7 +468,7 @@ class parseCSV {
 
         if (!is_null($filename)) {
             header('Content-type: application/csv');
-            header('Content-Length: ' . strlen($data));
+            header('Content-Length: ' . mb_strlen($data));
             header('Cache-Control: no-cache, must-revalidate');
             header('Pragma: no-cache');
             header('Expires: 0');
@@ -541,7 +541,7 @@ class parseCSV {
         }
 
         $chars = array();
-        $strlen = strlen($data);
+        $strlen = mb_strlen($data);
         $enclosed = false;
         $n = 1;
         $to_end = true;
@@ -655,7 +655,7 @@ class parseCSV {
         $col = 0;
         $enclosed = false;
         $was_enclosed = false;
-        $strlen = strlen($data);
+        $strlen = mb_strlen($data);
 
         // force the parser to process end of data as a character (false) when
         // data does not end with a line feed or carriage return character.
@@ -888,7 +888,7 @@ class parseCSV {
                 $data = iconv($this->input_encoding, $this->output_encoding, $data);
             }
 
-            if (substr($data, -1) != "\n") {
+            if (mb_substr($data, -1) != "\n") {
                 $data .= "\n";
             }
 
@@ -915,10 +915,10 @@ class parseCSV {
     protected function _validate_row_conditions($row = array(), $conditions = null) {
         if (!empty($row)) {
             if (!empty($conditions)) {
-                $conditions = (strpos($conditions, ' OR ') !== false) ? explode(' OR ', $conditions) : array($conditions);
+                $conditions = (mb_strpos($conditions, ' OR ') !== false) ? explode(' OR ', $conditions) : array($conditions);
                 $or = '';
                 foreach ($conditions as $key => $value) {
-                    if (strpos($value, ' AND ') !== false) {
+                    if (mb_strpos($value, ' AND ') !== false) {
                         $value = explode(' AND ', $value);
                         $and = '';
 
@@ -926,13 +926,13 @@ class parseCSV {
                             $and .= $this->_validate_row_condition($row, $v);
                         }
 
-                        $or .= (strpos($and, '0') !== false) ? '0' : '1';
+                        $or .= (mb_strpos($and, '0') !== false) ? '0' : '1';
                     } else {
                         $or .= $this->_validate_row_condition($row, $value);
                     }
                 }
 
-                return (strpos($or, '1') !== false) ? true : false;
+                return (mb_strpos($or, '1') !== false) ? true : false;
             }
 
             return true;
@@ -1043,7 +1043,7 @@ class parseCSV {
         if ($value !== null && $value != '') {
             $delimiter_quoted = preg_quote($delimiter, '/');
             $enclosure_quoted = preg_quote($this->enclosure, '/');
-            if (preg_match("/" . $delimiter_quoted . "|" . $enclosure_quoted . "|\n|\r/i", $value) || ($value{0} == ' ' || substr($value, -1) == ' ') || $this->enclose_all) {
+            if (preg_match("/" . $delimiter_quoted . "|" . $enclosure_quoted . "|\n|\r/i", $value) || ($value{0} == ' ' || mb_substr($value, -1) == ' ') || $this->enclose_all) {
                 $value = str_replace($this->enclosure, $this->enclosure . $this->enclosure, $value);
                 $value = $this->enclosure . $value . $this->enclosure;
             }
@@ -1104,7 +1104,7 @@ class parseCSV {
 
             if ($equal) {
                 $match = ($almost) ? 2 : 1;
-                $pref = strpos($preferred, $char);
+                $pref = mb_strpos($preferred, $char);
                 $pref = ($pref !== false) ? str_pad($pref, 3, '0', STR_PAD_LEFT) : '999';
 
                 return $pref . $match . '.' . (99999 - str_pad($first, 5, '0', STR_PAD_LEFT));

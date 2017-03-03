@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 	//Proceed!
 	//Check if file exists
-	
+
 	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
@@ -70,7 +70,7 @@ else {
 			try {
 				set_time_limit(600);
 				//Check for MAMP, because mysqldump is in a weird spot
-				if ( stripos($_ENV["_"], 'MAMP') !== false ) {
+				if ( mb_stripos($_ENV["_"], 'MAMP') !== false ) {
 					$command = "/Applications/MAMP/Library/bin/mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
 				} else {
 					$command = "mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
@@ -92,9 +92,9 @@ else {
 				$URLDelete=$URLDelete . "&return=success0" ;
 				header("Location: {$URLDelete}");
 			}
-			
+
 		}
-		
+
 	}
 }
 ?>

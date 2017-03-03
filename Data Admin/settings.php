@@ -55,8 +55,8 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
-				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'Gibbon', strstr($gibbonVersionRequired, '.', true) ); ?></b><br>
+			<td style="width: 275px">
+				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'Gibbon', mb_strstr($gibbonVersionRequired, '.', true) ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
@@ -67,7 +67,7 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'PHP', $phpVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
@@ -77,12 +77,12 @@ else {
 
 					echo '<span style="margin-right:20px;">PHP '.$phpVersion.'</span>';
 					echo (version_compare($phpVersion, $phpVersionRequired, '>='))? $trueIcon : $falseIcon;
-					
+
 				?>
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, '%s version %s or higher', 'Data Admin'), 'MySQL', $mysqlVersionRequired); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
@@ -92,13 +92,13 @@ else {
 
 					echo '<span style="margin-right:20px;">MySQL '.$mysqlVersion.'</span>';
 					echo (version_compare($mysqlVersion, $mysqlVersionRequired, '>='))? $trueIcon : $falseIcon;
-					
+
 				?>
 			</td>
 		</tr>
 
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_zip'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
@@ -107,7 +107,7 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_xml'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
@@ -116,7 +116,7 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, 'Extension %s enabled', 'Data Admin'), 'php_gd'); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
@@ -125,30 +125,30 @@ else {
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, '%s is writeable', 'Data Admin'), __($guid,'Custom Imports Folder', 'Data Admin') ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
-				<?php 
+				<?php
 					$importsFolder = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation');
 					$importsFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($importsFolder, '/ ');
 
-					echo (is_writable($importsFolderPath))? $trueIcon : $falseIcon; 
+					echo (is_writable($importsFolderPath))? $trueIcon : $falseIcon;
 				?>
 			</td>
 		</tr>
 		<tr>
-			<td style="width: 275px"> 
+			<td style="width: 275px">
 				<b><?php printf( __($guid, '%s is writeable', 'Data Admin'), __($guid,'Snapshots Folder', 'Data Admin') ); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
-				<?php 
+				<?php
 					$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 					$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($snapshotFolder, '/ ');
 
-					echo (is_writable($snapshotFolderPath))? $trueIcon : $falseIcon; 
+					echo (is_writable($snapshotFolderPath))? $trueIcon : $falseIcon;
 				?>
 			</td>
 		</tr>
@@ -167,7 +167,7 @@ else {
                 } catch (PDOException $e) {}
                 $row = $result->fetch();
                 ?>
-				<td style='width: 275px'> 
+				<td style='width: 275px'>
 					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?></b><br/>
 					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
@@ -190,7 +190,7 @@ else {
                 } catch (PDOException $e) {}
                 $row = $result->fetch();
                 ?>
-				<td style='width: 275px'> 
+				<td style='width: 275px'>
 					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?></b><br/>
 					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
@@ -211,7 +211,7 @@ else {
                 } catch (PDOException $e) {}
                 $row = $result->fetch();
                 ?>
-				<td style='width: 275px'> 
+				<td style='width: 275px'>
 					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?> *</b><br/>
 					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
@@ -220,7 +220,7 @@ else {
 					<script type="text/javascript">
 						var <?php echo $row['name'] ?>=new LiveValidation('<?php echo $row['name'] ?>');
 						<?php echo $row['name'] ?>.add(Validate.Presence);
-					</script> 
+					</script>
 				</td>
 			</tr>
 			<tr>
@@ -233,7 +233,7 @@ else {
                 } catch (PDOException $e) {}
                 $row = $result->fetch();
                 ?>
-				<td style='width: 275px'> 
+				<td style='width: 275px'>
 					<b><?php echo __($guid, $row['nameDisplay'], 'Data Admin') ?> *</b><br/>
 					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($guid, $row['description'], 'Data Admin');}?></span>
 				</td>
@@ -242,7 +242,7 @@ else {
 					<script type="text/javascript">
 						var <?php echo $row['name'] ?>=new LiveValidation('<?php echo $row['name'] ?>');
 						<?php echo $row['name'] ?>.add(Validate.Presence);
-					</script> 
+					</script>
 				</td>
 			</tr>
 			<tr>
@@ -258,5 +258,5 @@ else {
 	</form>
 
 	<?php
-}	
+}
 ?>

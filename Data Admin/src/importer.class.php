@@ -110,17 +110,17 @@ class importer
 	private $csvMimeTypes = array(
 		'text/csv', 'text/xml', 'text/comma-separated-values', 'text/x-comma-separated-values', 'application/vnd.ms-excel', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'application/msexcel', 'application/x-msexcel', 'application/x-ms-excel', 'application/x-excel', 'application/x-dos_ms_excel', 'application/xls', 'application/x-xls', 'application/vnd.oasis.opendocument.spreadsheet'
 	);
-	
+
 	/**
 	 * Gibbon\sqlConnection
 	 */
 	private $pdo ;
-	
+
 	/**
 	 * Gibbon\session
 	 */
 	private $session ;
-	
+
 	/**
 	 * Gibbon\config
 	 */
@@ -252,14 +252,14 @@ class importer
 		}
 
 		return (!empty($this->importHeaders) && count($this->importData) > 0 && count($this->importErrors) == 0 );
-    }	
+    }
 
 
     public function readFileIntoCSV() {
 
         $data = '';
 
-        $fileType = substr($_FILES['file']['name'], strpos($_FILES['file']['name'], '.')+1);
+        $fileType = mb_substr($_FILES['file']['name'], mb_strpos($_FILES['file']['name'], '.')+1);
         $mimeType = $_FILES['file']['type'];
 
         if ($fileType == 'csv') {
@@ -347,17 +347,17 @@ class importer
 				}
 				// Get the custom text value provided by the user (from Step 2)
 				else if ($columnIndex == importer::COLUMN_DATA_CUSTOM) {
-					
+
 					$value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
 				}
 				// Run a user_func based on the function name defined for that field
 				else if ($columnIndex == importer::COLUMN_DATA_FUNCTION) {
-					
+
 					$value = $importType->doImportFunction( $fieldName );
 				}
                 // Grab another field value for linked fields. Fields with values must always preceed the linked field.
                 else if ($columnIndex == importer::COLUMN_DATA_LINKED) {
-                    
+
                     if ($importType->isFieldLinked($fieldName)) {
                         $linkedFieldName = $importType->getField($fieldName, 'linked');
                         $value = (isset($fields[ $linkedFieldName ]))? $fields[ $linkedFieldName ] : null;
@@ -373,12 +373,12 @@ class importer
                 // Filter
                 $value = $importType->filterFieldValue( $fieldName, $value );
                 //echo $fieldName.'='.$value.'<br/>';
-				
+
 				// Validate the value
 				if ( $importType->validateFieldValue( $fieldName, $value ) === false ) {
                     $type = $importType->getField($fieldName, 'type');
                     $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $importType->getField($fieldName, 'filter');
-                    
+
 					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $expectation) );
 
 					$partialFail = TRUE;
@@ -432,7 +432,7 @@ class importer
                         // Missing relation for required field? Or missing a relation when value is provided?
                         if (!empty($value) || $importType->isFieldRequired($fieldName)) {
                             $field = (is_array($field))? implode(', ', $field) : $field;
-                            $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount, 
+                            $this->log( $rowNum, importer::ERROR_RELATIONAL_FIELD_MISMATCH, $fieldName, $fieldCount,
                                 array($importType->getField($fieldName, 'name'), $value, $field, $table) );
                             $partialFail = TRUE;
                         }
@@ -460,7 +460,7 @@ class importer
                         $this->serializeData[ $serialize ][ $customField ] = $value;
                     }
 
-                    
+
                 }
                 // Add the field to the field set for this row
                 else {
@@ -491,7 +491,7 @@ class importer
                 $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
                 $fields[ 'passwordStrongSalt' ] = $salt;
                 $fields[ 'password' ] = '';
-                
+
             }
 
 			if (!empty($fields) && $partialFail == FALSE) {
@@ -522,7 +522,7 @@ class importer
 
         // Temporaily removed - Locked tables referenced more than once need an alias
         // http://forums.mysql.com/read.php?21,134450,144180#msg-144180
-        // 
+        //
         // if ($liveRun) {
         // 	if ( $this->lockTables( $importType->getTables() ) == false) {
         // 		$this->errorID = importer::ERROR_LOCKING_DATABASE;
@@ -570,7 +570,7 @@ class importer
                 $keyRow = $result->fetch();
 			}
 
-			catch(PDOException $e) { 
+			catch(PDOException $e) {
 				$this->log( $rowNum, importer::ERROR_DATABASE_GENERIC );
 				$partialFail = TRUE;
 				continue;
@@ -630,7 +630,7 @@ class importer
 					$sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
 					$this->pdo->executeQuery($sqlData, $sql);
 				}
-				catch(PDOException $e) { 
+				catch(PDOException $e) {
 					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
@@ -657,12 +657,12 @@ class importer
 					$sql="INSERT INTO {$tableName} SET ".$sqlFieldString;
 					$this->pdo->executeQuery($sqlData, $sql);
 				}
-				catch(PDOException $e) { 
+				catch(PDOException $e) {
 					$this->log( $rowNum, importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage() );
 					$partialFail = TRUE;
 					continue;
 				}
-				
+
 			}
 			else {
 
@@ -688,7 +688,7 @@ class importer
         $sqlKeys = array();
         foreach ( $importType->getUniqueKeys() as $uniqueKey ) {
 
-            // Handle multi-part unique keys (eg: school year AND course short name) 
+            // Handle multi-part unique keys (eg: school year AND course short name)
             if ( is_array($uniqueKey) && count($uniqueKey) > 1 ) {
 
                 $sqlKeysFields = array();
@@ -706,7 +706,7 @@ class importer
                 $uniqueKeyField = $this->escapeIdentifier($uniqueKey);
                 $sqlKeys[] = "({$uniqueKeyField}=:{$uniqueKey} AND {$uniqueKeyField} IS NOT NULL)";
             }
-            
+
         }
 
         // Add the primary key if database IDs is enabled
@@ -857,7 +857,7 @@ class importer
             $type = 'message';
         }
 
-    	$this->importLog[ $type ][] = array( 
+    	$this->importLog[ $type ][] = array(
     		'index' => $rowNum,
     		'row' => $rowNum+2,
     		'info' => vsprintf( $this->translateMessage($messageID), $args ),
@@ -887,9 +887,9 @@ class importer
     		// ERRORS
     		case importer::ERROR_IMPORT_FILE:
                 return __($this->config->get('guid'), "There was an error reading the import file type %s"); break;
-            case importer::ERROR_REQUIRED_FIELD_MISSING: 
+            case importer::ERROR_REQUIRED_FIELD_MISSING:
     			return __( $this->config->get('guid'), "Missing value for required field."); break;
-    		case importer::ERROR_INVALID_FIELD_VALUE: 
+    		case importer::ERROR_INVALID_FIELD_VALUE:
     			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s"); break;
     		case importer::ERROR_INVALID_INPUTS:
     			return __( $this->config->get('guid'), "Your request failed because your inputs were invalid."); break;
@@ -905,7 +905,7 @@ class importer
     			return __($this->config->get('guid'), "Failed to insert record into database."); break;
     		case importer::ERROR_DATABASE_FAILED_UPDATE:
     			return __($this->config->get('guid'), "Failed to update database record."); break;
-            case importer::ERROR_RELATIONAL_FIELD_MISMATCH: 
+            case importer::ERROR_RELATIONAL_FIELD_MISMATCH:
                 return __( $this->config->get('guid'), "%s: %s does not match an existing %s in %s"); break;
     		// WARNINGS
     		case importer::WARNING_DUPLICATE_KEY:
@@ -935,14 +935,14 @@ class importer
      * @return	bool
      */
     public function createImportLog( $gibbonPersonID, $type, $results = array(), $columnOrder = array() ) {
-    	
+
     	$success = (( $results['importSuccess'] && $results['buildSuccess'] && $results['databaseSuccess'] ) || $results['ignoreErrors']);
 
-		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) ); 
+		$data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) );
 
 		$sql="INSERT INTO dataAdminImportLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
 		$result=$this->pdo->executeQuery($data, $sql);
-	
+
 		return $this->pdo->getQuerySuccess();
     }
 
@@ -962,7 +962,7 @@ class importer
 
 		try {
 			$sql="LOCK TABLES " . implode(' WRITE, ', $tables) ." WRITE";
-			$result = $this->pdo->executeQuery(array(), $sql);   
+			$result = $this->pdo->executeQuery(array(), $sql);
 			return true;
 		}
 		catch(PDOException $e) {
@@ -983,12 +983,12 @@ class importer
     private function unlockTables() {
     	try {
 			$sql="UNLOCK TABLES" ;
-			$result = $this->pdo->executeQuery(array(), $sql);   
+			$result = $this->pdo->executeQuery(array(), $sql);
 			return true;
 		}
 		catch(PDOException $e) {
 			return false;
-		}	
+		}
     }
 
 }
