@@ -25,7 +25,7 @@ $description="Provides additional import functionality for migrating existing da
 $entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="1.1.00" ; //Verson number
+$version="1.2.00" ; //Verson number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
@@ -47,7 +47,7 @@ $gibbonSetting[1]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,
 $gibbonSetting[2]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'exportSnapshotsFolderLocation', 'Snapshots Folder', 'Path to database snapshots folder, relative to uploads.', '/snapshots');";
 $gibbonSetting[3]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'exportDefaultFileType', 'Default Export File Type', '', 'Excel2007');";
 
-//Action rows 
+//Action rows
 //One array per action
 $actionRows[0]["name"]="Import & Export" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group

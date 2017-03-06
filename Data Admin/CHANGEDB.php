@@ -28,4 +28,9 @@ INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`val
 INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'exportDefaultFileType', 'Default Export File Type', '', 'Excel2007');end
 " ;
 
+//v1.2.00
+$count++;
+$sql[$count][0]="1.2.00" ;
+$sql[$count][1]="";
+
 ?>
