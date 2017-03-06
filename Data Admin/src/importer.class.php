@@ -119,12 +119,12 @@ class importer
 	/**
 	 * Gibbon\session
 	 */
-	private $session ;
+	private $gibbon ;
 
 	/**
 	 * Gibbon\config
 	 */
-	private $config ;
+	private $guid ;
 
     private $headerRow;
     private $firstRow;
@@ -139,22 +139,12 @@ class importer
      * @param    Gibbon\sqlConnection
      * @return    void
      */
-    public function __construct(\Gibbon\session $session = NULL, \Gibbon\config $config = NULL, \Gibbon\sqlConnection $pdo = NULL)
+    public function __construct(\Gibbon\core $gibbon, \Gibbon\sqlConnection $pdo)
     {
-        if ($session === NULL)
-            $this->session = new \Gibbon\Session();
-        else
-            $this->session = $session ;
+        $this->gibbon = $gibbon;
+        $this->pdo = $pdo;
 
-        if ($config === NULL)
-            $this->config = new \Gibbon\config();
-        else
-            $this->config = $config ;
-
-        if ($pdo === NULL)
-            $this->pdo = new \Gibbon\sqlConnection();
-        else
-            $this->pdo = $pdo ;
+        $this->guid = $gibbon->guid();
     }
 
     public function __get($name) {
@@ -894,37 +884,37 @@ class importer
     	switch ($errorID) {
     		// ERRORS
     		case importer::ERROR_IMPORT_FILE:
-                return __($this->config->get('guid'), "There was an error reading the import file type %s"); break;
+                return __($this->guid, "There was an error reading the import file type %s", 'Data Admin'); break;
             case importer::ERROR_REQUIRED_FIELD_MISSING:
-    			return __( $this->config->get('guid'), "Missing value for required field."); break;
+    			return __( $this->guid, "Missing value for required field.", 'Data Admin'); break;
     		case importer::ERROR_INVALID_FIELD_VALUE:
-    			return __( $this->config->get('guid'), "Invalid value: %s  Expected: %s"); break;
+    			return __( $this->guid, "Invalid value: \"%s\"  Expected: %s", 'Data Admin'); break;
     		case importer::ERROR_INVALID_INPUTS:
-    			return __( $this->config->get('guid'), "Your request failed because your inputs were invalid."); break;
+    			return __( $this->guid, "Your request failed because your inputs were invalid.", 'Data Admin'); break;
     		case importer::ERROR_LOCKING_DATABASE:
-    			return __( $this->config->get('guid'), "The database could not be locked/unlocked for use."); break;
+    			return __( $this->guid, "The database could not be locked/unlocked for use.", 'Data Admin'); break;
     		case importer::ERROR_KEY_MISSING:
-    			return __($this->config->get('guid'), "Missing value for primary key or unique key set."); break;
+    			return __($this->guid, "Missing value for primary key or unique key set.", 'Data Admin'); break;
             case importer::ERROR_NON_UNIQUE_KEY:
-                return __($this->config->get('guid'), "Encountered non-unique values used by %s: %s"); break;
+                return __($this->guid, "Encountered non-unique values used by %s: %s", 'Data Admin'); break;
     		case importer::ERROR_DATABASE_GENERIC:
-    			return __($this->config->get('guid'), "There was an error accessing the database."); break;
+    			return __($this->guid, "There was an error accessing the database.", 'Data Admin'); break;
     		case importer::ERROR_DATABASE_FAILED_INSERT:
-    			return __($this->config->get('guid'), "Failed to insert record into database."); break;
+    			return __($this->guid, "Failed to insert record into database.", 'Data Admin'); break;
     		case importer::ERROR_DATABASE_FAILED_UPDATE:
-    			return __($this->config->get('guid'), "Failed to update database record."); break;
+    			return __($this->guid, "Failed to update database record.", 'Data Admin'); break;
             case importer::ERROR_RELATIONAL_FIELD_MISMATCH:
-                return __( $this->config->get('guid'), "%s: %s does not match an existing %s in %s"); break;
+                return __( $this->guid, "%s: %s does not match an existing %s in %s", 'Data Admin'); break;
     		// WARNINGS
     		case importer::WARNING_DUPLICATE_KEY:
-    			return __($this->config->get('guid'), "A duplicate entry already exists for this record. Record skipped."); break;
+    			return __($this->guid, "A duplicate entry already exists for this record. Record skipped.", 'Data Admin'); break;
     		case importer::WARNING_RECORD_NOT_FOUND:
-    			return __($this->config->get('guid'), "A database entry for this record could not be found. Record skipped."); break;
+    			return __($this->guid, "A database entry for this record could not be found. Record skipped.", 'Data Admin'); break;
             // MESSAGES
             case importer::MESSAGE_GENERATED_PASSWORD:
-                return __($this->config->get('guid'), "Password generated for user %s: %s"); break;
+                return __($this->guid, "Password generated for user %s: %s", 'Data Admin'); break;
     		default:
-    			return __( $this->config->get('guid'), "An error occured, the import was aborted."); break;
+    			return __( $this->guid, "An error occured, the import was aborted.", 'Data Admin'); break;
     	}
     }
 

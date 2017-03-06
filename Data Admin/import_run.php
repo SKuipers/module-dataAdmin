@@ -50,7 +50,7 @@ else {
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
-	$importer = new DataAdmin\importer( NULL, NULL, $pdo );
+	$importer = new DataAdmin\importer( $gibbon, $pdo );
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
