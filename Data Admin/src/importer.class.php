@@ -260,6 +260,7 @@ class importer
         $data = '';
 
         $fileType = mb_substr($_FILES['file']['name'], mb_strpos($_FILES['file']['name'], '.')+1);
+        $fileType = mb_strtolower($fileType);
         $mimeType = $_FILES['file']['type'];
 
         if ($fileType == 'csv') {
