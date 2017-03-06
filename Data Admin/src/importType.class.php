@@ -1114,7 +1114,10 @@ class importType
                                 $output = "Decimal (" . str_repeat('0', $length) .".". str_repeat('0', $scale)." format)"; break;
                 case 'yesno':   $output = "Y or N"; break;
                 case 'boolean': $output = "True or False"; break;
-                case 'enum':    $output = "Options"; break;
+                case 'enum':    $options = $this->getField($fieldName, 'elements');
+                                $optionCount = $this->getField($fieldName, 'length');
+                                $optionString = ($optionCount > 4)? mb_substr(implode(', ', $options), 0, 60).' ...' : implode(', ', $options);
+                                $output = "Options (".$optionString.")"; break;
                 default:        $output = ucfirst($kind);
             }
         }
