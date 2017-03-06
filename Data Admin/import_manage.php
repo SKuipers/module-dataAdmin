@@ -49,7 +49,7 @@ else {
 		print "</div>" ;
 	}
 	else {
-		
+
 		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
 		$grouping = '';
@@ -92,7 +92,7 @@ else {
 				print "<td>" . $importType->getDetail('desc'). "</td>" ;
 				print "<td>";
 
-					$data=array("type"=>$importTypeName); 
+					$data=array("type"=>$importTypeName);
 					$sql="SELECT surname, preferredName, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID && type=:type ORDER BY timestamp DESC LIMIT 1" ;
 					$result=$pdo->executeQuery($data, $sql);
 
@@ -110,14 +110,19 @@ else {
 					} else {
 						print "<img style='margin-left: 5px' title='" . __($guid, 'You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
-		
+
 
 				print "</td>";
 			print "</tr>" ;
 		}
-		
+
 		print "</table><br/>" ;
 	}
-	
-}	
+
+	// Info
+	print "<div class='message'>" ;
+	print __($guid, 'This list is being added to with each version. New import types may be added by request, please post requests for new import types on the forum thread <a href="https://ask.gibbonedu.org/discussion/895/data-import-module">here</a>.', 'Data Admin');
+	print "</div>" ;
+
+}
 ?>
