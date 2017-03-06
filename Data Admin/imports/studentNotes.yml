@@ -13,30 +13,30 @@ primaryKey:
 uniqueKeys:
     []
 table:
-    gibbonPersonID: 
+    gibbonPersonID:
         name: "Student"
         desc: "Username"
-        args: { filter: string, required: true }
+        args: { filter: nospaces, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    gibbonStudentNoteCategoryID: 
+    gibbonStudentNoteCategoryID:
         name: "Category"
         desc: ""
         args: { filter: string, required: true }
         relationship: { table: gibbonStudentNoteCategory, key: gibbonStudentNoteCategoryID, field: name  }
-    title: 
+    title:
         name: "Title"
         desc: ""
         args: { filter: string, required: true }
-    note: 
+    note:
         name: "Note"
         desc: ""
         args: { filter: string, required: true }
-    gibbonPersonIDCreator: 
+    gibbonPersonIDCreator:
         name: "Created By (optional)"
         desc: "Username"
         args: { filter: string }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    timestamp: 
+    timestamp:
         name: "Timestamp"
         desc: ""
         args: { filter: timestamp, hidden: true, function: timestamp }

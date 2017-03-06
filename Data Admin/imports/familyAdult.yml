@@ -1,7 +1,7 @@
 details:
     type: familyAdult
     name: Family Adults
-    desc: 
+    desc:
     category: Families
     table: gibbonFamilyAdult
     modes: { update: true, insert: true, export: true }
@@ -14,41 +14,41 @@ uniqueKeys:
     - [ gibbonFamilyID, contactPriority ]
     - [ gibbonFamilyID, gibbonPersonID ]
 table:
-    gibbonFamilyID: 
+    gibbonFamilyID:
         name: "Family Sync"
         desc: "Unique ID for family, according to source system."
         args: { filter: string, required: true }
         relationship: { table: gibbonFamily, key: gibbonFamilyID, field: familySync  }
-    gibbonPersonID: 
+    gibbonPersonID:
         name: "Family Member"
         desc: "Username"
-        args: { filter: string, required: true }
+        args: { filter: nospaces, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    comment: 
+    comment:
         name: "Comment"
         desc: "Data displayed in full Student Profile"
         args: { filter: string }
-    childDataAccess: 
+    childDataAccess:
         name: "Child Data Access"
         desc: "Access data on family's children?"
         args: { filter: yesno, required: true, custom: true }
-    contactPriority: 
+    contactPriority:
         name: "Contact Priority"
         desc: "The order in which school should contact family members."
         args: { filter: numeric, custom: true }
-    contactCall: 
+    contactCall:
         name: "Call?"
         desc: "Receive non-emergency phone calls from school?"
         args: { filter: yesno, custom: true }
-    contactSMS: 
+    contactSMS:
         name: "SMS?"
         desc: "Receive non-emergency SMS messages from school?"
         args: { filter: yesno, custom: true }
-    contactEmail: 
+    contactEmail:
         name: "Email?"
         desc: "Receive non-emergency emails from school?"
         args: { filter: yesno, custom: true }
-    contactMail: 
+    contactMail:
         name: "Mail?"
         desc: "Receive postage mail from school?"
         args: { filter: yesno, custom: true }

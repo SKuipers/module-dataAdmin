@@ -14,74 +14,74 @@ uniqueKeys:
     - username
 #    - studentID
 table:
-    title: 
+    title:
         name: "Title"
         desc: "e.g. Mr, Mrs, Dr"
         args: {filter: string}
-    surname: 
+    surname:
         name: "Surname"
         desc: "Family Name"
         args: {filter: string, required: true}
-    firstName: 
+    firstName:
         name: "First Name"
         desc: "Given name"
         args: {filter: string, required: true}
-    preferredName: 
+    preferredName:
         name: "Preffered Name"
         desc: "Most common name, alias, nickname, handle, etc"
         args: {filter: string, required: true}
-    officialName: 
+    officialName:
         name: "Official Name"
         desc: "Full name as shown in ID documents."
         args: {filter: string, required: true}
-    nameInCharacters: 
+    nameInCharacters:
         name: "Name in Characters"
         desc: "Chinese or other character-based name."
         args: {filter: string}
-    gender: 
+    gender:
         name: "Gender"
         desc: ""
         args: {filter: gender, required: true}
-    dob: 
+    dob:
         name: "Date of Birth"
         desc: "yyyy-mm-dd"
         args: {filter: date}
-    gibbonRoleIDPrimary: 
+    gibbonRoleIDPrimary:
         name: "Primary Role"
         desc: "Short Name"
         args: {filter: string, required: true, custom: true }
         relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
-    username: 
+    username:
         name: "Username"
         desc: "User account name & login"
-        args: {filter: string, required: true}
-    password: 
+        args: {filter: nospaces, required: true}
+    password:
         name: "Password"
         desc: "At least one lowercase and one number, from 8 to 20 chars"
-        args: {filter: string, required: true, custom: true, function: generatePassword}
-    passwordForceReset: 
+        args: {filter: nospaces, required: true, custom: true, function: generatePassword}
+    passwordForceReset:
         name: "Force Password Reset"
         desc: ""
         args: {filter: yesno, custom: true}
-    status: 
+    status:
         name: "Status"
         desc: ""
         args: {filter: status, custom: true}
-    canLogin: 
+    canLogin:
         name: "Can Login"
         desc: ""
         args: {filter: yesno, custom: true}
-    email: 
+    email:
         name: "Email"
         desc: ""
         args: {filter: email}
-    studentID: 
+    studentID:
         name: "Student ID"
         desc: "Must be unique if set."
         args: {filter: string}
-    image_240: 
+    image_240:
         name: "Image"
         desc: "Path from /uploads/ to medium portrait image (240px by 320px)"
         args: {filter: string}
 
-        
+

@@ -916,6 +916,8 @@ class importType
 
             case 'schoolyear':  if ( preg_match('/(^\d{4}[-]\d{4}$)/u', $value) > 1 ) return false; break;
 
+            case 'nospaces':    if ( preg_match('/\s/u', $value) > 0 ) return false; break;
+
             default:            if (mb_substr($filter, 0, 1) == '/') {
                                     if ( preg_match($filter, $value) == false ) {
                                         return false;

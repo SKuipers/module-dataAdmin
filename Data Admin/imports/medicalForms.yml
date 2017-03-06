@@ -12,24 +12,24 @@ primaryKey:
 uniqueKeys:
     - gibbonPersonID
 table:
-    gibbonPersonID: 
+    gibbonPersonID:
         name: "Student"
         desc: "Username"
-        args: { filter: string, required: true }
+        args: { filter: nospaces, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    bloodType: 
+    bloodType:
         name: "Blood Type"
         desc: ""
         args: {filter: string}
-    longTermMedication: 
+    longTermMedication:
         name: "Long Term Medication?"
         desc: ""
         args: {filter: yesno}
-    longTermMedicationDetails: 
+    longTermMedicationDetails:
         name: "Medication Details"
         desc: ""
         args: {filter: string}
-    tetanusWithin10Years: 
+    tetanusWithin10Years:
         name: "Tetanus Within Last 10 Years?"
         desc: ""
         args: {filter: yesno}

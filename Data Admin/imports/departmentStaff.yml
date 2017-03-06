@@ -12,17 +12,17 @@ primaryKey:
 uniqueKeys:
     - [ gibbonDepartmentID, gibbonPersonID ]
 table:
-    gibbonDepartmentID: 
+    gibbonDepartmentID:
         name: "Department"
         desc: "Short Name"
         args: { filter: string, required: true }
         relationship: { table: gibbonDepartment, key: gibbonDepartmentID, field: nameShort  }
-    gibbonPersonID: 
+    gibbonPersonID:
         name: "Staff Member"
         desc: "Username"
-        args: { filter: string, required: true }
+        args: { filter: nospaces, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
-    role: 
+    role:
         name: "Role"
         desc: ""
         args: { filter: string, required: true }

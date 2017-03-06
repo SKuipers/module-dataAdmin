@@ -13,10 +13,10 @@ primaryKey:
 uniqueKeys:
     - gibbonPersonID
 table:
-    gibbonPersonID: 
+    gibbonPersonID:
         name: "Person"
         desc: "Username"
-        args: { filter: string, required: true }
+        args: { filter: nospaces, required: true }
         relationship: { table: gibbonPerson, key: gibbonPersonID, field: username  }
     status:
         name: "Current Status"
@@ -102,7 +102,7 @@ table:
         name: "Kindergarten AM/PM"
         desc: ""
         args: { filter: string, readonly: true, serialize: fields }
-    fields: 
+    fields:
         name: "Custom Fields"
         desc: ""
         args: { filter: customfield, serialize: fields, custom: true }

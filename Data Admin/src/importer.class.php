@@ -45,6 +45,7 @@ class importer
 	const ERROR_KEY_MISSING = 211;
     const ERROR_NON_UNIQUE_KEY =212;
     const ERROR_RELATIONAL_FIELD_MISMATCH = 213;
+    const ERROR_INVALID_HAS_SPACES = 214;
 
 	const WARNING_DUPLICATE_KEY = 101;
 	const WARNING_RECORD_NOT_FOUND = 102;
@@ -375,9 +376,14 @@ class importer
 				// Validate the value
 				if ( $importType->validateFieldValue( $fieldName, $value ) === false ) {
                     $type = $importType->getField($fieldName, 'type');
-                    $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $importType->getField($fieldName, 'filter');
+                    $filter = $importType->getField($fieldName, 'filter');
 
-					$this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $expectation) );
+                    if ($filter == 'nospaces') {
+                        $this->log( $rowNum, importer::ERROR_INVALID_HAS_SPACES, $fieldName, $fieldCount, array($value) );
+                    } else {
+                        $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $filter;
+					    $this->log( $rowNum, importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $expectation) );
+                    }
 
 					$partialFail = TRUE;
 				}
@@ -888,7 +894,9 @@ class importer
             case importer::ERROR_REQUIRED_FIELD_MISSING:
     			return __( $this->guid, "Missing value for required field.", 'Data Admin'); break;
     		case importer::ERROR_INVALID_FIELD_VALUE:
-    			return __( $this->guid, "Invalid value: \"%s\"  Expected: %s", 'Data Admin'); break;
+    			return __( $this->guid, "Invalid value: \"%s\".  Expected: %s", 'Data Admin'); break;
+            case importer::ERROR_INVALID_HAS_SPACES:
+                return __( $this->guid, "Invalid value: \"%s\".  This field type cannot contain spaces.", 'Data Admin'); break;
     		case importer::ERROR_INVALID_INPUTS:
     			return __( $this->guid, "Your request failed because your inputs were invalid.", 'Data Admin'); break;
     		case importer::ERROR_LOCKING_DATABASE:
