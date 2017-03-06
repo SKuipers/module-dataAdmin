@@ -155,7 +155,8 @@ class importType
     }
 
     public static function getBaseDir() {
-        $baseDir = str_replace(array('modules/Data Admin', 'src'), '', dirname(__FILE__));
+        $baseDir = rtrim(str_replace('\\', '/', dirname(__FILE__)), '/');
+        $baseDir = str_replace(array('modules/Data Admin', 'src'), '', $baseDir);
 
         return rtrim($baseDir, '/ ');
     }
