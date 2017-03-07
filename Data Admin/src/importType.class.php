@@ -154,21 +154,19 @@ class importType
         }
     }
 
-    public static function getBaseDir() {
-        $baseDir = rtrim(str_replace('\\', '/', dirname(__FILE__)), '/');
-        $baseDir = str_replace(array('modules/Data Admin', 'src'), '', $baseDir);
-
-        return rtrim($baseDir, '/ ');
+    public static function getBaseDir(\Gibbon\sqlConnection $pdo) {
+        $absolutePath = getSettingByScope($pdo->getConnection(), 'System', 'absolutePath');
+        return rtrim($absolutePath, '/ ');
     }
 
-    public static function getImportTypeDir() {
-        return self::getBaseDir() . "/modules/Data Admin/imports";
+    public static function getImportTypeDir(\Gibbon\sqlConnection $pdo) {
+        return self::getBaseDir($pdo) . "/modules/Data Admin/imports";
     }
 
     public static function getCustomImportTypeDir(\Gibbon\sqlConnection $pdo) {
         $customFolder = getSettingByScope($pdo->getConnection(), 'Data Admin', 'importCustomFolderLocation');
 
-        return self::getBaseDir().'/uploads/'.trim($customFolder, '/ ');
+        return self::getBaseDir($pdo).'/uploads/'.trim($customFolder, '/ ');
     }
 
     /**
@@ -188,7 +186,7 @@ class importType
         $importTypes = array();
 
         // Get the built-in import definitions
-        $defaultFiles = glob( self::getImportTypeDir() . "/*.yml" );
+        $defaultFiles = glob( self::getImportTypeDir($pdo) . "/*.yml" );
 
         // Create importType objects for each file
         foreach ( $defaultFiles as $file) {
@@ -259,7 +257,7 @@ class importType
         $path = self::getCustomImportTypeDir($pdo).'/'.$importTypeName.'.yml';
         if (!file_exists($path)) {
             // Next check the built-in import types folder
-            $path = self::getImportTypeDir().'/'.$importTypeName.'.yml';
+            $path = self::getImportTypeDir($pdo).'/'.$importTypeName.'.yml';
 
             // Finally fail if nothing is found
             if (!file_exists($path)) return NULL;
