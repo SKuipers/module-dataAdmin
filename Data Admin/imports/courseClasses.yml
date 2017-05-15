@@ -13,29 +13,29 @@ uniqueKeys:
     - [ gibbonCourseID, name ]
     - [ gibbonCourseID, nameShort ]
 table:
-    gibbonSchoolYearID: 
+    gibbonSchoolYearID:
         name: "School Year"
         desc: "Must match an existing school year e.g. 2015-2016"
-        args: { filter: schoolyear, required: true, readonly: true }
+        args: { filter: schoolyear, required: true, readonly: true, custom: true }
         relationship: { table: gibbonSchoolYear, key: gibbonSchoolYearID, field: name  }
-    gibbonCourseID: 
+    gibbonCourseID:
         name: "Course"
         desc: "nameShort of a valid Course"
         args: { filter: string, required: true }
         relationship: { table: gibbonCourse, key: gibbonCourseID, field: [ nameShort, gibbonSchoolYearID ]  }
-    name: 
+    name:
         name: "Class Name"
         desc: "Must be unique for this course."
         args: { filter: string, required: true }
-    nameShort: 
+    nameShort:
         name: "Short Name"
         desc: "Must be unique for this course."
         args: { filter: string, required: true }
-    reportable: 
+    reportable:
         name: "Reportable"
         desc: "Should this class show in reports?"
         args: { filter: yesno, custom: true }
-    attendance: 
+    attendance:
         name: "Track Attendance"
         desc: "Should this class take attendance?"
         args: { filter: yesno, custom: true }
