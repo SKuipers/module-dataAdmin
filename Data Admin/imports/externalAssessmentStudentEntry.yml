@@ -10,7 +10,7 @@ access:
 primaryKey:
     gibbonExternalAssessmentStudentEntryID
 uniqueKeys:
-    [ gibbonExternalAssessmentStudentID, gibbonExternalAssessmentFieldID ]
+    - [ gibbonExternalAssessmentStudentID, gibbonExternalAssessmentFieldID ]
 table:
     gibbonExternalAssessmentID:
         name: "External Assessment"
