@@ -23,13 +23,13 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
 	//Proceed!
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Delete Snapshot', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Delete Snapshot', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 	
 
@@ -40,7 +40,7 @@ else {
 	
 	if ($filename=="") {
 		print "<div class='error'>" ;
-			print __($guid, "You have not specified one or more required parameters.") ;
+			print __("You have not specified one or more required parameters.") ;
 		print "</div>" ;
 	}
 	else {
@@ -53,7 +53,7 @@ else {
 
 		if ( !file_exists( $filepath ) ) {
 			print "<div class='error'>" ;
-				print __($guid, "The specified record cannot be found.") ;
+				print __("The specified record cannot be found.") ;
 			print "</div>" ;
 		}
 		else {
@@ -63,8 +63,8 @@ else {
 				<table class='smallIntBorder fullWidth' cellspacing='0'>	
 					<tr>
 						<td> 
-							<b><?php print __($guid, 'Are you sure you want to delete this record?') ; ?></b><br/>
-							<span style="font-size: 90%; color: #cc0000"><i><?php print __($guid, 'This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
+							<b><?php print __('Are you sure you want to delete this record?') ; ?></b><br/>
+							<span style="font-size: 90%; color: #cc0000"><i><?php print __('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
 						</td>
 						<td class="right">
 							
@@ -73,7 +73,7 @@ else {
 					<tr>
 						<td> 
 							<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-							<input type="submit" value="<?php print __($guid, 'Yes') ; ?>">
+							<input type="submit" value="<?php print __('Yes') ; ?>">
 						</td>
 						<td class="right">
 							

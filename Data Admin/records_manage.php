@@ -26,7 +26,7 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
@@ -35,12 +35,12 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Manage Records', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	// Info
 	print "<div class='message'>" ;
-	print __($guid, 'The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
+	print __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
 	print "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
@@ -61,7 +61,7 @@ else {
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;
-		print __($guid, "There are no records to display.") ;
+		print __("There are no records to display.") ;
 		print "</div>" ;
 	}
 	else {
@@ -85,25 +85,25 @@ else {
 
 				print "<tr class='head'>" ;
 					print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-						print __($guid, "Category") ;
+						print __("Category") ;
 					print "</th>" ;
 					print "<th style='width: 25%;padding: 5px !important;'>" ;
-						print __($guid, "Table", 'Data Admin') ;
+						print __("Table", 'Data Admin') ;
 					print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __($guid, "Total Rows", 'Data Admin') ;
+						print __("Total Rows", 'Data Admin') ;
 					print "</th>" ;
 					// print "<th style='width: 12%;padding: 5px !important;'>" ;
-					// 	print __($guid, "Current Year") ;
+					// 	print __("Current Year") ;
 					// print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __($guid, "Duplicates", 'Data Admin') ;
+						print __("Duplicates", 'Data Admin') ;
 					print "</th>" ;
 					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __($guid, "Orphaned", 'Data Admin') ;
+						print __("Orphaned", 'Data Admin') ;
 					print "</th>" ;
 					print "<th style='width: 8%;padding: 5px !important;'>" ;
-						print __($guid, "Actions") ;
+						print __("Actions") ;
 					print "</th>" ;
 				print "</tr>" ;
 			}
@@ -144,10 +144,10 @@ else {
 
 					if ( $isImportAccessible ) {
 
-						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __($guid, 'Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __('Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __($guid, 'You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
 		
 

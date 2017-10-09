@@ -25,7 +25,7 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
@@ -34,11 +34,11 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'View Import History', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	print "<h3>" ;
-	print __($guid, "Import History", 'Data Admin') ;
+	print __("Import History", 'Data Admin') ;
 	print "</h3>" ;
 
 	// Get a list of available import options
@@ -49,7 +49,7 @@ else {
 
 	if (empty($importTypeList) || $result->rowCount()<1) {
 		print "<div class='error'>" ;
-		print __($guid, "There are no records to display.") ;
+		print __("There are no records to display.") ;
 		print "</div>" ;
 	}
 	else {
@@ -57,22 +57,22 @@ else {
 		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 			print "<tr class='head'>" ;
 				print "<th style='width: 100px;'>" ;
-					print __($guid, "Date") ;
+					print __("Date") ;
 				print "</th>" ;
 				print "<th>" ;
-					print __($guid, "User") ;
+					print __("User") ;
 				print "</th>" ;
 				print "<th style='width: 80px;'>" ;
-					print __($guid, "Category") ;
+					print __("Category") ;
 				print "</th>" ;
 				print "<th >" ;
-					print __($guid, "Import Type", 'Data Admin') ;
+					print __("Import Type", 'Data Admin') ;
 				print "</th>" ;
 				print "<th>" ;
-					print __($guid, "Details") ;
+					print __("Details") ;
 				print "</th>" ;
 				print "<th>" ;
-					print __($guid, "Actions") ;
+					print __("Actions") ;
 				print "</th>" ;
 			print "</tr>" ;
 
@@ -95,7 +95,7 @@ else {
 				print "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
 
 				print "<td>";
-					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __($guid, 'View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
 				print "</td>";
 
 			print "</tr>" ;

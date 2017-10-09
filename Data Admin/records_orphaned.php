@@ -26,7 +26,7 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphaned.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
@@ -35,12 +35,12 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Orphaned Records', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Orphaned Records', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	// Info
 	print "<div class='warning'>" ;
-	print __($guid, 'Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
+	print __('Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	print "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
@@ -66,7 +66,7 @@ else {
 
 	if (count($orphanedRecords)<1) {
 		print "<div class='error'>" ;
-		print __($guid, "There are no records to display.") ;
+		print __("There are no records to display.") ;
 		print "</div>" ;
 	}
 	else {
@@ -85,7 +85,7 @@ else {
 				}
 
 				print "<th style='width: 12%;padding: 5px !important;'>" ;
-					print __($guid, "Actions") ;
+					print __("Actions") ;
 				print "</th>" ;
 			print "</tr>" ;
 
@@ -105,7 +105,7 @@ else {
 					if (!empty($row[ $relationship['key'] ])) {
 						print "<td>" .$row[ $relationship['key'] ]."</td>";
 					} else {
-						print "<td class='error'>" .__($guid, 'Missing', 'Data Admin')."</td>";
+						print "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
 					}
 				}
 				
@@ -115,7 +115,7 @@ else {
 						
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __($guid, 'You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
 				print "</td>";
 

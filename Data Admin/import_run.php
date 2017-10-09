@@ -27,7 +27,7 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
@@ -40,7 +40,7 @@ else {
 	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import From File', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	$importer = new Importer( $gibbon, $pdo );
@@ -53,17 +53,17 @@ else {
 
 	if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
 		print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 		print "</div>" ;
 		return;
 	} else if ( empty($importType)  ) {
 		print "<div class='error'>" ;
-		print __($guid, "Your request failed because your inputs were invalid.") ;
+		print __("Your request failed because your inputs were invalid.") ;
 		print "</div>" ;
 		return;
 	} else if ( !$importType->isValid() ) {
 		print "<div class='error'>";
-		printf( __($guid, 'Import cannot proceed, as the selected Import Type "%s" did not validate with the database.', 'Data Admin'), $type) ;
+		printf( __('Import cannot proceed, as the selected Import Type "%s" did not validate with the database.', 'Data Admin'), $type) ;
 		print "<br/></div>";
 		return;
 	}
@@ -71,10 +71,10 @@ else {
 	$step = (isset($_GET["step"]))? min( max(1, $_GET["step"]), 4) : 1;
 
 	print "<ul id='progressbar'>";
-		printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", __($guid, "Select CSV", 'Data Admin') );
-		printf("<li class='%s'>%s</li>", ($step >= 2)? "active" : "", __($guid, "Confirm Data", 'Data Admin') );
-		printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", __($guid, "Dry Run", 'Data Admin') );
-		printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", __($guid, "Live Run", 'Data Admin') );
+		printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", __("Select CSV", 'Data Admin') );
+		printf("<li class='%s'>%s</li>", ($step >= 2)? "active" : "", __("Confirm Data", 'Data Admin') );
+		printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", __("Dry Run", 'Data Admin') );
+		printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", __("Live Run", 'Data Admin') );
 	print "</ul>";
 
 
@@ -91,11 +91,11 @@ else {
 		}
 	?>
 		<h2>
-			<?php print __($guid, 'Step 1 - Select CSV Files', 'Data Admin') ?>
+			<?php print __('Step 1 - Select CSV Files', 'Data Admin') ?>
 		</h2>
 
 		<div class='message'>
-			<?php print __($guid, 'Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there\'s no guaruntee the import won\'t change or overwrite important data.', 'Data Admin'); ?>
+			<?php print __('Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there\'s no guaruntee the import won\'t change or overwrite important data.', 'Data Admin'); ?>
 		</div>
 		<p>
 		</p>
@@ -103,8 +103,8 @@ else {
 			<table class='smallIntBorder fullWidth' cellspacing='0'>
 				<tr>
 					<td>
-						<b><?php print __($guid, "Mode", 'Data Admin'); ?> *</b><br/>
-						<span class="emphasis small"><?php print __($guid, "Options available depend on the import type.", 'Data Admin'); ?></span>
+						<b><?php print __("Mode", 'Data Admin'); ?> *</b><br/>
+						<span class="emphasis small"><?php print __("Options available depend on the import type.", 'Data Admin'); ?></span>
 					</td>
 					<td class="right">
 						<select name="mode" id="mode" class="standardWidth">
@@ -112,15 +112,15 @@ else {
 								$modes = $importType->getDetail('modes');
 
 								if ((isset($modes['update']) && $modes['update'] == true) && (isset($modes['insert']) && $modes['insert'] == true)) {
-									print "<option value='sync'>". __($guid, 'UPDATE & INSERT', 'Data Admin'). "</option>";
+									print "<option value='sync'>". __('UPDATE & INSERT', 'Data Admin'). "</option>";
 								}
 
 								if ( isset($modes['update']) && $modes['update'] == true ) {
-									print "<option value='update'>". __($guid, 'UPDATE only', 'Data Admin') . "</option>";
+									print "<option value='update'>". __('UPDATE only', 'Data Admin') . "</option>";
 								}
 
 								if ( isset($modes['insert']) && $modes['insert'] == true ) {
-									print "<option value='insert'>". __($guid, 'INSERT only', 'Data Admin'). "</option>";
+									print "<option value='insert'>". __('INSERT only', 'Data Admin'). "</option>";
 								}
 							?>
 						</select>
@@ -128,24 +128,24 @@ else {
 				</tr>
 				<tr>
 					<td>
-						<b><?php print __($guid, "Column Order", 'Data Admin'); ?></b><br/>
+						<b><?php print __("Column Order", 'Data Admin'); ?></b><br/>
 						<span class="emphasis small"></span>
 					</td>
 					<td class="right">
 						<select name="columnOrder" id="columnOrder" class="standardWidth">
-							<option value="guess"><?php print __($guid, 'Best Guess', 'Data Admin') ?></option>
+							<option value="guess"><?php print __('Best Guess', 'Data Admin') ?></option>
 							<?php if ($result->rowCount() > 0) : ?>
-								<option value="last" selected><?php print __($guid, 'From Last Import', 'Data Admin') ?></option>
+								<option value="last" selected><?php print __('From Last Import', 'Data Admin') ?></option>
 							<?php endif; ?>
-							<option value="linearplus"><?php print __($guid, 'From Export Data', 'Data Admin') ?></option>
-							<option value="linear"><?php print __($guid, 'Same as Below', 'Data Admin') ?></option>
+							<option value="linearplus"><?php print __('From Export Data', 'Data Admin') ?></option>
+							<option value="linear"><?php print __('Same as Below', 'Data Admin') ?></option>
 						</select>
 					</td>
 				</tr>
 				<tr>
 					<td style='width: 275px'>
-						<b><?php print __($guid, 'CSV File', 'Data Admin') ?> *</b><br/>
-						<span class="emphasis small"><?php print __($guid, 'See Notes below for specification.', 'Data Admin') ?></span>
+						<b><?php print __('CSV File', 'Data Admin') ?> *</b><br/>
+						<span class="emphasis small"><?php print __('See Notes below for specification.', 'Data Admin') ?></span>
 					</td>
 					<td class="right">
 						<input type="file" name="file" id="file" size="chars" accept=".csv,.xls,.xlsx,.xml,.ods">
@@ -157,7 +157,7 @@ else {
 				</tr>
 				<tr>
 					<td>
-						<b><?php print __($guid, 'Field Delimiter', 'Data Admin') ?> *</b><br/>
+						<b><?php print __('Field Delimiter', 'Data Admin') ?> *</b><br/>
 					</td>
 					<td class="right">
 						<input type="text" class="standardWidth" name="fieldDelimiter" value="," maxlength=1>
@@ -169,7 +169,7 @@ else {
 				</tr>
 				<tr>
 					<td>
-						<b><?php print __($guid, 'String Enclosure', 'Data Admin') ?> *</b><br/>
+						<b><?php print __('String Enclosure', 'Data Admin') ?> *</b><br/>
 						<span class="emphasis small"></span>
 					</td>
 					<td class="right">
@@ -182,11 +182,11 @@ else {
 				</tr>
 				<tr>
 					<td>
-						<span class="emphasis small">* <?php print __($guid, "denotes a required field") ; ?></span>
+						<span class="emphasis small">* <?php print __("denotes a required field") ; ?></span>
 					</td>
 					<td class="right">
 						<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-						<input id="submitStep1" type="submit" value="<?php print __($guid, "Submit") ; ?>">
+						<input id="submitStep1" type="submit" value="<?php print __("Submit") ; ?>">
 					</td>
 				</tr>
 			</table>
@@ -194,18 +194,18 @@ else {
 
 
 		<h4>
-			<?php print __($guid, 'Notes') ?>
+			<?php print __('Notes') ?>
 		</h4>
 		<ol>
-			<li style='color: #c00; font-weight: bold'><?php print __($guid, 'Always include a header row in the CSV file.', 'Data Admin') ?></li>
-			<li><?php print __($guid, 'You may only submit CSV files.') ?></li>
-			<li><?php print __($guid, 'Imports cannot be run concurrently (e.g. make sure you are the only person importing at any one time).') ?></li>
+			<li style='color: #c00; font-weight: bold'><?php print __('Always include a header row in the CSV file.', 'Data Admin') ?></li>
+			<li><?php print __('You may only submit CSV files.') ?></li>
+			<li><?php print __('Imports cannot be run concurrently (e.g. make sure you are the only person importing at any one time).') ?></li>
 		</ol>
 	<?php
 
 	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php") ) {
 		print "<div class='linkTop'>" ;
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __($guid, 'Export Structure', 'Data Admin') . "<img style='margin-left: 5px' title='" . __($guid, 'Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+		print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Structure', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 		print "</div>" ;
 	}
 
@@ -214,13 +214,13 @@ else {
 			print "<th style='width: 20px;'>" ;
 			print "</th>" ;
 			print "<th style='width: 180px;'>" ;
-				print __($guid, "Name") ;
+				print __("Name") ;
 			print "</th>" ;
 			print "<th >" ;
-				print __($guid, "Description") ;
+				print __("Description") ;
 			print "</th>" ;
 			print "<th style='width: 100px;'>" ;
-				print __($guid, "Type") ;
+				print __("Type") ;
 			print "</th>" ;
 		print "</tr>" ;
 
@@ -264,7 +264,7 @@ else {
 
 
 		print "<h2>";
-		print __($guid, 'Step 2 - Data Check & Confirm', 'Data Admin');
+		print __('Step 2 - Data Check & Confirm', 'Data Admin');
 		print "</h2>";
 
 		$mode = (isset($_POST['mode']))? $_POST['mode'] : NULL;
@@ -272,17 +272,17 @@ else {
 		//Check file type
 		if ($importer->isValidMimeType($_FILES['file']['type']) == false) {
 			print "<div class='error'>";
-			printf(__($guid, 'Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a CSV file.', 'Data Admin'), $_FILES['file']['type']);
+			printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a CSV file.', 'Data Admin'), $_FILES['file']['type']);
 			print "<br/></div>";
 		}
 		else if ( empty($_POST["fieldDelimiter"]) OR empty($_POST["stringEnclosure"])) {
 			print "<div class='error'>";
-			print __($guid, 'Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
+			print __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
 			print "<br/></div>";
 		}
 		else if ($mode != "sync" AND $mode != "insert" AND $mode != "update") {
 			print "<div class='error'>";
-			print __($guid, 'Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
+			print __('Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
 			print "<br/></div>";
 		}
 		else {
@@ -314,7 +314,7 @@ else {
 
 			if ( empty($csvData) || empty($headings) || empty($firstLine) ) {
 				print "<div class='error'>";
-				print __($guid, 'Import cannot proceed, the file type cannot be read.', 'Data Admin');
+				print __('Import cannot proceed, the file type cannot be read.', 'Data Admin');
 				print "<br/></div>";
 				return;
 			}
@@ -345,24 +345,24 @@ else {
 				print "<tr>" ;
 					print "<td>";
 						print "<strong>";
-						print __($guid, "Use database ID field?", 'Data Admin');
+						print __("Use database ID field?", 'Data Admin');
 						print "</strong><br/>";
 
 						print "<span class='emphasis small'>";
-						print __($guid, "Only entries with a matching database ID will be updated.", 'Data Admin');
+						print __("Only entries with a matching database ID will be updated.", 'Data Admin');
 						print "</span>";
 					print "</td>";
 					print "<td class='right standardWidth'>";
 
-					print "<input type='radio' name='syncField' value='Y' ". (($lastFieldValue == 'Y')? 'checked' : '') ."> " . __($guid, 'Yes') .' ';
-					print "<input type='radio' name='syncField' value='N' ". (($lastFieldValue == 'N')? 'checked' : '') ."> " . __($guid, 'No');
+					print "<input type='radio' name='syncField' value='Y' ". (($lastFieldValue == 'Y')? 'checked' : '') ."> " . __('Yes') .' ';
+					print "<input type='radio' name='syncField' value='N' ". (($lastFieldValue == 'N')? 'checked' : '') ."> " . __('No');
 
 					print "</td>";
 				print "</tr>" ;
 
 				print "<tr class='syncDetails'>" ;
 					print "<td>";
-					printf( __($guid, "Sync field %s with CSV column:", 'Data Admin'), '<code>'.$importType->getPrimaryKey().'</code>' );
+					printf( __("Sync field %s with CSV column:", 'Data Admin'), '<code>'.$importType->getPrimaryKey().'</code>' );
 					print "</td>";
 
 					print "<td>";
@@ -408,9 +408,9 @@ else {
 						foreach(array_reverse($key) as $keyName) {
 							$keyNames[] = $importType->getField($keyName, 'name');
 						}
-						$importRestrictions[] = __($guid, 'Unique', 'Data Admin').' '. implode(__($guid, ' for each ', 'Data Admin'), $keyNames);
+						$importRestrictions[] = __('Unique', 'Data Admin').' '. implode(__(' for each ', 'Data Admin'), $keyNames);
 					} else {
-						$importRestrictions[] = $importType->getField($key, 'name') .' ' . __($guid, 'must be unique', 'Data Admin');
+						$importRestrictions[] = $importType->getField($key, 'name') .' ' . __('must be unique', 'Data Admin');
 					}
 				}
 			}
@@ -424,14 +424,14 @@ else {
 					extract( $importType->getField($fieldName, 'relationship') );
 					$field = (is_array($field))? implode(', ', $field) : $field;
 
-					$importRestrictions[] = sprintf( __($guid, 'Each %s should match the %s of a %s', 'Data Admin'),
+					$importRestrictions[] = sprintf( __('Each %s should match the %s of a %s', 'Data Admin'),
 						$importType->getField($fieldName, 'name'), $field, $table
 					);
 				}
 
 				if ($importType->getField($fieldName, 'type') == 'enum') {
 
-					$importRestrictions[] = sprintf( __($guid, '%s must be one of: %s', 'Data Admin'),
+					$importRestrictions[] = sprintf( __('%s must be one of: %s', 'Data Admin'),
 						$importType->getField($fieldName, 'name'),
 						implode(', ', $importType->getField($fieldName, 'elements'))
 					);
@@ -439,11 +439,11 @@ else {
 				}
 
 				if ($importType->getField($fieldName, 'filter') == 'email') {
-					$importRestrictions[] = sprintf( __($guid, '%s must be a valid email address'), $importType->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
+					$importRestrictions[] = sprintf( __('%s must be a valid email address'), $importType->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
 				}
 
 				if ($importType->getField($fieldName, 'filter') == 'url') {
-					$importRestrictions[] = sprintf( __($guid, '%s must be a valid url'), $importType->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
+					$importRestrictions[] = sprintf( __('%s must be a valid url'), $importType->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
 				}
 			}
 
@@ -455,7 +455,7 @@ else {
 				print "<tr>" ;
 					print "<th colspan=2>";
 						print "<strong>";
-						print __($guid, "Import Restrictions", 'Data Admin');
+						print __("Import Restrictions", 'Data Admin');
 						print "</strong>";
 					print "</th>" ;
 				print "</tr>" ;
@@ -475,16 +475,16 @@ else {
 			print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 			print "<tr class='head'>" ;
 				print "<th >" ;
-					print __($guid, "Field Name", 'Data Admin') ;
+					print __("Field Name", 'Data Admin') ;
 				print "</th>" ;
 				print "<th style='width: 120px;'>" ;
-					print __($guid, "Type", 'Data Admin') ;
+					print __("Type", 'Data Admin') ;
 				print "</th>" ;
 				print "<th style='width:215px;'>" ;
-					print __($guid, "Column", 'Data Admin') ;
+					print __("Column", 'Data Admin') ;
 				print "</th>" ;
 				print "<th style='width:185px;'>" ;
-					print __($guid, "Sample", 'Data Admin') ;
+					print __("Sample", 'Data Admin') ;
 				print "</th>" ;
 
 			print "</tr>" ;
@@ -513,11 +513,11 @@ else {
 							 }
 
 							 if ( $importType->isFieldUniqueKey($fieldName) ) {
-							 	print "<img title='" . __($guid, 'Unique Key', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/target.png'/ style='float: right; width:12px; height:12px;margin-left:4px;'>";
+							 	print "<img title='" . __('Unique Key', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/target.png'/ style='float: right; width:12px; height:12px;margin-left:4px;'>";
 							 }
 
 							 if ( $importType->isFieldRelational($fieldName) ) {
-							 	print "<img title='" . __($guid, 'Relational', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/ style='float: right; width:10px; height:10px;margin-left:4px;'>";
+							 	print "<img title='" . __('Relational', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/refresh.png'/ style='float: right; width:10px; height:10px;margin-left:4px;'>";
 							 }
 						print "</td>" ;
 
@@ -591,13 +591,13 @@ else {
 			<table class='smallIntBorder fullWidth' cellspacing='0'>
 				<tr>
 					<td colspan="2">
-						<?php print __($guid, "CSV Data:", 'Data Admin') ; ?><br/>
+						<?php print __("CSV Data:", 'Data Admin') ; ?><br/>
 						<textarea name="csvData" cols="92" rows="5" readonly><?php print $csvData; ?></textarea>
 					</td>
 				</tr>
 				<tr>
 					<td>
-						<span class="emphasis small">* <?php print __($guid, "denotes a required field") ; ?></span>
+						<span class="emphasis small">* <?php print __("denotes a required field") ; ?></span>
 					</td>
 					<td class="right">
 						<input name="mode" id="mode" value="<?php print $mode; ?>" type="hidden">
@@ -605,7 +605,7 @@ else {
 						<input name="stringEnclosure" id="stringEnclosure" value="<?php print urlencode($_POST["stringEnclosure"]); ?>" type="hidden">
 						<input id="ignoreErrors" name="ignoreErrors" value="0" type="hidden">
 						<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-						<input id="submitStep2" type="submit" value="<?php print __($guid, "Submit") ; ?>">
+						<input id="submitStep2" type="submit" value="<?php print __("Submit") ; ?>">
 					</td>
 				</tr>
 			</table>
@@ -624,7 +624,7 @@ else {
 		// print "</pre>";
 
 		print "<h2>";
-		print ($step==3)? __($guid, 'Step 3 - Dry Run', 'Data Admin') : __($guid, 'Step 4 - Live Run', 'Data Admin');
+		print ($step==3)? __('Step 3 - Dry Run', 'Data Admin') : __('Step 4 - Live Run', 'Data Admin');
 		print "</h2>";
 
 		// Gather our data
@@ -648,24 +648,24 @@ else {
 
 		if ( empty($csvData) || empty($columnOrder) ) {
 			print "<div class='error'>";
-			print __($guid, "Your request failed because your inputs were invalid.") ;
+			print __("Your request failed because your inputs were invalid.") ;
 			print "<br/></div>";
 			return;
 		}
 		else if ($mode != "sync" AND $mode != "insert" AND $mode != "update") {
 			print "<div class='error'>";
-			print __($guid, 'Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
+			print __('Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
 			print "<br/></div>";
 		}
 		else if ( ($mode == 'sync' || $mode == 'update') && (!empty($syncField) && $syncColumn < 0 ) ) {
 			print "<div class='error'>";
-			print __($guid, "Your request failed because your inputs were invalid.") ;
+			print __("Your request failed because your inputs were invalid.") ;
 			print "<br/></div>";
 			return;
 		}
 		else if ( empty($fieldDelimiter) OR empty($stringEnclosure) ) {
 			print "<div class='error'>";
-			print __($guid, 'Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
+			print __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
 			print "<br/></div>";
 		}
 		else {
@@ -703,9 +703,9 @@ else {
 
 				print "<div class='success'>";
 				if ($step == 3) {
-					print __($guid, 'The data was successfully imported and validated. No changes have been made to the database.', 'Data Admin');
+					print __('The data was successfully imported and validated. No changes have been made to the database.', 'Data Admin');
 				} else {
-					print __($guid, 'The import completed successfully and all relevant database fields have been created and/or updated.', 'Data Admin');
+					print __('The import completed successfully and all relevant database fields have been created and/or updated.', 'Data Admin');
 				}
 				print "</div>";
 
@@ -722,13 +722,13 @@ else {
 				print "<table class='smallIntBorder fullWidth colorOddEven' cellspacing='0'>" ;
 					print "<tr class='head'>" ;
 						print "<th style='width: 40px;'>" ;
-							print __($guid, "Row", 'Data Admin') ;
+							print __("Row", 'Data Admin') ;
 						print "</th>" ;
 						print "<th style='width: 200px;'>" ;
-							print __($guid, "Field", 'Data Admin') ;
+							print __("Field", 'Data Admin') ;
 						print "</th>" ;
 						print "<th >" ;
-							print __($guid, "Message", 'Data Admin') ;
+							print __("Message", 'Data Admin') ;
 						print "</th>" ;
 					print "</tr>" ;
 
@@ -754,15 +754,15 @@ else {
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php print "class='". ( ($importSuccess)? 'current' : 'error' ) ."'"; ?>>
 					<td class="right"  width="50%">
-						<?php print __($guid, "Reading CSV file", 'Data Admin').": "; ?>
+						<?php print __("Reading CSV file", 'Data Admin').": "; ?>
 					</td>
 					<td>
-						<?php print ($importSuccess)? __($guid, "Success") : __($guid, "Failed"); ?>
+						<?php print ($importSuccess)? __("Success") : __("Failed"); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Execution time", 'Data Admin').": "; ?>
+						<?php print __("Execution time", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php print $executionTime; ?>
@@ -770,7 +770,7 @@ else {
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Memory usage", 'Data Admin').": "; ?>
+						<?php print __("Memory usage", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php
@@ -783,15 +783,15 @@ else {
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php print "class='". ( ($buildSuccess)? 'current' : 'error' ) ."'"; ?>>
 					<td class="right" width="50%">
-						<?php print __($guid, "Validating data", 'Data Admin').": "; ?>
+						<?php print __("Validating data", 'Data Admin').": "; ?>
 					</td>
 					<td>
-						<?php print ($buildSuccess)? __($guid, "Success", 'Data Admin') : __($guid, "Failed", 'Data Admin'); ?>
+						<?php print ($buildSuccess)? __("Success", 'Data Admin') : __("Failed", 'Data Admin'); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Rows processed", 'Data Admin').": "; ?>
+						<?php print __("Rows processed", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php print $importer->getRowCount(); ?>
@@ -799,7 +799,7 @@ else {
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Rows with errors", 'Data Admin').": "; ?>
+						<?php print __("Rows with errors", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php print $importer->getErrorRowCount(); ?>
@@ -807,7 +807,7 @@ else {
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Total errors", 'Data Admin').": "; ?>
+						<?php print __("Total errors", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php print $importer->getErrorCount(); ?>
@@ -816,7 +816,7 @@ else {
 				<?php if ($importer->getWarningCount() > 0) : ?>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Total warnings", 'Data Admin').": "; ?>
+						<?php print __("Total warnings", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php print $importer->getWarningCount(); ?>
@@ -828,21 +828,21 @@ else {
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php print "class='". ( ($databaseSuccess)? 'current' : 'error' ) ."'"; ?>>
 					<td class="right" width="50%">
-						<?php print __($guid, "Querying database", 'Data Admin').": "; ?>
+						<?php print __("Querying database", 'Data Admin').": "; ?>
 					</td>
 					<td>
-						<?php print ($databaseSuccess)? __($guid, "Success", 'Data Admin') : __($guid, "Failed", 'Data Admin'); ?>
+						<?php print ($databaseSuccess)? __("Success", 'Data Admin') : __("Failed", 'Data Admin'); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Database Inserts", 'Data Admin').": ";?>
+						<?php print __("Database Inserts", 'Data Admin').": ";?>
 					</td>
 					<td>
 					<?php
 						print $importer->getDatabaseResult('inserts');
 						if ($importer->getDatabaseResult('inserts_skipped') > 0) {
-							print " (". $importer->getDatabaseResult('inserts_skipped') ." ". __($guid, "skipped", 'Data Admin') .")";
+							print " (". $importer->getDatabaseResult('inserts_skipped') ." ". __("skipped", 'Data Admin') .")";
 						}
 					?>
 					</td>
@@ -850,12 +850,12 @@ else {
 
 				<tr>
 					<td class="right">
-						<?php print __($guid, "Database Updates").": "; ?>
+						<?php print __("Database Updates").": "; ?>
 					</td>
 					<td>
 					<?php print $importer->getDatabaseResult('updates');
 						if ($importer->getDatabaseResult('updates_skipped') > 0) {
-							print " (". $importer->getDatabaseResult('updates_skipped') ." ". __($guid, "skipped", 'Data Admin') .")";
+							print " (". $importer->getDatabaseResult('updates_skipped') ." ". __("skipped", 'Data Admin') .")";
 						}
 					?>
 					</td>
@@ -871,7 +871,7 @@ else {
 				<table class='smallIntBorder fullWidth' cellspacing='0'>
 					<tr>
 						<td colspan=2>
-							<?php print __($guid, "CSV Data:", 'Data Admin') ; ?><br/>
+							<?php print __("CSV Data:", 'Data Admin') ; ?><br/>
 							<textarea name="csvData" cols="92" rows="5" readonly><?php print $csvData; ?></textarea>
 						</td>
 					</tr>
@@ -879,7 +879,7 @@ else {
 						<?php if (!$overallSuccess) : ?>
 							<td>
 								<input type="checkbox" id="ignoreErrors" name="ignoreErrors" value="<?php echo $ignoreErrors; ?>">
-								<span class="emphasis small"><?php echo __($guid, 'Ignore Errors? (Expert Only!)', 'Data Admin'); ?><span>
+								<span class="emphasis small"><?php echo __('Ignore Errors? (Expert Only!)', 'Data Admin'); ?><span>
 							</td>
 						<?php endif; ?>
 
@@ -893,9 +893,9 @@ else {
 							<input name="stringEnclosure" id="stringEnclosure" value="<?php print urlencode($stringEnclosure); ?>" type="hidden">
 							<input name="address" type="hidden" value="<?php print $_SESSION[$guid]["address"] ?>">
 							<?php if (!$overallSuccess && !$ignoreErrors) : ?>
-								<input id="submitStep3" type="submit" value="<?php print __($guid, "Cannot Continue", 'Data Admin') ; ?>" disabled>
+								<input id="submitStep3" type="submit" value="<?php print __("Cannot Continue", 'Data Admin') ; ?>" disabled>
 							<?php else : ?>
-								<input id="submitStep3" type="submit" value="<?php print __($guid, "Submit") ; ?>"  >
+								<input id="submitStep3" type="submit" value="<?php print __("Submit") ; ?>"  >
 							<?php endif; ?>
 						</td>
 					</tr>

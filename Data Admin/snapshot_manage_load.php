@@ -23,30 +23,30 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_load.php")==FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
 
 	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __($guid, 'Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Load Snapshot', 'Data Admin') . "</div>" ;
+		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Load Snapshot', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	print "<h3>" ;
-	print __($guid, "Load Snapshot", 'Data Admin') ;
+	print __("Load Snapshot", 'Data Admin') ;
 	print "</h3>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 
 	print "<div class='warning'>" ;
-	print __($guid, 'Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.', 'Data Admin');
+	print __('Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.', 'Data Admin');
 	print "</div>" ;
 	
 	//Check if file exists
 	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
 	if ($filename=="") {
 		print "<div class='error'>" ;
-			print __($guid, "You have not specified one or more required parameters.") ;
+			print __("You have not specified one or more required parameters.") ;
 		print "</div>" ;
 	}
 	else {
@@ -59,7 +59,7 @@ else {
 
 		if ( !file_exists( $filepath ) ) {
 			print "<div class='error'>" ;
-				print __($guid, "The specified record cannot be found.") ;
+				print __("The specified record cannot be found.") ;
 			print "</div>" ;
 		}
 		else {
@@ -69,8 +69,8 @@ else {
 				<table class='smallIntBorder fullWidth' cellspacing='0'>	
 					<tr>
 						<td> 
-							<b><?php print __($guid, 'Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin') ; ?></b><br/>&nbsp;<br/>
-							<span style="font-size: 120%; color: #cc0000"><i><?php print __($guid, 'This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
+							<b><?php print __('Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin') ; ?></b><br/>&nbsp;<br/>
+							<span style="font-size: 120%; color: #cc0000"><i><?php print __('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
 						</td>
 						<td class="right">
 							
@@ -79,7 +79,7 @@ else {
 					<tr>
 						<td> 
 							<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-							<input type="submit" value="<?php print __($guid, 'Yes') ; ?>">
+							<input type="submit" value="<?php print __('Yes') ; ?>">
 						</td>
 						<td class="right">
 							

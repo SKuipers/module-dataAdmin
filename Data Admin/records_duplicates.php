@@ -26,7 +26,7 @@ require __DIR__ . '/module.php';
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplicates.php") == FALSE) {
 	//Acess denied
 	print "<div class='error'>" ;
-		print __($guid, "You do not have access to this action.") ;
+		print __("You do not have access to this action.") ;
 	print "</div>" ;
 }
 else {
@@ -35,12 +35,12 @@ else {
 	$connection2 = $pdo->getConnection();
 
 	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __($guid, 'Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __($guid, 'Duplicate Records', 'Data Admin') . "</div>" ;
+	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Duplicate Records', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	// Info
 	print "<div class='warning'>" ;
-	print __($guid, 'Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
+	print __('Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	print "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
@@ -65,7 +65,7 @@ else {
 
 	if (count($duplicateRecords)<1) {
 		print "<div class='error'>" ;
-		print __($guid, "There are no records to display.") ;
+		print __("There are no records to display.") ;
 		print "</div>" ;
 	}
 	else {
@@ -75,7 +75,7 @@ else {
 			print "<tr class='head'>" ;
 
 				print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-					print __($guid, "Count") ;
+					print __("Count") ;
 				print "</th>" ;
 
 				print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
@@ -89,7 +89,7 @@ else {
 				}
 
 				print "<th style='width: 12%;padding: 5px !important;'>" ;
-					print __($guid, "Actions") ;
+					print __("Actions") ;
 				print "</th>" ;
 			print "</tr>" ;
 
@@ -113,7 +113,7 @@ else {
 					if (!empty($row[ $uniqueKey ])) {
 						print "<td>" .$row[ $uniqueKey ]."</td>";
 					} else {
-						print "<td class='error'>" .__($guid, 'Missing', 'Data Admin')."</td>";
+						print "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
 					}
 				}
 				
@@ -123,7 +123,7 @@ else {
 						
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __($guid, 'You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
 				print "</td>";
 
