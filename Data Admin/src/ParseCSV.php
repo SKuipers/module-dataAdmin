@@ -1,10 +1,12 @@
 <?php
 
-class parseCSV {
+namespace Modules\DataAdmin;
+
+class ParseCSV {
 
     /*
-    Class: parseCSV v0.4.3 beta
-    https://github.com/parsecsv/parsecsv-for-php
+    Class: ParseCSV v0.4.3 beta
+    https://github.com/ParseCSV/ParseCSV-for-php
 
     Fully conforms to the specifications lined out on wikipedia:
     - http://en.wikipedia.org/wiki/Comma-separated_values
@@ -39,23 +41,23 @@ class parseCSV {
     Code Examples
     ----------------
     # general usage
-    $csv = new parseCSV('data.csv');
+    $csv = new ParseCSV('data.csv');
     print_r($csv->data);
     ----------------
     # tab delimited, and encoding conversion
-    $csv = new parseCSV();
+    $csv = new ParseCSV();
     $csv->encoding('UTF-16', 'UTF-8');
     $csv->delimiter = "\t";
     $csv->parse('data.tsv');
     print_r($csv->data);
     ----------------
     # auto-detect delimiter character
-    $csv = new parseCSV();
+    $csv = new ParseCSV();
     $csv->auto('data.csv');
     print_r($csv->data);
     ----------------
     # modify data in a csv file
-    $csv = new parseCSV();
+    $csv = new ParseCSV();
     $csv->sort_by = 'id';
     $csv->parse('data.csv');
     # "4" is the value of the "id" column of the CSV row
@@ -64,12 +66,12 @@ class parseCSV {
     ----------------
     # add row/entry to end of CSV file
     #  - only recommended when you know the extact sctructure of the file
-    $csv = new parseCSV();
+    $csv = new ParseCSV();
     $csv->save('data.csv', array(array('1986', 'Home', 'Nowhere', '')), true);
     ----------------
     # convert 2D array to csv data and send headers
     # to browser to treat output as a file and download it
-    $csv = new parseCSV();
+    $csv = new ParseCSV();
     $csv->output('movies.csv', $array, array('field 1', 'field 2'), ',');
     ----------------
      */

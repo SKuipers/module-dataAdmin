@@ -225,7 +225,7 @@ class Importer
      */
     public function readCSVString( $csvString ) {
 
-		$csv = new \parseCSV();
+		$csv = new ParseCSV();
 		$csv->heading = true;
 		$csv->delimiter = $this->fieldDelimiter;
 		$csv->enclosure = $this->stringEnclosure;
@@ -371,7 +371,6 @@ class Importer
 
                 // Filter
                 $value = $importType->filterFieldValue( $fieldName, $value );
-                //echo $fieldName.'='.$value.'<br/>';
 
 				// Validate the value
 				if ( $importType->validateFieldValue( $fieldName, $value ) === false ) {
@@ -425,9 +424,6 @@ class Importer
                         $relationalData = array( $fieldName => $value );
                         $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$table}.{$field}=:{$fieldName}";
                     }
-
-                    // print_r($relationalData);
-                    // print '<br/>'.$relationalSQL.'<br/>';
 
                     $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
                     if ($result->rowCount() > 0) {
@@ -488,8 +484,8 @@ class Importer
 
             // Salt & hash passwords - then output them
             if ( isset($fields['password'] ) ) {
-                // Temporaily removed (different password displays in dry run :/)
-                //$this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
+                // TODO: Temporaily removed (different password displays in dry run :/)
+                // $this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
                 $salt=getSalt() ;
                 $value=$fields['password'];
                 $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
@@ -523,16 +519,6 @@ class Importer
      * @return	bool	true if import succeeded
      */
     public function importIntoDatabase( $importType, $liveRun = TRUE ) {
-
-        // Temporaily removed - Locked tables referenced more than once need an alias
-        // http://forums.mysql.com/read.php?21,134450,144180#msg-144180
-        //
-        // if ($liveRun) {
-        // 	if ( $this->lockTables( $importType->getTables() ) == false) {
-        // 		$this->errorID = importer::ERROR_LOCKING_DATABASE;
-        // 		return false;
-        // 	}
-        // }
 
 		if (empty($this->tableData) || count($this->tableData) < 1) {
 			return false;
@@ -675,10 +661,6 @@ class Importer
                 $partialFail = TRUE;
 			}
 		}
-
-        // if ($liveRun) {
-        // 	$partialFail = ($this->unlockTables() == false);
-        // }
 
 		return (!$partialFail);
     }
@@ -976,25 +958,4 @@ class Importer
 		}
 
     }
-
-    /**
-     * Unlock Tables
-     *
-     * @access  private
-     * @version	28th April 2016
-     * @since	28th April 2016
-     *
-     * @return	bool	true if database is now unlocked
-     */
-    private function unlockTables() {
-    	try {
-			$sql="UNLOCK TABLES" ;
-			$result = $this->pdo->executeQuery(array(), $sql);
-			return true;
-		}
-		catch(PDOException $e) {
-			return false;
-		}
-    }
-
 }

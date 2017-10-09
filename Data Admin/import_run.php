@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Modules\DataAdmin\Importer;
 use Modules\DataAdmin\ImportType;
+use Modules\DataAdmin\ParseCSV;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -41,9 +42,6 @@ else {
 	print "<div class='trail'>" ;
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import From File', 'Data Admin') . "</div>" ;
 	print "</div>" ;
-
-	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/parsecsv.lib.php" ;
 
 	$importer = new Importer( $gibbon, $pdo );
 

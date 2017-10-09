@@ -19,9 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Modules\DataAdmin;
 
-
-use Library\Yaml\Yaml ;
-
+use Library\Yaml\Yaml;
 
 /**
  * Reads and holds the config info for a custom Import Type
@@ -960,11 +958,9 @@ class ImportType
                             break;
         }
 
-        //echo $fieldName .'='. $value .'<br>';
-
-        //TODO: More value validation
-        //TODO: Handle relational table data
-        //TODO: Sanitize
+        // TODO: More value validation
+        // TODO: Handle relational table data
+        // TODO: Sanitize
 
         return $value;
     }

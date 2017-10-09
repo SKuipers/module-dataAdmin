@@ -116,8 +116,6 @@ class DatabaseTools
         $sql .= " GROUP BY ".implode(', ', $uniqueKeys);
         $sql .= " HAVING count > 1";
 
-        //echo $sql.'<br/>';
-
         try {
             $result = $this->pdo->executeQuery(array(), $sql);
         } catch(\PDOException $e) {
@@ -172,8 +170,6 @@ class DatabaseTools
         $sql = "SELECT ".implode(', ', $sqlSelect);
         $sql .= " FROM {$tableName} ".implode(' ', $sqlJoin);
         $sql .= " WHERE ".implode(' OR ', $sqlWhere);
-
-        //echo $sql.'<br/>';
 
         try {
             $result = $this->pdo->executeQuery(array(), $sql);
