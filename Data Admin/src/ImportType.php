@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace DataAdmin;
+namespace Modules\DataAdmin;
 
 
 use Library\Yaml\Yaml ;
@@ -30,7 +30,7 @@ use Library\Yaml\Yaml ;
  * @since   25th April 2016
  * @author  Sandra Kuipers
  */
-class importType
+class ImportType
 {
     /**
      * Information about the overall Import Type

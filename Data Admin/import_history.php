@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\ImportType;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==FALSE) {
 	//Acess denied
@@ -41,11 +41,8 @@ else {
 	print __($guid, "Import History", 'Data Admin') ;
 	print "</h3>" ;
 
-	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
-
 	// Get a list of available import options
-	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
+	$importTypeList = ImportType::loadImportTypeList($pdo, false);
 
 	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
 	$result=$pdo->executeQuery(array(), $sql);

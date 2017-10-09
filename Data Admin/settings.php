@@ -19,8 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 @session_start() ;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") == FALSE) {
 	//Acess denied

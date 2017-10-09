@@ -17,10 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\ImportType;
+use Modules\DataAdmin\DatabaseTools;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplicates.php") == FALSE) {
 	//Acess denied
@@ -42,16 +43,12 @@ else {
 	print __($guid, 'Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	print "</div>" ;
 
-	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/databaseTools.class.php" ;
-
-	$databaseTools = new DataAdmin\databaseTools(null, $pdo);
+	$databaseTools = new DatabaseTools(null, $pdo);
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
 
-	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
+	$importType = ImportType::loadImportType( $type, $pdo );
 
 	$duplicateRecords = $databaseTools->getDuplicateRecords($importType);
 

@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace DataAdmin;
+namespace Modules\DataAdmin;
 
 /**
  * Extended Import class
@@ -26,7 +26,7 @@ namespace DataAdmin;
  * @since	25th April 2016
  * @author	Sandra Kuipers
  */
-class importer
+class Importer
 {
 	const COLUMN_DATA_SKIP = -1;
 	const COLUMN_DATA_CUSTOM = -2;

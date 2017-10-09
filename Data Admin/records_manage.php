@@ -17,10 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\ImportType;
+use Modules\DataAdmin\DatabaseTools;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.php") == FALSE) {
 	//Acess denied
@@ -42,14 +43,10 @@ else {
 	print __($guid, 'The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
 	print "</div>" ;
 
-	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/databaseTools.class.php" ;
-
-	$databaseTools = new DataAdmin\databaseTools(null, $pdo);
+	$databaseTools = new DatabaseTools(null, $pdo);
 
 	// Get a list of available import options
-	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
+	$importTypeList = ImportType::loadImportTypeList($pdo, false);
 
 	// Get the unique tables used
 	$importTables = array();

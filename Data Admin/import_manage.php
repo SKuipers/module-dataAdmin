@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\ImportType;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.php") == FALSE) {
 	//Acess denied
@@ -37,11 +37,8 @@ else {
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import From File', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
-	//Class includes
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
-
 	// Get a list of available import options
-	$importTypeList = DataAdmin\importType::loadImportTypeList($pdo, false);
+	$importTypeList = ImportType::loadImportTypeList($pdo, false);
 
 	if (count($importTypeList)<1) {
 		print "<div class='error'>" ;

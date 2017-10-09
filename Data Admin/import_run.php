@@ -17,10 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\Importer;
+use Modules\DataAdmin\ImportType;
 
-//Module includes
-require_once "./modules/" . $_SESSION[$guid]["module"] . "/moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php")==FALSE) {
 	//Acess denied
@@ -37,24 +38,18 @@ else {
 	// Include PHPExcel
 	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
 
-	//New PDO DB connection
-	$pdo = new Gibbon\sqlConnection();
-	$connection2 = $pdo->getConnection();
-
 	print "<div class='trail'>" ;
 	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __($guid, "Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __($guid, getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __($guid, 'Import From File', 'Data Admin') . "</div>" ;
 	print "</div>" ;
 
 	//Class includes
 	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/parsecsv.lib.php" ;
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importer.class.php" ;
-	require_once "./modules/" . $_SESSION[$guid]["module"] . "/src/importType.class.php" ;
 
-	$importer = new DataAdmin\importer( $gibbon, $pdo );
+	$importer = new Importer( $gibbon, $pdo );
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
+	$importType = ImportType::loadImportType( $type, $pdo );
 
 	$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
@@ -329,9 +324,9 @@ else {
 
 			print "<script>";
 			print "var csvFirstLine = " . json_encode($firstLine) .";";
-			print "var columnDataSkip = " . DataAdmin\importer::COLUMN_DATA_SKIP .";";
-			print "var columnDataCustom = " . DataAdmin\importer::COLUMN_DATA_CUSTOM .";";
-			print "var columnDataFunction = " . DataAdmin\importer::COLUMN_DATA_FUNCTION .";";
+			print "var columnDataSkip = " . Importer::COLUMN_DATA_SKIP .";";
+			print "var columnDataCustom = " . Importer::COLUMN_DATA_CUSTOM .";";
+			print "var columnDataFunction = " . Importer::COLUMN_DATA_FUNCTION .";";
 			print "</script>";
 
 			print "<form method='post' action='". $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=$type&step=3' enctype='multipart/form-data'>";
@@ -502,10 +497,10 @@ else {
 				foreach ($importType->getTableFields() as $fieldName ) {
 
 					if ( $importType->isFieldHidden($fieldName) ) {
-						$columnIndex = DataAdmin\importer::COLUMN_DATA_HIDDEN;
+						$columnIndex = Importer::COLUMN_DATA_HIDDEN;
 
-						if ($importType->isFieldLinked($fieldName)) $columnIndex = DataAdmin\importer::COLUMN_DATA_LINKED;
-						if (!empty($importType->getField($fieldName, 'function'))) $columnIndex = DataAdmin\importer::COLUMN_DATA_FUNCTION;
+						if ($importType->isFieldLinked($fieldName)) $columnIndex = Importer::COLUMN_DATA_LINKED;
+						if (!empty($importType->getField($fieldName, 'function'))) $columnIndex = Importer::COLUMN_DATA_FUNCTION;
 
 						print "<input type='hidden' id='col[$count]' name='columnOrder[$count]' value='".$columnIndex."'>";
 						$count++;
@@ -538,20 +533,20 @@ else {
 							$lastImportValue = ($columnOrder == 'last' && isset($columnOrderLast[$count]))? $columnOrderLast[$count] : '';
 							// Allow users to skip non-required columns
 							if ( $importType->isFieldRequired($fieldName) == false ) {
-								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_SKIP)? 'selected' : '';
-								print "<option value='".DataAdmin\importer::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
+								$selectThis = ($lastImportValue == Importer::COLUMN_DATA_SKIP)? 'selected' : '';
+								print "<option value='".Importer::COLUMN_DATA_SKIP."' $selectThis>[ Skip this Column ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'custom')) {
-								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_CUSTOM)? 'selected' : '';
-								print "<option value='".DataAdmin\importer::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
+								$selectThis = ($lastImportValue == Importer::COLUMN_DATA_CUSTOM)? 'selected' : '';
+								print "<option value='".Importer::COLUMN_DATA_CUSTOM."' $selectThis>[ Custom Value ]</option>";
 							}
 
 							// Allow users to enter a value manually
 							if ( $importType->getField($fieldName, 'function') ) {
-								$selectThis = ($lastImportValue == DataAdmin\importer::COLUMN_DATA_FUNCTION)? 'selected' : '';
-								print "<option value='".DataAdmin\importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
+								$selectThis = ($lastImportValue == Importer::COLUMN_DATA_FUNCTION)? 'selected' : '';
+								print "<option value='".Importer::COLUMN_DATA_FUNCTION."' data-function='". $importType->getField($fieldName, 'function') ."' $selectThis>[ Generate Value ]</option>";
 							}
 
 							$selectCount = 0;

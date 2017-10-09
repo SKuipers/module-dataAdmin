@@ -27,5 +27,3 @@ function readableFileSize( $bytes ) {
 	$unit=array('bytes','KB','MB','GB','TB','PB');
     return @round($bytes/pow(1024,($i=floor(log($bytes,1024)))),2).' '.$unit[$i];
 }
-
-?>

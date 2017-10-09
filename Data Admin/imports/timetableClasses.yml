@@ -19,9 +19,9 @@ table:
         relationship: { table: gibbonSchoolYear, key: gibbonSchoolYearID, field: name  }
     gibbonTTID:
         name: "Timetable Name"
-        desc: "Must match the Short Name of an existing timetable"
+        desc: "Must match the Full Name of an existing timetable"
         args: { filter: string, required: true, custom: true, readonly: true }
-        relationship: { table: gibbonTT, key: gibbonTTID, field: [nameShort, gibbonSchoolYearID]  }
+        relationship: { table: gibbonTT, key: gibbonTTID, field: [name, gibbonSchoolYearID]  }
     gibbonTTColumnID:
         name: "Column Name"
         desc: "Must match the Short Name of an existing column ()"
@@ -41,12 +41,12 @@ table:
         name: "Timetable Day"
         desc: "Full Name, as used in the target timetable (eg: Monday)"
         args: { filter: string, required: true, custom: true }
-        relationship: { table: gibbonTTDay, key: gibbonTTDayID, field: [ nameShort, gibbonTTColumnID, gibbonTTID ]  }
+        relationship: { table: gibbonTTDay, key: gibbonTTDayID, field: [ name, gibbonTTColumnID, gibbonTTID ]  }
     gibbonTTColumnRowID:
         name: "Column Row"
         desc: "Full Name, as used in the target timetable (eg: Period 1)"
         args: { filter: string, required: true, custom: true }
-        relationship: { table: gibbonTTColumnRow, key: gibbonTTColumnRowID, field: [ nameShort, gibbonTTColumnID ]  }
+        relationship: { table: gibbonTTColumnRow, key: gibbonTTColumnRowID, field: [ name, gibbonTTColumnID ]  }
     gibbonSpaceID:
         name: "Space"
         desc: "Full Name, from school admin Manage Facilities (eg: 101)"

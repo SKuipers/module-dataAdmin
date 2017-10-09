@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-namespace DataAdmin;
+namespace Modules\DataAdmin;
 
 /**
  * Database Tools class
@@ -26,7 +26,7 @@ namespace DataAdmin;
  * @since	2nd December 2016
  * @author	Sandra Kuipers
  */
-class databaseTools
+class DatabaseTools
 {
     /**
      * Gibbon\session
@@ -60,7 +60,7 @@ class databaseTools
             $this->pdo = $pdo ;
     }
 
-    public function getRecordCount( \DataAdmin\importType $importType, $currentSchoolYear = false ) {
+    public function getRecordCount( ImportType $importType, $currentSchoolYear = false ) {
 
         $table = $this->escapeIdentifier( $importType->getDetail('table') );
 
@@ -88,7 +88,7 @@ class databaseTools
         return ($result->rowCount() > 0)? $result->fetchColumn(0) : 0;
     }
 
-    public function getDuplicateRecords( \DataAdmin\importType $importType, $countOnly = false ) {
+    public function getDuplicateRecords( ImportType $importType, $countOnly = false ) {
 
         $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
         $primaryKey = $importType->getPrimaryKey();
@@ -132,7 +132,7 @@ class databaseTools
         }
     }
 
-    public function getOrphanedRecords( \DataAdmin\importType $importType, $countOnly = false ) {
+    public function getOrphanedRecords( ImportType $importType, $countOnly = false ) {
 
         $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
         $primaryKey = $this->escapeIdentifier( $importType->getPrimaryKey() );

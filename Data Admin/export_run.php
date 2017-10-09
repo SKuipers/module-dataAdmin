@@ -17,24 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-@session_start() ;
+use Modules\DataAdmin\ImportType;
 
 //Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 600);
 
-include "../../config.php" ;
-include "../../functions.php" ;
-include "../../version.php" ;
+// Gibbon Bootstrap
+include __DIR__ . '/../../gibbon.php';
+include __DIR__ . '/../../version.php';
 
-$pdo = new Gibbon\sqlConnection();
-$connection2 = $pdo->getConnection();
-
-//Set timezone from session variable
-date_default_timezone_set($_SESSION[$guid]["timezone"]);
-
-
-//Module includes
-include "./moduleFunctions.php" ;
+// Module Bootstrap
+require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php")==FALSE) {
 	//Acess denied
@@ -47,12 +40,9 @@ else {
 	$dataExport = (isset($_GET['data']) && $_GET['data'] == true);
 	$dataExportAll = (isset($_GET['all']) && $_GET['all'] == true);
 
-	//Class includes
-	require_once "./src/importType.class.php" ;
-
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';
-	$importType = DataAdmin\importType::loadImportType( $type, $pdo );
+	$importType = ImportType::loadImportType( $type, $pdo );
 
 	$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
