@@ -33,4 +33,15 @@ $count++;
 $sql[$count][0]="1.2.00" ;
 $sql[$count][1]="";
 
+//v1.2.01
+$count++;
+$sql[$count][0]="1.2.01" ;
+$sql[$count][1]="
+UPDATE `gibbonAction` SET `name`='Import From File', `category`='Data Migration' WHERE name='Import & Export' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+UPDATE `gibbonAction` SET `category`='Data Migration' WHERE name='View Import History' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+UPDATE `gibbonAction` SET `category`='Database' WHERE name='Manage Records' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+UPDATE `gibbonAction` SET `category`='Database' WHERE name='Manage Snapshots' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+
+";
+
 ?>

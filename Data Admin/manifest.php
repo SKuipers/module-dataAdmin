@@ -25,7 +25,7 @@ $description="Provides additional import functionality for migrating existing da
 $entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="1.2.00" ; //Verson number
+$version="1.2.01" ; //Verson number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
@@ -49,9 +49,9 @@ $gibbonSetting[3]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,
 
 //Action rows
 //One array per action
-$actionRows[0]["name"]="Import & Export" ; //The name of the action (appears to user in the right hand side module menu)
+$actionRows[0]["name"]="Import From File" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[0]["category"]="Actions" ; //Optional: subgroups for the right hand side module menu
+$actionRows[0]["category"]="Data Migration" ; //Optional: subgroups for the right hand side module menu
 $actionRows[0]["description"]="View and run available import actions." ; //Text description
 $actionRows[0]["URLList"]="import_manage.php,import_run.php,export_run.php" ; //List of pages included in this action
 $actionRows[0]["entryURL"]="import_manage.php" ; //The landing action for the page.
@@ -67,7 +67,7 @@ $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be availabl
 
 $actionRows[1]["name"]="View Import History" ;
 $actionRows[1]["precedence"]="0";
-$actionRows[1]["category"]="Reports" ;
+$actionRows[1]["category"]="Data Migration" ;
 $actionRows[1]["description"]="View a log of import activity." ;
 $actionRows[1]["URLList"]="import_history.php,import_history_view.php" ;
 $actionRows[1]["entryURL"]="import_history.php" ;
@@ -83,7 +83,7 @@ $actionRows[1]["categoryPermissionOther"]="N" ;
 
 $actionRows[2]["name"]="Manage Snapshots" ;
 $actionRows[2]["precedence"]="0";
-$actionRows[2]["category"]="Actions" ;
+$actionRows[2]["category"]="Database" ;
 $actionRows[2]["description"]="Create and restore a mysqldump file." ;
 $actionRows[2]["URLList"]="snapshot_manage.php,snapshot_manage_add.php,snapshot_manage_delete.php,snapshot_manage_load.php" ;
 $actionRows[2]["entryURL"]="snapshot_manage.php" ;
@@ -99,7 +99,7 @@ $actionRows[2]["categoryPermissionOther"]="N" ;
 
 $actionRows[3]["name"]="Manage Records" ;
 $actionRows[3]["precedence"]="0";
-$actionRows[3]["category"]="Actions" ;
+$actionRows[3]["category"]="Database" ;
 $actionRows[3]["description"]="Allows users to view database table information." ;
 $actionRows[3]["URLList"]="records_manage.php,records_orphaned.php,records_duplicates.php" ;
 $actionRows[3]["entryURL"]="records_manage.php" ;
