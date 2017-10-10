@@ -25,7 +25,7 @@ $description="Provides additional import functionality for migrating existing da
 $entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="1.2.01" ; //Verson number
+$version="1.2.02" ; //Verson number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
@@ -129,6 +129,21 @@ $actionRows[4]["categoryPermissionStudent"]="N" ;
 $actionRows[4]["categoryPermissionParent"]="N" ;
 $actionRows[4]["categoryPermissionOther"]="N" ;
 
+$actionRows[5]["name"]="Combine Similar Fields" ;
+$actionRows[5]["precedence"]="0";
+$actionRows[5]["category"]="Duplication" ;
+$actionRows[5]["description"]="Reduce duplication in fields with similar types of data." ;
+$actionRows[5]["URLList"]="duplication_combine.php" ;
+$actionRows[5]["entryURL"]="duplication_combine.php" ;
+$actionRows[5]["defaultPermissionAdmin"]="Y" ;
+$actionRows[5]["defaultPermissionTeacher"]="N" ;
+$actionRows[5]["defaultPermissionStudent"]="N" ;
+$actionRows[5]["defaultPermissionParent"]="N" ;
+$actionRows[5]["defaultPermissionSupport"]="N" ;
+$actionRows[5]["categoryPermissionStaff"]="Y" ;
+$actionRows[5]["categoryPermissionStudent"]="N" ;
+$actionRows[5]["categoryPermissionParent"]="N" ;
+$actionRows[5]["categoryPermissionOther"]="N" ;
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
 ?>
