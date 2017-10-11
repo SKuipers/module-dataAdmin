@@ -47,8 +47,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     $form = Form::create('combineFieldsFilder', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combine.php');
     $form->addHiddenValue('address', $_SESSION[$guid]['address']);
     
-    $tableData = include __DIR__ . '/duplication_combineData.php';
+    $tableData = include __DIR__ . '/src/CombineableFields.php';
 
+    // Build a set of options for the chained selects
     $tableOptions = array_combine(array_keys($tableData), array_column($tableData, 'label'));
     $fieldChained = array();
     $fieldOptions = array_reduce(array_keys($tableData), function($carry, $item) use (&$tableData, &$fieldChained) {
@@ -92,8 +93,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             FROM `$tableName` as match1, `$tableName` as match2 
             WHERE match2.`$fieldName` LIKE CONCAT('%', match1.`$fieldName`, '%') 
             AND LENGTH(match1.`$fieldName`) < LENGTH(match2.`$fieldName`) 
+            AND LENGTH(match1.`$fieldName`) > 2
             AND (match1.`$fieldName` <> match2.`$fieldName`)
-            AND (match1.`$fieldName` <> '' AND match2.`$fieldName` <> '')";
+            AND match1.`$fieldName` <> ''
+            AND match2.`$fieldName` IS NOT NULL";
         } else {
             $sql = "SELECT `$fieldName` as value, count(*) as count FROM `$tableName` GROUP BY value ORDER BY value";
         }
@@ -104,6 +107,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             echo '<h3>';
             echo __('Results');
             echo '</h3>';
+
+            if ($mode == 'Assisted') {
+                echo '<p>';
+                echo __('Assisted mode aims to help find matches between similar values, but can also result in false positives. Use manual mode to select and combine values listed alphabetically.');
+                echo '</p>';
+            }
 
             $form = Form::create('combineFields', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
             $form->getRenderer()->setWrapper('form', 'div');
@@ -135,14 +144,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
                 $count = 0;
                 foreach ($fields as $fieldValue => $fieldMatches) {
+                    $fieldMatches = array_column($fieldMatches, 'value');
+                    array_unshift($fieldMatches, $fieldValue);
+
                     $row = $table->addRow();
                     $row->addContent($fieldValue);
-
-                    $fieldMatches = array_combine(array_column($fieldMatches, 'value'), array_column($fieldMatches, 'value'));
-                    $fieldMatches = array($fieldValue => $fieldValue) + $fieldMatches;
-
                     $row->addCheckbox('values[]')->setID("valueSet$count")->fromArray($fieldMatches)->addClass('checkboxList floatNone');
-                    //$row->addContent('');
                     $count++;
                 }
             } else {

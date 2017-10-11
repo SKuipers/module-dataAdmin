@@ -23,4 +23,11 @@ return [
             'homeAddressDistrict' => __('Home Address (District)'),
         ],
     ],
+    'gibbonStaff' => [
+        'label' => 'Staff',
+        'fields' => [
+            'jobTitle'             => __('Job Title'),
+            'biographicalGrouping' => __('Grouping'),
+        ],
+    ]
 ];

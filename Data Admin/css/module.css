@@ -117,3 +117,26 @@ div.message {
 	margin: 10px 0px 15px 0px;
 	box-shadow: 2px 2px 2px rgba(50,50,50,0.15);
 }
+
+#content {
+	overflow: initial;
+}
+
+.sticky {
+	position: sticky;
+	top: -1px;
+}
+
+.checkboxList label {
+	font-size: 12px;
+	line-height: 1.8;
+	padding-right: 5px;
+}
+
+.checkboxList input[type="checkbox"] {
+	margin-right: 5px;
+}
+
+.floatNone {
+	float: none !important;
+}

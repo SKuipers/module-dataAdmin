@@ -56,8 +56,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         $row = $form->addRow()->addClass('right');
         $row->addLabel('combine', __('Combine'));
         $column = $row->addColumn()->addClass('standardWidth');
-        foreach ($values as $value) {
-            $column->addContent(htmlprep($value));
+
+        for ($i = 0; $i < count($values); $i++) {
+            $column->addTextField('label'.$i)->readonly()->setValue(htmlprep($values[$i]));
         }
     
         $row = $form->addRow();

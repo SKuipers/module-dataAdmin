@@ -34,7 +34,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
 } else {
     $fail = false;
 
-    $tableData = include __DIR__ . '/duplication_combineData.php';
+    $tableData = include __DIR__ . '/src/CombineableFields.php';
 
     $values = (isset($_POST['values']))? $_POST['values'] : '';
     $values = (!is_array($values))? array($values) : $values;
@@ -57,29 +57,27 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
 
     try {
         $valueList = array();
-        $data = array('newValue' => $renameValue);
+        $data = array('renameValue' => $renameValue);
 
         for ($i = 0; $i < count($values); $i++) {
             $valueList[] = "`$fieldName` = :oldValue$i";
             $data["oldValue$i"] = $values[$i];
         }
   
-        $sql = "UPDATE `$tableName` SET `$fieldName`=:newValue WHERE ".implode(' OR ', $valueList);
+        $sql = "UPDATE `$tableName` SET `$fieldName`=:renameValue WHERE ".implode(' OR ', $valueList);
         $result = $connection2->prepare($sql);
         $result->execute($data);
     } catch (PDOException $e) {
         $fail = true;
     }
 
-   //RETURN RESULTS
    if ($fail == true) {
-       $URL .= '&return=error2';
-       header("Location: {$URL}");
-       exit;
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+        exit;
    } else {
-       //Success
         $URL .= '&return=success0';
-       header("Location: {$URL}");
-       exit;
+        header("Location: {$URL}");
+        exit;
    }
 }	
