@@ -51,7 +51,7 @@ $gibbonSetting[3]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,
 //One array per action
 $actionRows[0]["name"]="Import From File" ; //The name of the action (appears to user in the right hand side module menu)
 $actionRows[0]["precedence"]="0"; //If it is a grouped action, the precedence controls which is highest action in group
-$actionRows[0]["category"]="Data Migration" ; //Optional: subgroups for the right hand side module menu
+$actionRows[0]["category"]="Data Import" ; //Optional: subgroups for the right hand side module menu
 $actionRows[0]["description"]="View and run available import actions." ; //Text description
 $actionRows[0]["URLList"]="import_manage.php,import_run.php,export_run.php" ; //List of pages included in this action
 $actionRows[0]["entryURL"]="import_manage.php" ; //The landing action for the page.
@@ -67,7 +67,7 @@ $actionRows[0]["categoryPermissionOther"]="N" ; //Should this action be availabl
 
 $actionRows[1]["name"]="View Import History" ;
 $actionRows[1]["precedence"]="0";
-$actionRows[1]["category"]="Data Migration" ;
+$actionRows[1]["category"]="Data Import" ;
 $actionRows[1]["description"]="View a log of import activity." ;
 $actionRows[1]["URLList"]="import_history.php,import_history_view.php" ;
 $actionRows[1]["entryURL"]="import_history.php" ;
@@ -131,7 +131,7 @@ $actionRows[4]["categoryPermissionOther"]="N" ;
 
 $actionRows[5]["name"]="Combine Similar Fields" ;
 $actionRows[5]["precedence"]="0";
-$actionRows[5]["category"]="Duplication" ;
+$actionRows[5]["category"]="Data Tools" ;
 $actionRows[5]["description"]="Reduce duplication in fields with similar types of data." ;
 $actionRows[5]["URLList"]="duplication_combine.php,duplication_combineConfirm.php" ;
 $actionRows[5]["entryURL"]="duplication_combine.php" ;

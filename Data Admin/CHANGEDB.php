@@ -37,8 +37,8 @@ $sql[$count][1]="";
 $count++;
 $sql[$count][0]="1.2.01" ;
 $sql[$count][1]="
-UPDATE `gibbonAction` SET `name`='Import From File', `category`='Data Migration' WHERE name='Import & Export' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
-UPDATE `gibbonAction` SET `category`='Data Migration' WHERE name='View Import History' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+UPDATE `gibbonAction` SET `name`='Import From File', `category`='Data Import' WHERE name='Import & Export' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
+UPDATE `gibbonAction` SET `category`='Data Import' WHERE name='View Import History' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
 UPDATE `gibbonAction` SET `category`='Database' WHERE name='Manage Records' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
 UPDATE `gibbonAction` SET `category`='Database' WHERE name='Manage Snapshots' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end
 ";
@@ -47,7 +47,7 @@ UPDATE `gibbonAction` SET `category`='Database' WHERE name='Manage Snapshots' AN
 $count++;
 $sql[$count][0]="1.2.02" ;
 $sql[$count][1]="
-INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin'), 'Combine Similar Fields', 0, 'Duplication', '', 'duplication_combine.php,duplication_combineConfirm.php', 'duplication_combine.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin'), 'Combine Similar Fields', 0, 'Data Tools', '', 'duplication_combine.php,duplication_combineConfirm.php', 'duplication_combine.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
 INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Data Admin' AND gibbonAction.name='Combine Similar Fields'));end
 ";
 
