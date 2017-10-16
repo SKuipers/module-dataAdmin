@@ -115,17 +115,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             }
 
             $form = Form::create('combineFields', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
-            $form->getRenderer()->setWrapper('form', 'div');
-            $form->getRenderer()->setWrapper('row', 'div');
-            $form->getRenderer()->setWrapper('cell', 'div');
+            // v15 only -- oops!
+            //$form->getRenderer()->setWrapper('form', 'div');
+            //$form->getRenderer()->setWrapper('row', 'div');
+            //$form->getRenderer()->setWrapper('cell', 'div');
 
             $form->addHiddenValue('address', $_SESSION[$guid]['address']);
             $form->addHiddenValue('tableName', $tableName);
             $form->addHiddenValue('fieldName', $fieldName);
             $form->addHiddenValue('mode', $mode);
 
-            $row = $form->addRow()->setClass('sticky right');
-                $column = $row->addColumn()->addClass('inline');
+            $row = $form->addRow()->setClass('right sticky');
+            $column = $row->addColumn()->addClass('inline right');
                 $column->addSelect('action')
                     ->fromArray(array('combine' => __('Combine Selected')))
                     ->selected($fieldName)
@@ -133,7 +134,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
                 $column->addSubmit(__('Go'));
 
             $table = $form->addRow()->addTable();
-            $table->addClass('rowHighlight');
+            $table->addClass('rowHighlight colorOddEven');
 
             $header = $table->addHeaderRow();
             $header->addContent($fieldOptions[$fieldName]);
@@ -162,6 +163,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
                     $row->addCheckbox('values[]')->setClass()->setValue($field['value']);
                 }
             }
+
+            $row = $form->addRow()->setClass('right sticky');
+            $column = $row->addColumn()->addClass('inline right');
+                $column->addSelect('action')
+                    ->fromArray(array('combine' => __('Combine Selected')))
+                    ->selected($fieldName)
+                    ->setClass('mediumWidth floatNone');
+                $column->addSubmit(__('Go'));
 
             echo $form->getOutput();
         }
