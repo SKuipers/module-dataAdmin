@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.2.03] - 2017-10-16
+### Fixed
+- Fix v14 Form class compatibility in Combine Similar Fields
+
 ## [1.2.02] - 2017-10-16
 ### Added
 - Gibbon v14 requirement: new Form classes
@@ -40,7 +44,8 @@ CHANGELOG
 ## [1.0.0] - 2016-11-07
 ### Initial release
 
-[Unreleased]: https://github.com/SKuipers/module-dataAdmin/compare/v1.2.02...HEAD
+[Unreleased]: https://github.com/SKuipers/module-dataAdmin/compare/v1.2.03...HEAD
+[1.2.03]: https://github.com/SKuipers/module-dataAdmin/compare/v1.2.02...v1.2.03
 [1.2.02]: https://github.com/SKuipers/module-dataAdmin/compare/v1.2...v1.2.02
 [1.2.0]: https://github.com/SKuipers/module-dataAdmin/compare/v1.1...v1.2
 [1.1.0]: https://github.com/SKuipers/module-dataAdmin/compare/v1.0...v1.1

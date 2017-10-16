@@ -51,4 +51,10 @@ INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, 
 INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Data Admin' AND gibbonAction.name='Combine Similar Fields'));end
 ";
 
+//v1.2.03
+$count++;
+$sql[$count][0]="1.2.03" ;
+$sql[$count][1]="";
+
+
 ?>
