@@ -50,29 +50,4 @@ For support contact sandra.kuipers [at] tis.edu.mo
 Change Log
 ==============
 
-All notable changes to this project will be documented here.
-
-## [1.2.0] - 2017-03-06
-### Added
-- Gibbon v13 requirement: updated importer class dependancy
-- Improved internationalization: better handling of multi-byte strings
-- Detects and generates an error for fields that shouldn't have spaces
-- Enum field errors will display a set/subset of expected options
-### Fixed
-- WAMP and Windows support: now handles backslashes in directory path
-- Fixed filetype detection if file extension was uppercase
-
-## [1.1.0] - 2016-12-06
-### Added
-- Importing and exporting Excel and OpenDocument file types
-- Settings page: compatability check, also customize file paths and permissions
-- Manage Records page: table row counts, view duplicate and orphaned records
-- New import types: Markbook, Medical forms, Timetable classes, Student Notes, Special days
-
-## [1.0.0] - 2016-11-07
-### Initial release
-
-[Unreleased]: https://github.com/SKuipers/module-dataAdmin/compare/v1.1...HEAD
-[1.2.0]: https://github.com/SKuipers/module-dataAdmin/compare/v1.1...v1.2
-[1.1.0]: https://github.com/SKuipers/module-dataAdmin/compare/v1.0...v1.1
-[1.0.0]: https://github.com/SKuipers/module-dataAdmin/releases/tag/v1.0
+All notable changes to this project will be documented in the [CHANGELOG](CHANGELOG.md) file.
