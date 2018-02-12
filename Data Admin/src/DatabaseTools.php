@@ -47,7 +47,7 @@ class DatabaseTools
      * @param    Gibbon\session
      * @param    Gibbon\sqlConnection
      */
-    public function __construct(\Gibbon\session $session = NULL, \Gibbon\sqlConnection $pdo = NULL)
+    public function __construct(\Gibbon\Session $session = NULL, \Gibbon\sqlConnection $pdo = NULL)
     {
         if ($session === NULL)
             $this->session = new \Gibbon\Session();
