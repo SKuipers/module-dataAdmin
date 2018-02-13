@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+## [1.3.00] - 2018-02-13
+### Added
+- Gibbon v16 requirement: autoloader changes
+- Added composer and required Symfony\Component\Yaml library
+- This version is not backwards compatible with v15 or earlier
+
 ## [1.2.03] - 2017-10-16
 ### Fixed
 - Fix v14 Form class compatibility in Combine Similar Fields
