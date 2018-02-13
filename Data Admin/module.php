@@ -4,4 +4,4 @@
 require_once __DIR__ . '/moduleFunctions.php';
 
 // Add module namespace to Gibbon autoloader
-$loader->addNameSpace('Modules\DataAdmin\\', 'modules/Data Admin/src/');
+$autoloader->addPsr4('Modules\DataAdmin\\', 'modules/Data Admin/src/');
