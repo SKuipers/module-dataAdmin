@@ -19,7 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Modules\DataAdmin;
 
-use Library\Yaml\Yaml;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Reads and holds the config info for a custom Import Type
