@@ -1,7 +1,7 @@
 details:
-    type: rooms
+    type: spaces
     name: Facilities
-    desc: Rooms, Spaces and School Facilities
+    desc: School Facilities, Spaces and Classrooms
     table: gibbonSpace
     modes: { update: true, insert: true, export: true }
 access:
