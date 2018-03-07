@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.3.01] - 2018-03-07
+### Added
+- New import type for importing parent login codes from the Meet The Teacher booking system
+
 ## [1.3.00] - 2018-02-13
 ### Added
 - Gibbon v16 requirement: autoloader changes
