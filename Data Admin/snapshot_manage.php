@@ -22,30 +22,30 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage.php")==FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Snapshots', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Snapshots', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
-	print "<h3>" ;
-	print __("Manage Snapshots", 'Data Admin') ;
-	print "</h3>" ;
+	echo "<h3>" ;
+	echo __("Manage Snapshots", 'Data Admin') ;
+	echo "</h3>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 
-	print "<div class='warning'>" ;
-	print __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
-	print "</div>" ;
+	echo "<div class='warning'>" ;
+	echo __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
+	echo "</div>" ;
 	
 	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php") ) {
-		print "<div class='linkTop'>" ;
-		print "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __('Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Create Snapshot', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
-		print "</div>" ;
+		echo "<div class='linkTop'>" ;
+		echo "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __('Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Create Snapshot', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
+		echo "</div>" ;
 	}
 
 
@@ -65,37 +65,37 @@ else {
 	});
 
 	if (count($snapshotList)<1) {
-		print "<div class='error'>" ;
-		print __("There are no records to display.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("There are no records to display.") ;
+		echo "</div>" ;
 	}
 	else {
-		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-			print "<tr class='head'>" ;
-				print "<th>" ;
-					print __("Date") ;
-				print "</th>" ;
-				print "<th style='width: 140px;'>" ;
-					print __("Size") ;
-				print "</th>" ;
-				print "<th style='width: 80px!important'>" ;
-					print __("Actions") ;
-				print "</th>" ;
-			print "</tr>" ;
+		echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+			echo "<tr class='head'>" ;
+				echo "<th>" ;
+					echo __("Date") ;
+				echo "</th>" ;
+				echo "<th style='width: 140px;'>" ;
+					echo __("Size") ;
+				echo "</th>" ;
+				echo "<th style='width: 80px!important'>" ;
+					echo __("Actions") ;
+				echo "</th>" ;
+			echo "</tr>" ;
 
 		foreach ($snapshotList as $snapshotPath) {
 			$snapshotFile = basename( $snapshotPath );
-			print "<tr>" ;
-				print "<td>". date("F j, Y, g:i a", filemtime($snapshotPath)). "</td>" ;
-				print "<td>". readableFileSize( filesize($snapshotPath)) . "</td>" ;
+			echo "<tr>" ;
+				echo "<td>". date("F j, Y, g:i a", filemtime($snapshotPath)). "</td>" ;
+				echo "<td>". readableFileSize( filesize($snapshotPath)) . "</td>" ;
 
-				print "<td>";
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __('Load') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/delivery2.png'/></a> " ;
-					print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_delete.php&file=". $snapshotFile. "'><img style='margin-left: 5px' title='" . __('Delete') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a> " ;
-				print "</td>";
-			print "</tr>" ;
+				echo "<td>";
+					echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __('Load') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/delivery2.png'/></a> " ;
+					echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_delete.php&file=". $snapshotFile. "&width=650&height=135'><img style='margin-left: 5px' title='" . __('Delete') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a> " ;
+				echo "</td>";
+			echo "</tr>" ;
 		}
-		print "</table>" ;
+		echo "</table>" ;
 
 	}
 }	

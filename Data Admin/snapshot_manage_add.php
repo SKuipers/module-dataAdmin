@@ -17,44 +17,37 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
+
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php")==FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
-	print "<div class='trail'>" ;
-		print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Create Snapshot', 'Data Admin') . "</div>" ;
-		print "</div>" ;
+	echo "<div class='trail'>" ;
+		echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Create Snapshot', 'Data Admin') . "</div>" ;
+		echo "</div>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
 
-	print "<div class='warning'>" ;
-	print __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
-	print "</div>" ;
+	echo "<div class='warning'>" ;
+	echo __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
+	echo "</div>" ;
 
-	print "<div class='warning'>" ;
-	print __('Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.', 'Data Admin');
-	print "</div>" ;
-	?>
-	<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_addProcess.php" ?>">
-		<table class='smallIntBorder fullWidth' cellspacing='0'>	
-			<tr>
-				<td>
-					
-				</td>
-				<td class="right">
-					<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-					<input type="submit" value="<?php print __("Create Snapshot", 'Data Admin') ; ?>">
-				</td>
-			</tr>
-		</table>
-	</form>
-	<?php
-	
-}	
-?>
+	echo "<div class='warning'>" ;
+	echo __('Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.', 'Data Admin');
+    echo "</div>" ;
+    
+    $form = Form::create('deleteRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_addProcess.php');
+    $form->addHiddenValue('address', $_GET['q']);
+
+    $row = $form->addRow();
+        $row->addSubmit(__('Create Snapshot', 'Data Admin'));
+
+    echo $form->getOutput();
+}

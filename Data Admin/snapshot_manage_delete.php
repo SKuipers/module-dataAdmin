@@ -17,20 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Prefab\DeleteForm;
+
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 	//Proceed!
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Delete Snapshot', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Delete Snapshot', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 	
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
@@ -39,9 +41,9 @@ else {
 	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
 	
 	if ($filename=="") {
-		print "<div class='error'>" ;
-			print __("You have not specified one or more required parameters.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+			echo __("You have not specified one or more required parameters.") ;
+		echo "</div>" ;
 	}
 	else {
 
@@ -52,37 +54,14 @@ else {
 		$filepath = $snapshotFolderPath.'/'.$filename;
 
 		if ( !file_exists( $filepath ) ) {
-			print "<div class='error'>" ;
-				print __("The specified record cannot be found.") ;
-			print "</div>" ;
-		}
-		else {
-			//Let's go!
-			?>
-			<form method="post" action="<?php print $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_deleteProcess.php?file=$filename" ?>">
-				<table class='smallIntBorder fullWidth' cellspacing='0'>	
-					<tr>
-						<td> 
-							<b><?php print __('Are you sure you want to delete this record?') ; ?></b><br/>
-							<span style="font-size: 90%; color: #cc0000"><i><?php print __('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!') ; ?></span>
-						</td>
-						<td class="right">
-							
-						</td>
-					</tr>
-					<tr>
-						<td> 
-							<input type="hidden" name="address" value="<?php print $_SESSION[$guid]["address"] ?>">
-							<input type="submit" value="<?php print __('Yes') ; ?>">
-						</td>
-						<td class="right">
-							
-						</td>
-					</tr>
-				</table>
-			</form>
-			<?php
+			echo "<div class='error'>" ;
+				echo __("The specified record cannot be found.") ;
+			echo "</div>" ;
+		} else {
+            //Let's go!
+            
+            $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_deleteProcess.php?file='.$filename);
+            echo $form->getOutput();
 		}
 	}
 }
-?>
