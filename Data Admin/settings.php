@@ -17,20 +17,22 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Forms\Form;
+
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") == FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import Settings', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import Settings', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
 	if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
@@ -151,110 +153,42 @@ else {
 			</td>
 		</tr>
 
-	</table></br>
+    </table></br>
+    
+    <?php
 
-	<form method="post" action="<?php echo $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/settingsProcess.php' ?>">
-		<table class='smallIntBorder fullWidth' cellspacing='0'>
-			<tr>
-				<?php
-                try {
-                    $data = array();
-                    $sql = "SELECT * FROM gibbonSetting WHERE scope='Data Admin' AND name='exportDefaultFileType'";
-                    $result = $connection2->prepare($sql);
-                    $result->execute($data);
-                } catch (PDOException $e) {}
-                $row = $result->fetch();
-                ?>
-				<td style='width: 275px'>
-					<b><?php echo __($row['nameDisplay'], 'Data Admin') ?></b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($row['description'], 'Data Admin');}?></span>
-				</td>
-				<td class="right">
-                    <select name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" class="standardWidth">
-                    	<option <?php if ($row['value'] == 'Excel2007') { echo 'selected '; } ?>value="Excel2007"><?php echo __('Excel 2007 and above (.xlsx)', 'Data Admin') ?></option>
-                        <option <?php if ($row['value'] == 'Excel5') { echo 'selected '; } ?>value="Excel5"><?php echo __('Excel 95 and above (.xls)', 'Data Admin') ?></option>
-                        <option <?php if ($row['value'] == 'OpenDocument') { echo 'selected '; } ?>value="OpenDocument"><?php echo __('OpenDocument (.ods)', 'Data Admin') ?></option>
-                        <option <?php if ($row['value'] == 'CSV') { echo 'selected '; } ?>value="CSV"><?php echo __('Comma Separated (.csv)', 'Data Admin') ?></option>
-                    </select>
-                </td>
-			</tr>
-			<tr>
-				<?php
-                try {
-                    $data = array();
-                    $sql = "SELECT * FROM gibbonSetting WHERE scope='Data Admin' AND name='enableUserLevelPermissions'";
-                    $result = $connection2->prepare($sql);
-                    $result->execute($data);
-                } catch (PDOException $e) {}
-                $row = $result->fetch();
-                ?>
-				<td style='width: 275px'>
-					<b><?php echo __($row['nameDisplay'], 'Data Admin') ?></b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($row['description'], 'Data Admin');}?></span>
-				</td>
-				<td class="right">
-                    <select name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" class="standardWidth">
-                        <option <?php if ($row['value'] == 'Y') { echo 'selected '; } ?>value="Y"><?php echo __('Yes') ?></option>
-                        <option <?php if ($row['value'] == 'N') { echo 'selected '; } ?>value="N"><?php echo __('No') ?></option>
-                    </select>
-                </td>
-			</tr>
-			<tr>
-				<?php
-                try {
-                    $data = array();
-                    $sql = "SELECT * FROM gibbonSetting WHERE scope='Data Admin' AND name='importCustomFolderLocation'";
-                    $result = $connection2->prepare($sql);
-                    $result->execute($data);
-                } catch (PDOException $e) {}
-                $row = $result->fetch();
-                ?>
-				<td style='width: 275px'>
-					<b><?php echo __($row['nameDisplay'], 'Data Admin') ?> *</b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($row['description'], 'Data Admin');}?></span>
-				</td>
-				<td class="right">
-					<input type='text' name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" value="<?php echo $row['value'] ?>" class="standardWidth">
-					<script type="text/javascript">
-						var <?php echo $row['name'] ?>=new LiveValidation('<?php echo $row['name'] ?>');
-						<?php echo $row['name'] ?>.add(Validate.Presence);
-					</script>
-				</td>
-			</tr>
-			<tr>
-				<?php
-                try {
-                    $data = array();
-                    $sql = "SELECT * FROM gibbonSetting WHERE scope='Data Admin' AND name='exportSnapshotsFolderLocation'";
-                    $result = $connection2->prepare($sql);
-                    $result->execute($data);
-                } catch (PDOException $e) {}
-                $row = $result->fetch();
-                ?>
-				<td style='width: 275px'>
-					<b><?php echo __($row['nameDisplay'], 'Data Admin') ?> *</b><br/>
-					<span class="emphasis small"><?php if ($row['description'] != '') { echo __($row['description'], 'Data Admin');}?></span>
-				</td>
-				<td class="right">
-					<input type='text' name="<?php echo $row['name'] ?>" id="<?php echo $row['name'] ?>" value="<?php echo $row['value'] ?>" class="standardWidth">
-					<script type="text/javascript">
-						var <?php echo $row['name'] ?>=new LiveValidation('<?php echo $row['name'] ?>');
-						<?php echo $row['name'] ?>.add(Validate.Presence);
-					</script>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<span class="emphasis small">* <?php echo __('denotes a required field'); ?></span>
-				</td>
-				<td class="right">
-					<input type="hidden" name="address" value="<?php echo $_SESSION[$guid]['address'] ?>">
-					<input type="submit" value="<?php echo __('Submit'); ?>">
-				</td>
-			</tr>
-		</table>
-	</form>
+    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/settingsProcess.php');
+    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
 
-	<?php
+    $fileTypes = array(
+        'Excel2007'    => __('Excel 2007 and above (.xlsx)', 'Data Admin'),
+        'Excel5'       => __('Excel 95 and above (.xls)', 'Data Admin'),
+        'OpenDocument' => __('OpenDocument (.ods)', 'Data Admin'),
+        'CSV'          => __('Comma Separated (.csv)', 'Data Admin'),
+    );
+    $setting = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
+        $row->addSelect($setting['name'])->fromArray($fileTypes)->selected($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
+        $row->addYesNo($setting['name'])->selected($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
+        $row->addTextField($setting['name'])->isRequired()->setValue($setting['value']);
+
+    $setting = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation', true);
+    $row = $form->addRow();
+        $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
+        $row->addTextField($setting['name'])->isRequired()->setValue($setting['value']);
+
+    $row = $form->addRow();
+        $row->addFooter();
+        $row->addSubmit();
+
+    echo $form->getOutput();
 }
-?>
