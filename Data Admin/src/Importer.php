@@ -553,7 +553,7 @@ class Importer
                 }
 
                 //print_r($data);
-                //print '<br/>'.$sqlKeyQueryString.'<br/>';
+                //echo '<br/>'.$sqlKeyQueryString.'<br/>';
                 //print_r( array_keys($row) );
 
 				$result = $this->pdo->executeQuery($data, $sqlKeyQueryString);

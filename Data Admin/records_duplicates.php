@@ -25,23 +25,23 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplicates.php") == FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Duplicate Records', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Duplicate Records', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
 	// Info
-	print "<div class='warning'>" ;
-	print __('Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
-	print "</div>" ;
+	echo "<div class='warning'>" ;
+	echo __('Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
+	echo "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
 
@@ -64,34 +64,34 @@ else {
     //print_r($duplicateRecords);
 
 	if (count($duplicateRecords)<1) {
-		print "<div class='error'>" ;
-		print __("There are no records to display.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("There are no records to display.") ;
+		echo "</div>" ;
 	}
 	else {
 		
-		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+		echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 
-			print "<tr class='head'>" ;
+			echo "<tr class='head'>" ;
 
-				print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-					print __("Count") ;
-				print "</th>" ;
+				echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
+					echo __("Count") ;
+				echo "</th>" ;
 
-				print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-					print $primaryKey;
-				print "</th>" ;
+				echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
+					echo $primaryKey;
+				echo "</th>" ;
 
 				foreach ($uniqueKeys as $uniqueKey) {
-					print "<th style='width: 10%;padding: 5px !important;'>" ;
-						print $uniqueKey;
-					print "</th>" ;
+					echo "<th style='width: 10%;padding: 5px !important;'>" ;
+						echo $uniqueKey;
+					echo "</th>" ;
 				}
 
-				print "<th style='width: 12%;padding: 5px !important;'>" ;
-					print __("Actions") ;
-				print "</th>" ;
-			print "</tr>" ;
+				echo "<th style='width: 12%;padding: 5px !important;'>" ;
+					echo __("Actions") ;
+				echo "</th>" ;
+			echo "</tr>" ;
 
 		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 		$isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) != false);
@@ -103,34 +103,34 @@ else {
 			$importTypeName = $importType->getDetail('type');
 			$duplicates = explode(',', $row['list']);
 
-			print "<tr>" ;
+			echo "<tr>" ;
 
-				print "<td>".count($duplicates). "</td>" ;
+				echo "<td>".count($duplicates). "</td>" ;
 				
-				print "<td>".implode('<br/>', $duplicates). "</td>" ;
+				echo "<td>".implode('<br/>', $duplicates). "</td>" ;
 				
 				foreach ($uniqueKeys as $uniqueKey) {
 					if (!empty($row[ $uniqueKey ])) {
-						print "<td>" .$row[ $uniqueKey ]."</td>";
+						echo "<td>" .$row[ $uniqueKey ]."</td>";
 					} else {
-						print "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
+						echo "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
 					}
 				}
 				
-				print "<td>";
+				echo "<td>";
 					if ( $isImportAccessible ) {
 
 						
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
-				print "</td>";
+				echo "</td>";
 
-			print "</tr>" ;
+			echo "</tr>" ;
 		}
 		
-		print "</table><br/>" ;
+		echo "</table><br/>" ;
 	}
 	
 }	

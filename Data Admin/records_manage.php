@@ -25,23 +25,23 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.php") == FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
 	// Info
-	print "<div class='message'>" ;
-	print __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
-	print "</div>" ;
+	echo "<div class='message'>" ;
+	echo __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
+	echo "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
 
@@ -60,9 +60,9 @@ else {
 	}
 
 	if (count($importTypeList)<1) {
-		print "<div class='error'>" ;
-		print __("There are no records to display.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("There are no records to display.") ;
+		echo "</div>" ;
 	}
 	else {
 		
@@ -73,39 +73,39 @@ else {
 
 			if ($grouping != $importType->getDetail('grouping') ) {
 
-				if ($grouping != '') print "</table><br/>" ;
+				if ($grouping != '') echo "</table><br/>" ;
 
 				$grouping = $importType->getDetail('grouping');
 
-				print "<tr class='break'>" ;
-					print "<td colspan='5'><h4>".$grouping."</h4></td>" ;
-				print "</tr>" ;
+				echo "<tr class='break'>" ;
+					echo "<td colspan='5'><h4>".$grouping."</h4></td>" ;
+				echo "</tr>" ;
 
-				print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+				echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 
-				print "<tr class='head'>" ;
-					print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-						print __("Category") ;
-					print "</th>" ;
-					print "<th style='width: 25%;padding: 5px !important;'>" ;
-						print __("Table", 'Data Admin') ;
-					print "</th>" ;
-					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __("Total Rows", 'Data Admin') ;
-					print "</th>" ;
-					// print "<th style='width: 12%;padding: 5px !important;'>" ;
-					// 	print __("Current Year") ;
-					// print "</th>" ;
-					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __("Duplicates", 'Data Admin') ;
-					print "</th>" ;
-					print "<th style='width: 12%;padding: 5px !important;'>" ;
-						print __("Orphaned", 'Data Admin') ;
-					print "</th>" ;
-					print "<th style='width: 8%;padding: 5px !important;'>" ;
-						print __("Actions") ;
-					print "</th>" ;
-				print "</tr>" ;
+				echo "<tr class='head'>" ;
+					echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
+						echo __("Category") ;
+					echo "</th>" ;
+					echo "<th style='width: 25%;padding: 5px !important;'>" ;
+						echo __("Table", 'Data Admin') ;
+					echo "</th>" ;
+					echo "<th style='width: 12%;padding: 5px !important;'>" ;
+						echo __("Total Rows", 'Data Admin') ;
+					echo "</th>" ;
+					// echo "<th style='width: 12%;padding: 5px !important;'>" ;
+					// 	echo __("Current Year") ;
+					// echo "</th>" ;
+					echo "<th style='width: 12%;padding: 5px !important;'>" ;
+						echo __("Duplicates", 'Data Admin') ;
+					echo "</th>" ;
+					echo "<th style='width: 12%;padding: 5px !important;'>" ;
+						echo __("Orphaned", 'Data Admin') ;
+					echo "</th>" ;
+					echo "<th style='width: 8%;padding: 5px !important;'>" ;
+						echo __("Actions") ;
+					echo "</th>" ;
+				echo "</tr>" ;
 			}
 
 			$isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) != false);
@@ -115,47 +115,47 @@ else {
 			$duplicateCount = $databaseTools->getDuplicateRecords($importType, true);
 			$orphanCount = $databaseTools->getOrphanedRecords($importType, true);
 
-			print "<tr>" ;
-				print "<td>".$importType->getDetail('category'). "</td>" ;
+			echo "<tr>" ;
+				echo "<td>".$importType->getDetail('category'). "</td>" ;
 
-				print "<td>".$importType->getDetail('table')."</td>" ;
+				echo "<td>".$importType->getDetail('table')."</td>" ;
 
-				print "<td>".$recordCount."</td>";
+				echo "<td>".$recordCount."</td>";
 
-				//print "<td>".$recordYearCount."</td>";
+				//echo "<td>".$recordYearCount."</td>";
 
 				if ($isImportAccessible && $recordCount > 0 && $duplicateCount > 0 && $duplicateCount != '-') {
-					print "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_duplicates.php&type=" . $importTypeName . "'>";
-						print $duplicateCount;
-					print "</a></td>" ;
+					echo "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_duplicates.php&type=" . $importTypeName . "'>";
+						echo $duplicateCount;
+					echo "</a></td>" ;
 				} else {
-					print "<td>".$duplicateCount."</td>";
+					echo "<td>".$duplicateCount."</td>";
 				}
 
 				if ($isImportAccessible && $recordCount > 0 && $orphanCount > 0 && $orphanCount != '-') {
-					print "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_orphaned.php&type=" . $importTypeName . "'>";
-						print $orphanCount;
-					print "</a></td>" ;
+					echo "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_orphaned.php&type=" . $importTypeName . "'>";
+						echo $orphanCount;
+					echo "</a></td>" ;
 				} else {
-					print "<td>".$orphanCount."</td>";
+					echo "<td>".$orphanCount."</td>";
 				}
 
-				print "<td>";
+				echo "<td>";
 
 					if ( $isImportAccessible ) {
 
-						print "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __('Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+						echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __('Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
 		
 
-				print "</td>";
-			print "</tr>" ;
+				echo "</td>";
+			echo "</tr>" ;
 		}
 		
-		print "</table><br/>" ;
+		echo "</table><br/>" ;
 	}
 	
 }	

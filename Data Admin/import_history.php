@@ -24,22 +24,22 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
-	print "<h3>" ;
-	print __("Import History", 'Data Admin') ;
-	print "</h3>" ;
+	echo "<h3>" ;
+	echo __("Import History", 'Data Admin') ;
+	echo "</h3>" ;
 
 	// Get a list of available import options
 	$importTypeList = ImportType::loadImportTypeList($pdo, false);
@@ -48,59 +48,59 @@ else {
 	$result=$pdo->executeQuery(array(), $sql);
 
 	if (empty($importTypeList) || $result->rowCount()<1) {
-		print "<div class='error'>" ;
-		print __("There are no records to display.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("There are no records to display.") ;
+		echo "</div>" ;
 	}
 	else {
 
-		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-			print "<tr class='head'>" ;
-				print "<th style='width: 100px;'>" ;
-					print __("Date") ;
-				print "</th>" ;
-				print "<th>" ;
-					print __("User") ;
-				print "</th>" ;
-				print "<th style='width: 80px;'>" ;
-					print __("Category") ;
-				print "</th>" ;
-				print "<th >" ;
-					print __("Import Type", 'Data Admin') ;
-				print "</th>" ;
-				print "<th>" ;
-					print __("Details") ;
-				print "</th>" ;
-				print "<th>" ;
-					print __("Actions") ;
-				print "</th>" ;
-			print "</tr>" ;
+		echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+			echo "<tr class='head'>" ;
+				echo "<th style='width: 100px;'>" ;
+					echo __("Date") ;
+				echo "</th>" ;
+				echo "<th>" ;
+					echo __("User") ;
+				echo "</th>" ;
+				echo "<th style='width: 80px;'>" ;
+					echo __("Category") ;
+				echo "</th>" ;
+				echo "<th >" ;
+					echo __("Import Type", 'Data Admin') ;
+				echo "</th>" ;
+				echo "<th>" ;
+					echo __("Details") ;
+				echo "</th>" ;
+				echo "<th>" ;
+					echo __("Actions") ;
+				echo "</th>" ;
+			echo "</tr>" ;
 
 		while ($row=$result->fetch()) {
 			if (!isset($importTypeList[ $row['type'] ])) continue; // Skip invalid import types
 
-			print "<tr class='".( $row['success'] == false? 'error' : '')."'>" ;
+			echo "<tr class='".( $row['success'] == false? 'error' : '')."'>" ;
 				$importType = $importTypeList[ $row['type'] ];
 
-				print "<td>";
+				echo "<td>";
 					printf("<span title='%s'>%s</span> ", $row['timestamp'], date('M j, Y', $row['unixtime']) );
-				print "</td>";
+				echo "</td>";
 
-				print "<td>";
-					print $row['preferredName'].' '.$row['surname'];
-				print "</td>";
+				echo "<td>";
+					echo $row['preferredName'].' '.$row['surname'];
+				echo "</td>";
 
-				print "<td>" . $importType->getDetail('category'). "</td>" ;
-				print "<td>" . $importType->getDetail('name'). "</td>" ;
-				print "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
+				echo "<td>" . $importType->getDetail('category'). "</td>" ;
+				echo "<td>" . $importType->getDetail('name'). "</td>" ;
+				echo "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
 
-				print "<td>";
-					print "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
-				print "</td>";
+				echo "<td>";
+					echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+				echo "</td>";
 
-			print "</tr>" ;
+			echo "</tr>" ;
 		}
-		print "</table>" ;
+		echo "</table>" ;
 
 	}
 	

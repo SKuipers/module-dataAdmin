@@ -25,23 +25,23 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphaned.php") == FALSE) {
 	//Acess denied
-	print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-	print "</div>" ;
+	echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+	echo "</div>" ;
 }
 else {
 	//New PDO DB connection
 	$pdo = new Gibbon\sqlConnection();
 	$connection2 = $pdo->getConnection();
 
-	print "<div class='trail'>" ;
-	print "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Orphaned Records', 'Data Admin') . "</div>" ;
-	print "</div>" ;
+	echo "<div class='trail'>" ;
+	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Orphaned Records', 'Data Admin') . "</div>" ;
+	echo "</div>" ;
 
 	// Info
-	print "<div class='warning'>" ;
-	print __('Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
-	print "</div>" ;
+	echo "<div class='warning'>" ;
+	echo __('Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
+	echo "</div>" ;
 
 	$databaseTools = new DatabaseTools(null, $pdo);
 
@@ -65,29 +65,29 @@ else {
     }
 
 	if (count($orphanedRecords)<1) {
-		print "<div class='error'>" ;
-		print __("There are no records to display.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("There are no records to display.") ;
+		echo "</div>" ;
 	}
 	else {
 		
-		print "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+		echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
 
-			print "<tr class='head'>" ;
-				print "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-					print $primaryKey;
-				print "</th>" ;
+			echo "<tr class='head'>" ;
+				echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
+					echo $primaryKey;
+				echo "</th>" ;
 
 				foreach ($relationships as $relationship) {
-					print "<th style='width: 10%;padding: 5px !important;'>" ;
-						print $relationship['key'];
-					print "</th>" ;
+					echo "<th style='width: 10%;padding: 5px !important;'>" ;
+						echo $relationship['key'];
+					echo "</th>" ;
 				}
 
-				print "<th style='width: 12%;padding: 5px !important;'>" ;
-					print __("Actions") ;
-				print "</th>" ;
-			print "</tr>" ;
+				echo "<th style='width: 12%;padding: 5px !important;'>" ;
+					echo __("Actions") ;
+				echo "</th>" ;
+			echo "</tr>" ;
 
 		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 		$isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) != false);
@@ -98,31 +98,31 @@ else {
 			
 			$importTypeName = $importType->getDetail('type');
 
-			print "<tr>" ;
-				print "<td>".$row[$primaryKey]. "</td>" ;
+			echo "<tr>" ;
+				echo "<td>".$row[$primaryKey]. "</td>" ;
 
 				foreach ($relationships as $relationship) {
 					if (!empty($row[ $relationship['key'] ])) {
-						print "<td>" .$row[ $relationship['key'] ]."</td>";
+						echo "<td>" .$row[ $relationship['key'] ]."</td>";
 					} else {
-						print "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
+						echo "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
 					}
 				}
 				
-				print "<td>";
+				echo "<td>";
 					if ( $isImportAccessible ) {
 
 						
 
 					} else {
-						print "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
 					}
-				print "</td>";
+				echo "</td>";
 
-			print "</tr>" ;
+			echo "</tr>" ;
 		}
 		
-		print "</table><br/>" ;
+		echo "</table><br/>" ;
 	}
 	
 }	

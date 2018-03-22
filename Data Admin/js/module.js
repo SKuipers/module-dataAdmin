@@ -18,51 +18,37 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 jQuery(function($){
 
-	$(document).ready(function () {
-		$(".columnOrder").each( columnSampleData );
-	});
+    $("select.columnOrder").on('change', function(){
 
-	$(".columnOrder").on('change', columnSampleData );
+        var currentSelection = $(this).val();
+        var textBox = $(this).parent().parent().find('input.columnText');
 
+        textBox.prop("readonly", currentSelection != columnDataCustom );
+        textBox.prop("disabled", currentSelection != columnDataCustom );
 
-	function columnSampleData(){
+        if ( currentSelection == columnDataFunction ) {
+            textBox.val($(this).find("option:selected").data("function")+"()" );
+        } else if ( currentSelection == columnDataCustom ) {
+            textBox.val("");
+        } else if ( currentSelection == columnDataSkip ) {
+            textBox.val("*skipped*");
+        } else if ( currentSelection >= 0 ) {
+            if ( currentSelection in csvFirstLine ) {
+                textBox.val(csvFirstLine[ currentSelection ] );
+            } else {
+                textBox.val("");
+            }
+        }
+    });
+    $("select.columnOrder").change();
 
-		var textBox = $(this).parent().find(".columnText");
-
-		textBox.attr("readonly", $(this).val() != columnDataCustom );
-		textBox.attr("disabled", $(this).val() != columnDataCustom );
-
-
-		if ( $(this).val() == columnDataFunction ) {
-			textBox.attr("value", $(this).find("option:selected").data("function")+"()" );
-		}
-		else if ( $(this).val() == columnDataCustom ) {
-			textBox.attr("value", "" );
-		}
-		else if ( $(this).val() == columnDataSkip ) {
-			textBox.attr("value", "*skipped*" );
-		}
-		else if ( $(this).val() >= 0 ) {
-
-			if ( $(this).val() in csvFirstLine ) {
-				textBox.attr("value", csvFirstLine[ $(this).val() ] );
-			}
-			else {
-				textBox.attr("value", "" );
-			}
-		}
-
-	}
-
-	$("#ignoreErrors").click( function() {
-		if ( $(this).is(':checked') ) {
+	$("#ignoreErrors").click(function() {
+		if ($(this).is(':checked')) {
 			$(this).val( 1 );
-			$( "#submitStep3" ).prop( "disabled", false);
-			$( "#submitStep3" ).prop( "value", "Submit");
+			$("#submitStep3").prop("disabled", false).prop("type", "submit").prop("value", "Submit");
 		} else {
 			$(this).val( 0 );
-			$( "#submitStep3" ).prop( "disabled", true);
-			$( "#submitStep3" ).prop( "value", "Cannot Continue");
+			$("#submitStep3").prop("disabled", true).prop("value", "Cannot Continue");
 		}
 	});
 }); 

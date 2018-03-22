@@ -31,9 +31,9 @@ require __DIR__ . '/module.php';
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php")==FALSE) {
 	// Acess denied
-	print '<div class="error">';
-		print __('You do not have access to this action.');
-	print '</div>';
+	echo '<div class="error">';
+		echo __('You do not have access to this action.');
+	echo '</div>';
 }
 else {
 
@@ -47,19 +47,19 @@ else {
 	$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
 	if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
-		print "<div class='error'>" ;
-		print __("You do not have access to this action.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("You do not have access to this action.") ;
+		echo "</div>" ;
 		return;
 	} else if ( empty($importType)  ) {
-		print "<div class='error'>" ;
-		print __("Your request failed because your inputs were invalid.") ;
-		print "</div>" ;
+		echo "<div class='error'>" ;
+		echo __("Your request failed because your inputs were invalid.") ;
+		echo "</div>" ;
 		return;
 	} else if ( !$importType->isValid() ) {
-		print "<div class='error'>";
+		echo "<div class='error'>";
 		printf( __('Import cannot proceed, as the selected Import Type "%s" did not validate with the database.', 'Data Admin'), $type) ;
-		print "<br/></div>";
+		echo "<br/></div>";
 		return;
 	}
 
@@ -181,9 +181,9 @@ else {
 				}
 			}
 
-			// print '<pre>';
+			// echo '<pre>';
 			// print_r($relationalData);
-			// print '</pre>';
+			// echo '</pre>';
 
 			$rowCount = 2;
 			while ($row = $result->fetch()) {
