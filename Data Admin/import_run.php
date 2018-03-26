@@ -665,8 +665,8 @@ else {
                     $row->addTextArea('csvData')->setRows(4)->setCols(74)->setClass('')->readonly()->setValue($csvData);
 
                 $row = $table->addRow();
-                    $row->if(!$overallSuccess)->addCheckbox('ignoreErrors')->description(__('Ignore Errors? (Expert Only!)', 'Data Admin'))->setValue($ignoreErrors)->setClass('');
-                    $row->if($overallSuccess)->addContent('');
+                    $row->onlyIf(!$overallSuccess)->addCheckbox('ignoreErrors')->description(__('Ignore Errors? (Expert Only!)', 'Data Admin'))->setValue($ignoreErrors)->setClass('');
+                    $row->onlyIf($overallSuccess)->addContent('');
                 
                 if (!$overallSuccess && !$ignoreErrors) {
                     $row->addButton(__('Cannot Continue', 'Data Admin'))->setID('submitStep3')->isDisabled()->addClass('right');
