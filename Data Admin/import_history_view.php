@@ -29,10 +29,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_
 	echo "</div>" ;
 }
 else {
-	//New PDO DB connection
-	$pdo = new Gibbon\sqlConnection();
-	$connection2 = $pdo->getConnection();
-
 	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
 	$data = array( 'importLogID' => $importLogID );
