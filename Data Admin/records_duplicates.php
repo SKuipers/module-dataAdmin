@@ -43,7 +43,7 @@ else {
 	echo __('Duplicate records can potentially arise from import errors. At this time the duplicate records list is for informational purposes only. Tools to update or remove duplicate records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	echo "</div>" ;
 
-	$databaseTools = new DatabaseTools(null, $pdo);
+	$databaseTools = new DatabaseTools($gibbon->session, $pdo);
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';

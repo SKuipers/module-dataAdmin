@@ -43,7 +43,7 @@ else {
 	echo __('Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
 	echo "</div>" ;
 
-	$databaseTools = new DatabaseTools(null, $pdo);
+	$databaseTools = new DatabaseTools($gibbon->session, $pdo);
 
 	// Get the importType information
 	$type = (isset($_GET['type']))? $_GET['type'] : '';

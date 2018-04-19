@@ -49,15 +49,8 @@ class DatabaseTools
      */
     public function __construct(\Gibbon\Session $session = NULL, \Gibbon\sqlConnection $pdo = NULL)
     {
-        if ($session === NULL)
-            $this->session = new \Gibbon\Session();
-        else
-            $this->session = $session ;
-
-        if ($pdo === NULL)
-            $this->pdo = new \Gibbon\sqlConnection();
-        else
-            $this->pdo = $pdo ;
+        $this->session = $session;
+        $this->pdo = $pdo;
     }
 
     public function getRecordCount( ImportType $importType, $currentSchoolYear = false ) {

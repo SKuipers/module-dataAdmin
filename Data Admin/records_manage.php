@@ -43,7 +43,7 @@ else {
 	echo __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
 	echo "</div>" ;
 
-	$databaseTools = new DatabaseTools(null, $pdo);
+	$databaseTools = new DatabaseTools($gibbon->session, $pdo);
 
 	// Get a list of available import options
 	$importTypeList = ImportType::loadImportTypeList($pdo, false);
