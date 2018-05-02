@@ -90,7 +90,7 @@ else {
 					$sql="SELECT surname, preferredName, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID && type=:type ORDER BY timestamp DESC LIMIT 1" ;
 					$result=$pdo->executeQuery($data, $sql);
 
-					if ($pdo->getSuccess() && $result->rowCount()>0) {
+					if ($pdo->getQuerySuccess() && $result->rowCount()>0) {
 						$log = $result->fetch();
 						printf("<span title='%s by %s %s'>%s</span> ", $log['timestamp'], $log['preferredName'], $log['surname'], date('M j, Y', $log['unixtime']) );
 					}

@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Modules\DataAdmin;
 
+use Gibbon\Contracts\Database\Connection;
 use Symfony\Component\Yaml\Yaml;
 
 /**
@@ -85,7 +86,7 @@ class ImportType
      * @param   array   importType information
      * @param   Object  PDO Connection
      */
-    public function __construct( $data, $pdo = NULL, $validateStructure = true )
+    public function __construct( $data, Connection $pdo = NULL, $validateStructure = true )
     {
         if (isset($data['details'])) {
             $this->details = $data['details'];
@@ -152,16 +153,16 @@ class ImportType
         }
     }
 
-    public static function getBaseDir(\Gibbon\sqlConnection $pdo) {
+    public static function getBaseDir(Connection $pdo) {
         $absolutePath = getSettingByScope($pdo->getConnection(), 'System', 'absolutePath');
         return rtrim($absolutePath, '/ ');
     }
 
-    public static function getImportTypeDir(\Gibbon\sqlConnection $pdo) {
+    public static function getImportTypeDir(Connection $pdo) {
         return self::getBaseDir($pdo) . "/modules/Data Admin/imports";
     }
 
-    public static function getCustomImportTypeDir(\Gibbon\sqlConnection $pdo) {
+    public static function getCustomImportTypeDir(Connection $pdo) {
         $customFolder = getSettingByScope($pdo->getConnection(), 'Data Admin', 'importCustomFolderLocation');
 
         return self::getBaseDir($pdo).'/uploads/'.trim($customFolder, '/ ');
@@ -178,7 +179,7 @@ class ImportType
      *
      * @return  array   2D array of importType objects
      */
-    public static function loadImportTypeList( \Gibbon\sqlConnection $pdo = NULL, $validateStructure = false ) {
+    public static function loadImportTypeList(Connection $pdo = NULL, $validateStructure = false ) {
 
         $yaml = new Yaml();
         $importTypes = array();
@@ -192,7 +193,7 @@ class ImportType
 
             if (isset($fileData['details']) && isset($fileData['details']['type']) ) {
                 $fileData['details']['grouping'] = (isset($fileData['access']['module']))? $fileData['access']['module'] : 'General';
-                $importTypes[ $fileData['details']['type'] ] = new importType( $fileData, $pdo, $validateStructure );
+                $importTypes[ $fileData['details']['type'] ] = new ImportType( $fileData, $pdo, $validateStructure );
             }
         }
 
@@ -249,7 +250,7 @@ class ImportType
      *
      * @return  [importType]
      */
-    public static function loadImportType( $importTypeName, \Gibbon\sqlConnection $pdo = NULL ) {
+    public static function loadImportType( $importTypeName, Connection $pdo = NULL ) {
 
         // Check custom first, this allows for local overrides
         $path = self::getCustomImportTypeDir($pdo).'/'.$importTypeName.'.yml';
@@ -297,7 +298,7 @@ class ImportType
      *
      * @return  bool    true if all fields match existing table columns
      */
-    protected function validateWithDatabase( \Gibbon\sqlConnection $pdo ) {
+    protected function validateWithDatabase( Connection $pdo ) {
 
         try {
             $sql="SHOW COLUMNS FROM " . $this->getDetail('table');
@@ -338,9 +339,9 @@ class ImportType
      * Load Access Data - for user permission checking, and category names
      * @version 2016
      * @since   2016
-     * @param   \Gibbon\sqlConnection $pdo
+     * @param   Connection $pdo
      */
-    protected function loadAccessData( \Gibbon\sqlConnection $pdo ) {
+    protected function loadAccessData( Connection $pdo ) {
 
         if ( empty($this->access['module']) || empty($this->access['action']) ) {
             $this->access['protected'] = false;
@@ -376,9 +377,9 @@ class ImportType
      * Load Relational Data
      * @version 2016
      * @since   2016
-     * @param   \Gibbon\sqlConnection $pdo
+     * @param   Connection $pdo
      */
-    protected function loadRelationalData( \Gibbon\sqlConnection $pdo ) {
+    protected function loadRelationalData( Connection $pdo ) {
 
         // Grab the year groups so we can translate Year Group Lists without a million queries
         if ($this->useYearGroups) {

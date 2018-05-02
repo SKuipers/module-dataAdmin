@@ -19,6 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Modules\DataAdmin;
 
+use Gibbon\Contracts\Database\Connection;
+
 /**
  * Extended Import class
  *
@@ -113,7 +115,7 @@ class Importer
 	);
 
 	/**
-	 * Gibbon\sqlConnection
+	 * Gibbon\Contracts\Database\Connection
 	 */
 	private $pdo ;
 
@@ -137,10 +139,10 @@ class Importer
      * @since    25th April 2016
      * @param    Gibbon\session
      * @param    Gibbon\config
-     * @param    Gibbon\sqlConnection
+     * @param    Gibbon\Contracts\Database\Connection
      * @return    void
      */
-    public function __construct(\Gibbon\Core $gibbon, \Gibbon\sqlConnection $pdo)
+    public function __construct(\Gibbon\Core $gibbon, Connection $pdo)
     {
         $this->gibbon = $gibbon;
         $this->pdo = $pdo;

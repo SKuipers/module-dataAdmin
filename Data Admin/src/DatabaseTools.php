@@ -19,6 +19,8 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 namespace Modules\DataAdmin;
 
+use Gibbon\Contracts\Database\Connection;
+
 /**
  * Database Tools class
  *
@@ -34,7 +36,7 @@ class DatabaseTools
     private $session ;
 
 	/**
-	 * Gibbon\sqlConnection
+	 * Gibbon\Contracts\Database\Connection
 	 */
 	private $pdo ;
 	
@@ -45,9 +47,9 @@ class DatabaseTools
      * @version  2nd December 2016
      * @since    2nd December 2016
      * @param    Gibbon\session
-     * @param    Gibbon\sqlConnection
+     * @param    Gibbon\Contracts\Database\Connection
      */
-    public function __construct(\Gibbon\Session $session = NULL, \Gibbon\sqlConnection $pdo = NULL)
+    public function __construct(\Gibbon\Session $session = NULL, Connection $pdo = NULL)
     {
         $this->session = $session;
         $this->pdo = $pdo;
