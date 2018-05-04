@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.3.02] - 2018-05-04
+### Added
+- Updated database connections for compatability with v16 database Connection interface
+
 ## [1.3.01] - 2018-03-07
 ### Added
 - New import type for importing parent login codes from the Meet The Teacher booking system
