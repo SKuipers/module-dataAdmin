@@ -326,6 +326,22 @@ else {
 
                 $count = 0;
 
+                $defaultColumns = function ($fieldName) use (&$importType) {
+                    $columns = [];
+                    
+                    if ( $importType->isFieldRequired($fieldName) == false ) {
+                        $columns[Importer::COLUMN_DATA_SKIP] = __('[ Skip this Column ]');
+                    }
+                    if ( $importType->getField($fieldName, 'custom')) {
+                        $columns[Importer::COLUMN_DATA_CUSTOM] = __('[ Custom Value ]');
+                    }
+                    if ( $importType->getField($fieldName, 'function') ) {
+                        $columns[Importer::COLUMN_DATA_FUNCTION] = __('[ Generate Value ]');
+                        //data-function='". $importType->getField($fieldName, 'function') ."'
+                    }
+                    return $columns;
+                };
+
                 $columns = array_reduce(range(0, count($headings)-1), function($group, $index) use (&$headings) {
                     $group[strval($index)." "] = $headings[$index];
                     return $group;
@@ -346,6 +362,17 @@ else {
                 };
 
                 foreach ($importType->getTableFields() as $fieldName ) {
+
+                    if ( $importType->isFieldHidden($fieldName) ) {
+						$columnIndex = Importer::COLUMN_DATA_HIDDEN;
+						if ($importType->isFieldLinked($fieldName)) $columnIndex = Importer::COLUMN_DATA_LINKED;
+						if (!empty($importType->getField($fieldName, 'function'))) $columnIndex = Importer::COLUMN_DATA_FUNCTION;
+
+                        $form->addHiddenValue("columnOrder[$count]", $columnIndex);
+						$count++;
+						continue;
+                    }
+                    
                     $selectedColumn = '';
                     if ($columnOrder == 'linear' || $columnOrder == 'linearplus') {
                         $selectedColumn = ($columnOrder == 'linearplus')? $count+1 : $count;
@@ -367,8 +394,9 @@ else {
                         $row->addContent($importType->readableFieldType($fieldName));
                         $row->addSelect('columnOrder['.$count.']')
                             ->setID('columnOrder'.$count)
+                            ->fromArray($defaultColumns($fieldName))
                             ->fromArray($columns)
-                            ->setRequired($importType->isFieldRequired($fieldName))
+                            ->isRequired()
                             ->setClass('columnOrder floatLeft mediumWidth')
                             ->selected($selectedColumn)
                             ->placeholder();
@@ -479,17 +507,20 @@ else {
 			$overallSuccess = ($importSuccess && $buildSuccess && $databaseSuccess);
 
 			if ($overallSuccess) {
-
-				echo "<div class='success'>";
 				if ($step == 3) {
-					echo __('The data was successfully imported and validated. No changes have been made to the database.', 'Data Admin');
+                    echo "<div class='message'>";
+                    echo __('The data was successfully validated. This is a <b>DRY RUN!</b> No changes have been made to the database. If everything looks good here, you can click submit to complete this import.', 'Data Admin');
+                    echo "</div>";
 				} else {
-					echo __('The import completed successfully and all relevant database fields have been created and/or updated.', 'Data Admin');
-				}
+                    echo "<div class='success'>";
+                    echo __('The import completed successfully and all relevant database fields have been created and/or updated.', 'Data Admin');
+                    echo "</div>";
+                }
+            } else if ($ignoreErrors) {
+                echo "<div class='warning'>";
+                echo __('The import completed successfully, with the following errors ignored.', 'Data Admin');
 				echo "</div>";
-
 			} else {
-
 				echo "<div class='error'>";
 					echo $importer->getLastError();
 				echo "</div>";
@@ -615,7 +646,7 @@ else {
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Database Inserts", 'Data Admin').": ";?>
+						<?php echo ($step == 3? __('Simulated').' ' : '') . __("Database Inserts", 'Data Admin').": ";?>
 					</td>
 					<td>
 					<?php
@@ -629,7 +660,7 @@ else {
 
 				<tr>
 					<td class="right">
-						<?php echo __("Database Updates").": "; ?>
+						<?php echo ($step == 3? __('Simulated').' ' : '') . __("Database Updates").": "; ?>
 					</td>
 					<td>
 					<?php echo $importer->getDatabaseResult('updates');
