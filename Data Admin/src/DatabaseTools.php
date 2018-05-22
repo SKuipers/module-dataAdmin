@@ -55,7 +55,9 @@ class DatabaseTools
         $this->pdo = $pdo;
     }
 
-    public function getRecordCount( ImportType $importType, $currentSchoolYear = false ) {
+    public function getRecordCount( ImportType $importType, $currentSchoolYear = false )
+    {
+        if (!$importType->isValid()) return;
 
         $table = $this->escapeIdentifier( $importType->getDetail('table') );
 
@@ -76,14 +78,16 @@ class DatabaseTools
                 }
             }
             $result = $this->pdo->executeQuery($data, $sql);
-        } catch(PDOException $e) {
+        } catch(\PDOException $e) {
             return 'Error';
         }
 
         return ($result->rowCount() > 0)? $result->fetchColumn(0) : 0;
     }
 
-    public function getDuplicateRecords( ImportType $importType, $countOnly = false ) {
+    public function getDuplicateRecords( ImportType $importType, $countOnly = false )
+    {
+        if (!$importType->isValid()) return;
 
         $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
         $primaryKey = $importType->getPrimaryKey();
@@ -125,8 +129,10 @@ class DatabaseTools
         }
     }
 
-    public function getOrphanedRecords( ImportType $importType, $countOnly = false ) {
-
+    public function getOrphanedRecords( ImportType $importType, $countOnly = false )
+    {
+        if (!$importType->isValid()) return;
+        
         $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
         $primaryKey = $this->escapeIdentifier( $importType->getPrimaryKey() );
 

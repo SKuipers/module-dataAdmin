@@ -143,6 +143,10 @@ class ImportType
             if ($validateStructure == true) {
                 $this->validated = $this->validateWithDatabase( $pdo );
                 $this->loadRelationalData( $pdo );
+            } else {
+                $data = array('tableName' => $this->getDetail('table'));
+                $sql = "SHOW TABLES LIKE :tableName";
+                $this->validated = !empty($pdo->selectOne($sql, $data));
             }
 
             $this->loadAccessData( $pdo );
@@ -304,7 +308,7 @@ class ImportType
             $sql="SHOW COLUMNS FROM " . $this->getDetail('table');
             $result = $pdo->executeQuery(array(), $sql);
         }
-        catch(PDOException $e) {
+        catch(\PDOException $e) {
             return false;
         }
 
@@ -359,7 +363,7 @@ class ImportType
                     ORDER BY gibbonAction.precedence ASC
                     LIMIT 1";
             $result = $pdo->executeQuery($data, $sql);
-        } catch(PDOException $e) {}
+        } catch(\PDOException $e) {}
 
         if ($result->rowCount() > 0) {
             $action = $result->fetch();
@@ -386,7 +390,7 @@ class ImportType
             try {
                 $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
                 $resultYearGroups = $pdo->executeQuery(array(), $sql);
-            } catch(PDOException $e) {}
+            } catch(\PDOException $e) {}
 
             if ($resultYearGroups->rowCount() > 0) {
                 while ($yearGroup = $resultYearGroups->fetch() ) {
@@ -400,7 +404,7 @@ class ImportType
             try {
                 $sql="SELECT name FROM gibbonLanguage";
                 $resultLanguages = $pdo->executeQuery(array(), $sql);
-            } catch(PDOException $e) {}
+            } catch(\PDOException $e) {}
 
             if ($resultLanguages->rowCount() > 0) {
                 while ($languages = $resultLanguages->fetch() ) {
@@ -414,7 +418,7 @@ class ImportType
             try {
                 $sql="SELECT printable_name, iddCountryCode FROM gibbonCountry";
                 $resultCountries = $pdo->executeQuery(array(), $sql);
-            } catch(PDOException $e) {}
+            } catch(\PDOException $e) {}
 
             if ($resultCountries->rowCount() > 0) {
                 while ($countries = $resultCountries->fetch() ) {
@@ -429,7 +433,7 @@ class ImportType
             try {
                 $sql="SELECT gibbonPersonFieldID, name, type, options, required FROM gibbonPersonField where active = 'Y'";
                 $resultCustomFields = $pdo->executeQuery(array(), $sql);
-            } catch(PDOException $e) {}
+            } catch(\PDOException $e) {}
 
             if ($resultCustomFields->rowCount() > 0) {
                 while ($fields = $resultCustomFields->fetch() ) {
@@ -1183,11 +1187,11 @@ class ImportType
             }
 
             if ($this->getField($fieldName, 'filter') == 'email') {
-                $importRestrictions[] = sprintf( __('%s must be a valid email address'), $this->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
+                $importRestrictions[] = sprintf( __('%s must be a valid email address'), $this->getField($fieldName, 'name'));
             }
 
             if ($this->getField($fieldName, 'filter') == 'url') {
-                $importRestrictions[] = sprintf( __('%s must be a valid url'), $this->getField($fieldName, 'name'), $_SESSION[$guid]['module'] );
+                $importRestrictions[] = sprintf( __('%s must be a valid url'), $this->getField($fieldName, 'name'));
             }
         } 
         

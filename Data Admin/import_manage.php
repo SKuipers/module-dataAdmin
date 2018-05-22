@@ -41,13 +41,13 @@ else {
 		echo "<div class='error'>" ;
 		echo __("There are no records to display.") ;
 		echo "</div>" ;
-	}
-	else {
-
+	} else {
 		$checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
 		$grouping = '';
 		foreach ($importTypeList as $importTypeName => $importType) {
+
+            if (!$importType->isValid()) continue;
 
 			if ($grouping != $importType->getDetail('grouping') ) {
 
