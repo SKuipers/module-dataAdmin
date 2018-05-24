@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+## [1.3.03] - 2018-05-24
+### Fixed
+- Restored missing skip column and custom value options post-ooification
+- Improve database validation for non-existent tables
+
 ## [1.3.02] - 2018-05-04
 ### Added
 - Updated database connections for compatability with v16 database Connection interface
