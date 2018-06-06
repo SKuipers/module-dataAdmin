@@ -27,7 +27,7 @@ jQuery(function($){
         textBox.prop("disabled", currentSelection != columnDataCustom );
 
         if ( currentSelection == columnDataFunction ) {
-            textBox.val($(this).find("option:selected").data("function")+"()" );
+            textBox.val("*generated*");
         } else if ( currentSelection == columnDataCustom ) {
             textBox.val("");
         } else if ( currentSelection == columnDataSkip ) {

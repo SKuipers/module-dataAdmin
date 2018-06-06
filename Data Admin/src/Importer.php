@@ -60,7 +60,9 @@ class Importer
 
 	public $mode;
 	public $syncField;
-	public $syncColumn;
+    public $syncColumn;
+    
+    public $outputData = array();
 
 	/**
 	 * File handler for line-by-line CSV read
@@ -484,10 +486,11 @@ class Importer
                 }
             }
 
-            // Salt & hash passwords - then output them
+            // Salt & hash passwords
             if ( isset($fields['password'] ) ) {
-                // TODO: Temporaily removed (different password displays in dry run :/)
-                // $this->log( $rowNum, importer::MESSAGE_GENERATED_PASSWORD, 'password', -1, array($fields['username'], $fields['password']) );
+                if (!isset($this->outputData['passwords'])) $this->outputData['passwords'] = [];
+                $this->outputData['passwords'][] = ['username' => $fields['username'], 'password' => $fields['password']];
+
                 $salt=getSalt() ;
                 $value=$fields['password'];
                 $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);

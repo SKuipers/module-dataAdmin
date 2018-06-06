@@ -1209,7 +1209,7 @@ class ImportType
      * @return  string  Random password, based on default Gibbon function
      */
     protected function userFunc_generatePassword() {
-        return randomPassword(8);
+        return randomPassword(10);
     }
 
     /**
