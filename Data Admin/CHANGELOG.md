@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.3.04] - 2018-06-06
+### Fixed
+- Generated passwords for user imports are output on the final step
+
 ## [1.3.03] - 2018-05-24
 ### Fixed
 - Restored missing skip column and custom value options post-ooification
