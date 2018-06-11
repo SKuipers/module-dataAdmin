@@ -33,7 +33,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 else {
 	// Some script performace tracking
 	$memoryStart = memory_get_usage();
-	$resourceStart = getrusage();
 	$timeStart = microtime(true);
 
 	// Include PHPExcel
