@@ -79,31 +79,33 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
             $preferredName = $firstName = $surname1 = $surname2 = '';
 
             switch ($nameFormat) {
-                case 'firstLast':       preg_match('/([A-Z\'\.\-]\w+) ([A-Z\'\.\-]\w+) *(.*)/i', $studentName, $matches);
-                                        $firstName = !empty($matches[1])? $matches[1] : '';
-                                        $surname1 = !empty($matches[2])? implode(' ', array_slice($matches, 2)) : '';
-                                        $preferredName = !empty($matches[3])? implode(' ', array_slice($matches, 1, 2)) : $firstName;
-                                        $surname2 = !empty($matches[3])? implode(' ', array_slice($matches, 3)) : $surname1;
+                case 'firstLast':       // Handle names with spaces: Alpha Beta + Gamma as well as Alpha + Beta Gamma
+                                        if (preg_match_all('/([\w\.\-\']+)/i', $studentName, $matches)) {
+                                            $matches = $matches[0];
+                                            $firstName = !empty($matches[0])? $matches[0] : '';
+                                            $surname1 = !empty($matches[1])? implode(' ', array_slice($matches, 1)) : '';
+                                            $preferredName = !empty($matches[2])? implode(' ', array_slice($matches, 0, 2)) : $firstName;
+                                            $surname2 = !empty($matches[2])? implode(' ', array_slice($matches, 2)) : $surname1;
+                                        }
                                         break;
 
-                case 'preferredLast':   preg_match('/([A-Z\'\.\-]\w+) ([A-Z\'\.\-]\w+) *(.*)/i', $studentName, $matches);
-                                        $preferredName = !empty($matches[1])? $matches[1] : '';
-                                        $surname1 = !empty($matches[2])? implode(' ', array_slice($matches, 2)) : '';
-                                        $firstName = !empty($matches[3])? implode(' ', array_slice($matches, 1, 2)) : $preferredName;
-                                        $surname2 = !empty($matches[3])? implode(' ', array_slice($matches, 3)) : $surname1;
+                case 'lastFirst':       // Everything before the , is the surname, everything after is the first name
+                                        if (preg_match('/([^,]+)[, ]+(.*)/i', $studentName, $matches)) {
+                                            $surname1 = !empty($matches[1])? $matches[1] : '';
+                                            $firstName = !empty($matches[2])? implode(' ', array_slice($matches, 2)) : '';
+                                            $preferredName = $firstName;
+                                            $surname2 = $surname1;
+                                        }
                                         break;
 
-                case 'lastPreferred':   preg_match_all('/([A-Z \'\.\-])+/i', $studentName, $matches);
-                                        list($surname1, $preferredName, $firstName) = array_pad($matches[0], 3, '');
-                                        if (empty($firstName)) $firstName = $preferredName;
-                                        $surname2 = $surname1;
+                case 'lastFirstAlt':    // Split the surname before the , and the preferred name after, optionally grabbing a first name in ()
+                                        if (preg_match('/([^,]+)[, ]+([\w\.\-\']+)[ \(\)]*([\w\.\-\' ]*)/i', $studentName, $matches)) {
+                                            list($surname1, $preferredName, $firstName) = array_pad(array_slice($matches, 1), 3, '');
+                                            if (empty($firstName)) $firstName = $preferredName;
+                                            $surname2 = $surname1;
+                                        }
                                         break;
 
-                case 'lastFirst':       preg_match_all('/([A-Z \'\.\-])+/i', $studentName, $matches);
-                                        list($surname1, $firstName, $preferredName) = array_pad($matches[0], 3, '');
-                                        if (empty($preferredName)) $preferredName = $firstName;
-                                        $surname2 = $surname1;
-                                        break;
             }
         } else if ($columnType == 'multi') {
             $preferredName = isset($array[0][$nameColumn])? $array[0][$nameColumn] : '';
@@ -112,7 +114,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
             $surname2 = $surname1;
         }
 
-        // echo "Matching: $preferredName + $surname1 OR $firstName + $surname2 </br>";
+        // echo "Matching: $firstName + $surname1 OR $preferredName + $surname2 </br>";
 
         if ($roleCategory == 'Student') {
             // Locate a student enrolment for the target year group with a matching student name
@@ -128,13 +130,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
                         OR (gibbonPerson.surname = :surname2 AND gibbonPerson.firstName = :firstName)
                     )";
         } else {
-            $data = ['preferredName' => trim($preferredName), 'surname' => trim($surname) ];
+            $data = ['preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
             $sql = "SELECT gibbonPerson.username
                     FROM gibbonPerson 
                     WHERE (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')
                     AND (
-                        (gibbonPerson.surname LIKE CONCAT('%', :surname, '%') AND gibbonPerson.preferredName LIKE :preferredName)
-                        OR (gibbonPerson.surname LIKE :surname AND gibbonPerson.preferredName LIKE CONCAT('%', :preferredName, '%'))
+                        (gibbonPerson.surname = :surname1 AND gibbonPerson.preferredName = :preferredName)
+                        OR (gibbonPerson.surname = :surname2 AND gibbonPerson.firstName = :firstName)
                     )";
         }
 

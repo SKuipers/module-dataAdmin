@@ -45,6 +45,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     echo '</p>';
     echo '<ol>';
     echo '<li>'.__('The name provided must match one any <b>only one</b> user of the same role category.').'</li>';
+    echo '<li>'.__('Matches will be found using Preferred Name + Surname as well as First Name + Surname.').'</li>';
     echo '<li>'.__('No username will be returned if there are no matches, or if too many users match the same name.').'</li>';
     echo '<li>'.__('Only users with a status of Full or Expected will be matched.').'</li>';
     echo '<li>'.__('For students: the matching student must also be in the target year group from the column provided.').'</li>';
@@ -86,10 +87,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
 
     // ONE COLUMN
     $formats = array(
-        'firstLast' => __('FirstName Surname'),
-        'preferredLast' => __('PreferredName Surname'),
-        'lastFirst' => __('Surname, FirstName (PreferredName)'),
-        'lastPreferred' => __('Surname, PreferredName (FirstName)'),
+        'firstLast' => __('Name Surname'),
+        'lastFirst' => __('Surname, Name'),
+        'lastFirstAlt' => __('Surname, Name (Other Name)'),
     );
     $row = $form->addRow()->addClass('oneColumnOptions');
         $row->addLabel('nameFormat', __('Name Format'))->description(__('What format are the names currently in?'));
