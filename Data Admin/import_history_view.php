@@ -90,7 +90,7 @@ else {
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
 			<tr <?php echo "class='". ( ($importResults['importSuccess'])? 'current' : 'error' ) ."'"; ?>>
 				<td class="right"  width="50%">
-					<?php echo __("Reading CSV file", 'Data Admin').": "; ?>
+					<?php echo __("Reading Spreadsheet", 'Data Admin').": "; ?>
 				</td>
 				<td>
 					<?php echo ($importResults['importSuccess'])? __("Success", 'Data Admin') : __("Failed", 'Data Admin'); ?>

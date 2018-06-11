@@ -73,7 +73,7 @@ else {
 	$step = (isset($_GET["step"]))? min( max(1, $_GET["step"]), 4) : 1;
 
 	echo "<ul id='progressbar'>";
-		printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", __("Select CSV", 'Data Admin') );
+		printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", __("Select Spreadsheet", 'Data Admin') );
 		printf("<li class='%s'>%s</li>", ($step >= 2)? "active" : "", __("Confirm Data", 'Data Admin') );
 		printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", __("Dry Run", 'Data Admin') );
 		printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", __("Live Run", 'Data Admin') );
@@ -93,7 +93,7 @@ else {
         }
         
         echo '<h2>';
-		echo __('Step 1 - Select CSV Files', 'Data Admin');
+		echo __('Step 1 - Select Spreadsheet', 'Data Admin');
         echo '</h2>';
 
         echo '<div class="message">';
@@ -126,7 +126,7 @@ else {
             $row->addSelect('columnOrder')->fromArray($columnOrders)->isRequired()->selected($selectedOrder);
 
         $row = $form->addRow();
-            $row->addLabel('file', __('CSV File'))->description(__('See Notes below for specification.'));
+            $row->addLabel('file', __('Spreadsheet'))->description(__('See Notes below for specification.'));
             $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
 
         $row = $form->addRow();
@@ -213,7 +213,7 @@ else {
 		//Check file type
 		if ($importer->isValidMimeType($_FILES['file']['type']) == false) {
 			echo "<div class='error'>";
-			printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a CSV file.', 'Data Admin'), $_FILES['file']['type']);
+			printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a Spreadsheet file.', 'Data Admin'), $_FILES['file']['type']);
 			echo "<br/></div>";
 		}
 		else if ( empty($_POST["fieldDelimiter"]) OR empty($_POST["stringEnclosure"])) {
@@ -565,7 +565,7 @@ else {
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php echo "class='". ( ($importSuccess)? 'current' : 'error' ) ."'"; ?>>
 					<td class="right"  width="50%">
-						<?php echo __("Reading CSV file", 'Data Admin').": "; ?>
+						<?php echo __("Reading Spreadsheet", 'Data Admin').": "; ?>
 					</td>
 					<td>
 						<?php echo ($importSuccess)? __("Success") : __("Failed"); ?>

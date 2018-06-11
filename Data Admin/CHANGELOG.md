@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.3.05] - 2018-06-11
+### Added
+- Added a tool to help find usernames from a spreadsheet with only names
+
 ## [1.3.04] - 2018-06-06
 ### Fixed
 - Generated passwords for user imports are output on the final step
