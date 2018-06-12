@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.2.04] - 2018-06-12
+### Fixed
+- Fix pre-PHP7 Windows compatibility issue when importing
+
 ## [1.2.03] - 2017-10-16
 ### Fixed
 - Fix v14 Form class compatibility in Combine Similar Fields
