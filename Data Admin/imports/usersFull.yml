@@ -73,9 +73,9 @@ table:
         args: {filter: string, required: true, custom: true }
         relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
     gibbonRoleIDAll:
-        name: "Other Roles"
+        name: "All Roles (including Primary Role)"
         desc: "Short Names, Comma separated"
-        args: {filter: string, custom: true }
+        args: {filter: string, required: true, custom: true }
     email:
         name: "Email"
         desc: ""

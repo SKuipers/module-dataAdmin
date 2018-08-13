@@ -51,6 +51,10 @@ table:
         desc: "Short Name"
         args: {filter: string, required: true, custom: true }
         relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
+    gibbonRoleIDAll:
+        name: "All Roles (including Primary Role)"
+        desc: "Short Names, Comma separated"
+        args: {filter: string, required: true, custom: true }
     username:
         name: "Username"
         desc: "User account name & login"
