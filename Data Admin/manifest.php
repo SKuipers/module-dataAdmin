@@ -144,6 +144,22 @@ $actionRows[5]["categoryPermissionStaff"]="Y" ;
 $actionRows[5]["categoryPermissionStudent"]="N" ;
 $actionRows[5]["categoryPermissionParent"]="N" ;
 $actionRows[5]["categoryPermissionOther"]="N" ;
+
+$actionRows[6]["name"]="Find Usernames" ;
+$actionRows[6]["precedence"]="0";
+$actionRows[6]["category"]="Data Tools" ;
+$actionRows[6]["description"]="Helps find usernames from a spreadsheet with only names.";
+$actionRows[6]["URLList"]="tools_findUsernames.php" ;
+$actionRows[6]["entryURL"]="tools_findUsernames.php" ;
+$actionRows[6]["defaultPermissionAdmin"]="Y" ;
+$actionRows[6]["defaultPermissionTeacher"]="N" ;
+$actionRows[6]["defaultPermissionStudent"]="N" ;
+$actionRows[6]["defaultPermissionParent"]="N" ;
+$actionRows[6]["defaultPermissionSupport"]="N" ;
+$actionRows[6]["categoryPermissionStaff"]="Y" ;
+$actionRows[6]["categoryPermissionStudent"]="N" ;
+$actionRows[6]["categoryPermissionParent"]="N" ;
+$actionRows[6]["categoryPermissionOther"]="N" ;
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
 ?>
