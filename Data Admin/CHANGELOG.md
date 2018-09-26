@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+## [1.3.06] - 2018-09-26
+### Added
+- Added application/octet-stream as a valid MIME type
+- Fixed missing Find Usernames action in manifest.php
+- Made the All Roles field required for all user imports
+
 ## [1.3.05] - 2018-06-11
 ### Added
 - Added a tool to help find usernames from a spreadsheet with only names
