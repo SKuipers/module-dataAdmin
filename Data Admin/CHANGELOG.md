@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+## [1.4.00] - 2018-11-09
+### Added
+- Refactored all breadcrumbs to use Page class
+- Gibbon v17 requirement
+- PHP 7 requirement
+
 ## [1.3.06] - 2018-09-26
 ### Added
 - Added application/octet-stream as a valid MIME type
