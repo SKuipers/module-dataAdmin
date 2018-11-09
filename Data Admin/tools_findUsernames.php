@@ -28,9 +28,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
         echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Find Usernames', 'Data Admin') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs->add(__('Find Usernames', 'Data Admin'));
 
     if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, ['error4' => __('Import cannot proceed, the file type cannot be read.') ]);

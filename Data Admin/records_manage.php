@@ -30,11 +30,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
 	echo "</div>" ;
 }
 else {
-	
-	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
-	echo "</div>" ;
-
+    $page->breadcrumbs->add(__('Manage Records', 'Data Admin'));
+    
 	// Info
 	echo "<div class='message'>" ;
 	echo __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');

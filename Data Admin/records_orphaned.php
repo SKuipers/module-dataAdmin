@@ -30,11 +30,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
 	echo "</div>" ;
 }
 else {
-	
-	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Orphaned Records', 'Data Admin') . "</div>" ;
-	echo "</div>" ;
-
+    $page->breadcrumbs
+        ->add(__('Manage Records', 'Data Admin'), 'records_manage.php')
+        ->add(__('Orphaned Records', 'Data Admin'));
+    
 	// Info
 	echo "<div class='warning'>" ;
 	echo __('Orphaned records are those where the link between this record and any related records on other tables has been broken. This can happen if other records are deleted or replaced without removing the linked records. At this time the orphaned records list is for informational purposes only. Tools to update or remove orphaned records will be added once the safest way to handle them has been determined.', 'Data Admin');
