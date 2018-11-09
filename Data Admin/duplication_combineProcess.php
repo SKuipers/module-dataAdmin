@@ -71,13 +71,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-   if ($fail == true) {
+    if ($fail == true) {
         $URL .= '&return=error2';
         header("Location: {$URL}");
         exit;
-   } else {
+    } else {
         $URL .= '&return=success0';
         header("Location: {$URL}");
         exit;
-   }
-}	
+    }
+}

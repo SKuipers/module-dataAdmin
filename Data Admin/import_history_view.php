@@ -22,37 +22,34 @@ use Modules\DataAdmin\ImportType;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_view.php")==FALSE) {
-	//Acess denied
-	echo "<div class='error'>" ;
-		echo __("You do not have access to this action.") ;
-	echo "</div>" ;
-}
-else {
-	$importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_view.php")==false) {
+    //Acess denied
+    echo "<div class='error'>" ;
+    echo __("You do not have access to this action.") ;
+    echo "</div>" ;
+} else {
+    $importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
 
-	$data = array( 'importLogID' => $importLogID );
-	$sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
-	$result=$pdo->executeQuery($data, $sql);
+    $data = array( 'importLogID' => $importLogID );
+    $sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
+    $result=$pdo->executeQuery($data, $sql);
 
-	if ( $result->rowCount() < 1) {
-		echo "<div class='error'>" ;
-		echo __("There are no records to display.") ;
-		echo "</div>" ;
+    if ($result->rowCount() < 1) {
+        echo "<div class='error'>" ;
+        echo __("There are no records to display.") ;
+        echo "</div>" ;
+    } else {
+        $importLog = $result->fetch();
+        $importResults = (isset($importLog['importResults']))? unserialize($importLog['importResults']) : array();
 
-	} else {
-		$importLog = $result->fetch();
-		$importResults = (isset($importLog['importResults']))? unserialize($importLog['importResults']) : array();
+        if (empty($importResults) || !isset($importLog['type'])) {
+            echo "<div class='error'>" ;
+            echo __("There are no records to display.") ;
+            echo "</div>" ;
+            return;
+        }
 
-		if (empty($importResults) || !isset($importLog['type'])) {
-			echo "<div class='error'>" ;
-			echo __("There are no records to display.") ;
-			echo "</div>" ;
-			return;
-		}
-
-		$importType = ImportType::loadImportType( $importLog['type'], $pdo );
-	?>
+        $importType = ImportType::loadImportType($importLog['type'], $pdo); ?>
 		<h1>
 			<?php echo __('Import History', 'Data Admin'); ?>
 		</h1>
@@ -71,7 +68,7 @@ else {
 				</td>
 				<td width="50%">
 					<?php echo __("Date").": "; ?><br/>
-					<?php printf( "<span title='%s'>%s</span>", $importLog['timestamp'], date('F j, Y, g:i a', $importLog['unixtime']) ); ?>
+					<?php printf("<span title='%s'>%s</span>", $importLog['timestamp'], date('F j, Y, g:i a', $importLog['unixtime'])); ?>
 				</td>
 			</tr>
 			<tr>
@@ -81,14 +78,14 @@ else {
 				</td>
 				<td width="50%">
 					<?php echo __("User").": "; ?><br/>
-					<?php printf( "<span title='%s'>%s %s</span>", $importLog['username'], $importLog['preferredName'], $importLog['surname'] ); ?>
+					<?php printf("<span title='%s'>%s %s</span>", $importLog['username'], $importLog['preferredName'], $importLog['surname']); ?>
 				</td>
 			</tr>
 		</table>
 		<br/>
 
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
-			<tr <?php echo "class='". ( ($importResults['importSuccess'])? 'current' : 'error' ) ."'"; ?>>
+			<tr <?php echo "class='". (($importResults['importSuccess'])? 'current' : 'error') ."'"; ?>>
 				<td class="right"  width="50%">
 					<?php echo __("Reading Spreadsheet", 'Data Admin').": "; ?>
 				</td>
@@ -114,7 +111,7 @@ else {
 			</tr>
 		</table><br/>
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
-			<tr <?php echo "class='". ( ($importResults['buildSuccess'])? 'current' : 'error' ) ."'"; ?>>
+			<tr <?php echo "class='". (($importResults['buildSuccess'])? 'current' : 'error') ."'"; ?>>
 				<td class="right" width="50%">
 					<?php echo __("Validating data", 'Data Admin').": "; ?>
 				</td>
@@ -159,7 +156,7 @@ else {
 		</table><br/>
 
 		<table class='smallIntBorder fullWidth' cellspacing='0'>	
-			<tr <?php echo "class='". ( ($importResults['databaseSuccess'])? 'current' : 'error' ) ."'"; ?>>
+			<tr <?php echo "class='". (($importResults['databaseSuccess'])? 'current' : 'error') ."'"; ?>>
 				<td class="right" width="50%">
 					<?php echo __("Querying database", 'Data Admin').": "; ?>
 				</td>
@@ -169,15 +166,14 @@ else {
 			</tr>
 			<tr>
 				<td class="right">
-					<?php echo __("Database Inserts", 'Data Admin').": ";?>
+					<?php echo __("Database Inserts", 'Data Admin').": "; ?>
 				</td>
 				<td>
-				<?php 
-					echo $importResults['inserts'];
-					if ($importResults['inserts_skipped'] > 0) {
-						echo " (". $importResults['inserts_skipped'] ." ". __("skipped", 'Data Admin') .")";
-					}
-				?>
+				<?php
+                    echo $importResults['inserts'];
+        if ($importResults['inserts_skipped'] > 0) {
+            echo " (". $importResults['inserts_skipped'] ." ". __("skipped", 'Data Admin') .")";
+        } ?>
 				</td>
 			</tr>
 
@@ -186,12 +182,11 @@ else {
 					<?php echo __("Database Updates", 'Data Admin').": "; ?>
 				</td>
 				<td>
-				<?php 
-					echo $importResults['updates'];
-					if ($importResults['updates_skipped'] > 0) {
-						echo " (". $importResults['updates_skipped'] ." ". __("skipped", 'Data Admin') .")";
-					}
-				?>
+				<?php
+                    echo $importResults['updates'];
+        if ($importResults['updates_skipped'] > 0) {
+            echo " (". $importResults['updates_skipped'] ." ". __("skipped", 'Data Admin') .")";
+        } ?>
 				</td>
 			</tr>
 
@@ -200,7 +195,6 @@ else {
 
 
 	<?php
-	}
-
-}	
+    }
+}
 ?>

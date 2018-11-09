@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
 } else {
     $fail = false;
 
-    $exportDefaultFileType = (isset($_POST['exportDefaultFileType'])) ? $_POST['exportDefaultFileType'] : NULL;
+    $exportDefaultFileType = (isset($_POST['exportDefaultFileType'])) ? $_POST['exportDefaultFileType'] : null;
     try {
         $data = array('value' => $exportDefaultFileType);
         $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='exportDefaultFileType'";
@@ -41,7 +41,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
     
-    $enableUserLevelPermissions = (isset($_POST['enableUserLevelPermissions'])) ? $_POST['enableUserLevelPermissions'] : NULL;
+    $enableUserLevelPermissions = (isset($_POST['enableUserLevelPermissions'])) ? $_POST['enableUserLevelPermissions'] : null;
     try {
         $data = array('value' => $enableUserLevelPermissions);
         $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='enableUserLevelPermissions'";
@@ -51,7 +51,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-    $importCustomFolderLocation = (isset($_POST['importCustomFolderLocation'])) ? $_POST['importCustomFolderLocation'] : NULL;
+    $importCustomFolderLocation = (isset($_POST['importCustomFolderLocation'])) ? $_POST['importCustomFolderLocation'] : null;
     try {
         $data = array('value' => $importCustomFolderLocation);
         $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='importCustomFolderLocation'";
@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-    $exportSnapshotsFolderLocation = (isset($_POST['exportSnapshotsFolderLocation'])) ? $_POST['exportSnapshotsFolderLocation'] : NULL;
+    $exportSnapshotsFolderLocation = (isset($_POST['exportSnapshotsFolderLocation'])) ? $_POST['exportSnapshotsFolderLocation'] : null;
     try {
         $data = array('value' => $exportSnapshotsFolderLocation);
         $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='exportSnapshotsFolderLocation'";
@@ -71,13 +71,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-   //RETURN RESULTS
-   if ($fail == true) {
-       $URL .= '&return=error2';
-       header("Location: {$URL}");
-   } else {
-       //Success 0
+    //RETURN RESULTS
+    if ($fail == true) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+    } else {
+        //Success 0
         $URL .= '&return=success0';
-       header("Location: {$URL}");
-   }
-}	
+        header("Location: {$URL}");
+    }
+}

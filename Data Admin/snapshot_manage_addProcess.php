@@ -26,68 +26,62 @@ require __DIR__ . '/module.php';
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_add.php" ;
 $URLDelete=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php")==FALSE) {
-	$URL.="&return=error0" ;
-	header("Location: {$URL}");
-	exit;
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php")==false) {
+    $URL.="&return=error0" ;
+    header("Location: {$URL}");
+    exit;
 } else {
-	//Proceed!
-	//Check if file exists
+    //Proceed!
+    //Check if file exists
 
-	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
-	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+    $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+    $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+    $snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
 
-	$filename = "snapshot-" . date("d-m-Y-Hi") . ".sql.gz";
-	$filepath = $snapshotFolderPath.'/'.$filename;
+    $filename = "snapshot-" . date("d-m-Y-Hi") . ".sql.gz";
+    $filepath = $snapshotFolderPath.'/'.$filename;
 
-	if (file_exists($filepath)) {
-		$URL.="&return=error1" ;
-		header("Location: {$URL}");
-		exit;
-	} else {
+    if (file_exists($filepath)) {
+        $URL.="&return=error1" ;
+        header("Location: {$URL}");
+        exit;
+    } else {
+        if (file_exists($_SESSION[$guid]["absolutePath"] . '/config.php')) {
+            include $_SESSION[$guid]["absolutePath"].'/config.php';
+        }
 
-		if ( file_exists($_SESSION[$guid]["absolutePath"] . '/config.php')) {
-			include $_SESSION[$guid]["absolutePath"].'/config.php';
-		}
+        if (empty($databaseServer) || empty($databaseUsername) || empty($databasePassword) || empty($databaseName)) {
+            $URL.="&return=error1" ;
+            header("Location: {$URL}");
+            exit;
+        } else {
+            try {
+                set_time_limit(600);
+                //Check for MAMP, because mysqldump is in a weird spot
+                if (mb_stripos($_ENV["_"], 'MAMP') !== false) {
+                    $command = "/Applications/MAMP/Library/bin/mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
+                } else {
+                    $command = "mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
+                }
 
-		if (empty($databaseServer) || empty($databaseUsername) || empty($databasePassword) || empty($databaseName)) {
-			$URL.="&return=error1" ;
-			header("Location: {$URL}");
-			exit;
-		} else {
+                exec($command, $output, $return);
+            } catch (Exception $e) {
+                $URL.="&return=error1" ;
+                header("Location: {$URL}");
+                exit;
+            }
 
-			try {
-				set_time_limit(600);
-				//Check for MAMP, because mysqldump is in a weird spot
-				if ( mb_stripos($_ENV["_"], 'MAMP') !== false ) {
-					$command = "/Applications/MAMP/Library/bin/mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
-				} else {
-					$command = "mysqldump --opt --user=$databaseUsername --password='$databasePassword' --host=$databaseServer $databaseName > $filepath";
-				}
-
-				exec($command, $output, $return);
-
-			} catch (Exception $e) {
-				$URL.="&return=error1" ;
-				header("Location: {$URL}");
-				exit;
-			}
-
-			// Error # returned by mysqldump
-			if ($return != 0) {
-				$URL.="&return=error1" ;
-				header("Location: {$URL}");
-				exit;
-			} else {
-				$URLDelete=$URLDelete . "&return=success0" ;
-				header("Location: {$URLDelete}");
-				exit;
-			}
-
-		}
-
-	}
+            // Error # returned by mysqldump
+            if ($return != 0) {
+                $URL.="&return=error1" ;
+                header("Location: {$URL}");
+                exit;
+            } else {
+                $URLDelete=$URLDelete . "&return=success0" ;
+                header("Location: {$URLDelete}");
+                exit;
+            }
+        }
+    }
 }
-?>

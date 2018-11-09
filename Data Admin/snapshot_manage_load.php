@@ -68,13 +68,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
             $form->addHiddenValue('address', $_GET['q']);
 
             $col = $form->addRow()->addColumn();
-                $col->addContent(__('Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin'))->wrap('<strong>', '</strong>');
-                $col->addContent(__('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!'))
+            $col->addContent(__('Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin'))->wrap('<strong>', '</strong>');
+            $col->addContent(__('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!'))
                     ->wrap('<span style="color: #cc0000"><i>', '</i></span>');
 
             $row = $form->addRow();
-                $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('CONFIRM')));
-                $row->addTextField('confirm')
+            $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('CONFIRM')));
+            $row->addTextField('confirm')
                     ->isRequired()
                     ->addValidation(
                         'Validate.Inclusion',

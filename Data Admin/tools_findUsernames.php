@@ -22,10 +22,10 @@ use Gibbon\Forms\Form;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsernames.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsernames.php") == false) {
     //Acess denied
     echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+    echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
     $page->breadcrumbs->add(__('Find Usernames', 'Data Admin'));
@@ -52,7 +52,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     echo __("If successful, this tool will return a new spreadsheet with an added column of usernames.", 'Data Admin');
     echo '</p>';
 
-    $columns = array_reduce(range(0, 25), function($group, $index) {
+    $columns = array_reduce(range(0, 25), function ($group, $index) {
         $group[str_pad($index, 2, '0', STR_PAD_LEFT)] = chr($index % 26 + 0x41);
         return $group;
     }, array());
@@ -62,13 +62,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     $form->setClass('fullWidth smallIntBorder');
 
     $row = $form->addRow();
-        $row->addLabel('file', __('Spreadsheet'));
-        $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
+    $row->addLabel('file', __('Spreadsheet'));
+    $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
 
     $sql = "SELECT DISTINCT category AS value, category AS name FROM gibbonRole ORDER BY category";
     $row = $form->addRow();
-        $row->addLabel('roleCategory', __('Role Category'));
-        $row->addSelect('roleCategory')->fromQuery($pdo, $sql)->isRequired()->placeholder();
+    $row->addLabel('roleCategory', __('Role Category'));
+    $row->addSelect('roleCategory')->fromQuery($pdo, $sql)->isRequired()->placeholder();
 
     // COLUMN OPTIONS
     $form->toggleVisibilityByClass('columnTypeOptions')->onSelect('roleCategory')->whenNot(__('Please select...'));
@@ -77,8 +77,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
         'multi' => __('More than one column'),
     );
     $row = $form->addRow()->addClass('columnTypeOptions');
-        $row->addLabel('columnType', __('Columns'))->description(__('Are the first and surnames separated into columns, or all in one column?'));
-        $row->addSelect('columnType')->fromArray($columnTypes)->isRequired()->placeholder();
+    $row->addLabel('columnType', __('Columns'))->description(__('Are the first and surnames separated into columns, or all in one column?'));
+    $row->addSelect('columnType')->fromArray($columnTypes)->isRequired()->placeholder();
 
     $form->toggleVisibilityByClass('oneColumnOptions')->onSelect('columnType')->when('one');
     $form->toggleVisibilityByClass('multiColumnOptions')->onSelect('columnType')->when('multi');
@@ -90,36 +90,36 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
         'lastFirstAlt' => __('Surname, Name (Other Name)'),
     );
     $row = $form->addRow()->addClass('oneColumnOptions');
-        $row->addLabel('nameFormat', __('Name Format'))->description(__('What format are the names currently in?'));
-        $row->addSelect('nameFormat')->fromArray($formats)->isRequired()->placeholder();
+    $row->addLabel('nameFormat', __('Name Format'))->description(__('What format are the names currently in?'));
+    $row->addSelect('nameFormat')->fromArray($formats)->isRequired()->placeholder();
     
     $row = $form->addRow()->addClass('oneColumnOptions');
-        $row->addLabel('nameColumn', __('Name Column'))->description(__('What column are the names in?'));
-        $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addLabel('nameColumn', __('Name Column'))->description(__('What column are the names in?'));
+    $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
 
     // MULTIPLE COLUMNS
     $row = $form->addRow()->addClass('multiColumnOptions');
-        $row->addLabel('nameColumn', __('Preferred Name Column'));
-        $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addLabel('nameColumn', __('Preferred Name Column'));
+    $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
 
     $row = $form->addRow()->addClass('multiColumnOptions');
-        $row->addLabel('firstNameColumn', __('First Name Column'))->description(__('Can be the same as preferred.'));
-        $row->addSelect('firstNameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addLabel('firstNameColumn', __('First Name Column'))->description(__('Can be the same as preferred.'));
+    $row->addSelect('firstNameColumn')->fromArray($columns)->isRequired()->placeholder();
 
     $row = $form->addRow()->addClass('multiColumnOptions');
-        $row->addLabel('surnameColumn', __('Surname Column'));
-        $row->addSelect('surnameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addLabel('surnameColumn', __('Surname Column'));
+    $row->addSelect('surnameColumn')->fromArray($columns)->isRequired()->placeholder();
 
     // STUDENT YEAR GROUP
     $form->toggleVisibilityByClass('yearGroupOptions')->onSelect('roleCategory')->when('Student');
 
     $row = $form->addRow()->addClass('yearGroupOptions');
-        $row->addLabel('yearGroupColumn', __('Year Group Column'))->description(__('Only students with the same name AND same year group will be matched.'));
-        $row->addSelect('yearGroupColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addLabel('yearGroupColumn', __('Year Group Column'))->description(__('Only students with the same name AND same year group will be matched.'));
+    $row->addSelect('yearGroupColumn')->fromArray($columns)->isRequired()->placeholder();
 
     $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
+    $row->addFooter();
+    $row->addSubmit();
     
     echo $form->getOutput();
-}	
+}

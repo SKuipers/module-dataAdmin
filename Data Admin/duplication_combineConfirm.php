@@ -22,10 +22,10 @@ use Gibbon\Forms\Form;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == false) {
     //Acess denied
     echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+    echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
@@ -71,4 +71,4 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     
         echo $form->getOutput();
     }
-}	
+}

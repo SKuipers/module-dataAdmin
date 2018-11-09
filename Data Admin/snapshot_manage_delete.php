@@ -22,41 +22,40 @@ use Gibbon\Forms\Prefab\DeleteForm;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==FALSE) {
-	//Acess denied
-	echo "<div class='error'>" ;
-		echo __("You do not have access to this action.") ;
-	echo "</div>" ;
-}
-else {
-	//Proceed!
-	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
-	
-	//Check if file exists
-	$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
-	
-	if ($filename=="") {
-		echo "<div class='error'>" ;
-			echo __("You have not specified one or more required parameters.") ;
-		echo "</div>" ;
-	}
-	else {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==false) {
+    //Acess denied
+    echo "<div class='error'>" ;
+    echo __("You do not have access to this action.") ;
+    echo "</div>" ;
+} else {
+    //Proceed!
+    if (isset($_GET["return"])) {
+        returnProcess($guid, $_GET["return"], null, null);
+    }
+    
+    //Check if file exists
+    $filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
+    
+    if ($filename=="") {
+        echo "<div class='error'>" ;
+        echo __("You have not specified one or more required parameters.") ;
+        echo "</div>" ;
+    } else {
+        $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+        $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-		$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
-		$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+        $snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+        $filepath = $snapshotFolderPath.'/'.$filename;
 
-		$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
-		$filepath = $snapshotFolderPath.'/'.$filename;
-
-		if ( !file_exists( $filepath ) ) {
-			echo "<div class='error'>" ;
-				echo __("The specified record cannot be found.") ;
-			echo "</div>" ;
-		} else {
+        if (!file_exists($filepath)) {
+            echo "<div class='error'>" ;
+            echo __("The specified record cannot be found.") ;
+            echo "</div>" ;
+        } else {
             //Let's go!
             
             $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_deleteProcess.php?file='.$filename);
             echo $form->getOutput();
-		}
-	}
+        }
+    }
 }

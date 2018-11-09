@@ -22,10 +22,10 @@ use Gibbon\Forms\Form;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == false) {
     //Acess denied
     echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+    echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
     $page->breadcrumbs->add(__('Combine Similar Fields', 'Data Admin'));
@@ -50,23 +50,25 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     // Build a set of options for the chained selects
     $tableOptions = array_combine(array_keys($tableData), array_column($tableData, 'label'));
     $fieldChained = array();
-    $fieldOptions = array_reduce(array_keys($tableData), function($carry, $item) use (&$tableData, &$fieldChained) {
-        if (empty($tableData[$item]['fields'])) return $carry;
+    $fieldOptions = array_reduce(array_keys($tableData), function ($carry, $item) use (&$tableData, &$fieldChained) {
+        if (empty($tableData[$item]['fields'])) {
+            return $carry;
+        }
 
         foreach ($tableData[$item]['fields'] as $fieldValue => $fieldName) {
             $carry[$fieldValue] = $fieldName;
             $fieldChained[$fieldValue] = $item;
         }
         return $carry;
-    }, array() );
+    }, array());
 
     $row = $form->addRow();
-        $row->addLabel('tableName', __('Record Type'));
-        $row->addSelect('tableName')->fromArray($tableOptions)->selected($tableName);
+    $row->addLabel('tableName', __('Record Type'));
+    $row->addSelect('tableName')->fromArray($tableOptions)->selected($tableName);
 
     $row = $form->addRow();
-        $row->addLabel('fieldName', __('Field Name'));
-        $row->addSelect('fieldName')
+    $row->addLabel('fieldName', __('Field Name'));
+    $row->addSelect('fieldName')
             ->isRequired()
             ->fromArray($fieldOptions)
             ->chainedTo('tableName', $fieldChained)
@@ -74,18 +76,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             ->placeholder();
 
     $row = $form->addRow();
-        $row->addLabel('mode', __('Mode'));
-        $row->addRadio('mode')->fromArray(array('Assisted' => __('Assisted'), 'Manual' => __('Manual')))->checked($mode);
+    $row->addLabel('mode', __('Mode'));
+    $row->addRadio('mode')->fromArray(array('Assisted' => __('Assisted'), 'Manual' => __('Manual')))->checked($mode);
     
     $row = $form->addRow();
-        $row->addFooter();
-        $row->addSubmit();
+    $row->addFooter();
+    $row->addSubmit();
     
     echo $form->getOutput();
 
     // Validate against data set to prevent unwanted values in SQL query
     if (!empty($fieldName) && array_key_exists($tableName, $tableData) && array_key_exists($fieldName, $tableData[$tableName]['fields'])) {
-
         if ($mode == 'Assisted') {
             $sql = "SELECT DISTINCT match1.`$fieldName` as matched, match2.`$fieldName` as value
             FROM `$tableName` as match1, `$tableName` as match2 
@@ -125,11 +126,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
             $row = $form->addRow()->setClass('right sticky');
             $column = $row->addColumn()->addClass('inline right');
-                $column->addSelect('action')
+            $column->addSelect('action')
                     ->fromArray(array('combine' => __('Combine Selected')))
                     ->selected($fieldName)
                     ->setClass('mediumWidth floatNone');
-                $column->addSubmit(__('Go'));
+            $column->addSubmit(__('Go'));
 
             $table = $form->addRow()->addTable();
             $table->addClass('rowHighlight colorOddEven');
@@ -164,13 +165,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
             $row = $form->addRow()->setClass('right sticky');
             $column = $row->addColumn()->addClass('inline right');
-                $column->addSelect('action')
+            $column->addSelect('action')
                     ->fromArray(array('combine' => __('Combine Selected')))
                     ->selected($fieldName)
                     ->setClass('mediumWidth floatNone');
-                $column->addSubmit(__('Go'));
+            $column->addSubmit(__('Go'));
 
             echo $form->getOutput();
         }
     }
-}	
+}
