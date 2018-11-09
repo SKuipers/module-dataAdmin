@@ -61,16 +61,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
         return;
     }
 
-    /** Include PHPExcel */
-    require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
-
     // Create new PHPExcel object
-    $excel = new PHPExcel();
+    $excel = new \PHPExcel();
 
     //Create border styles
     $style_head_fill= array(
-        'fill' => array('type' => PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'eeeeee')),
-        'borders' => array('top' => array('style' => PHPExcel_Style_Border::BORDER_THIN, 'color' => array('argb' => '444444'), ), 'bottom' => array('style' => PHPExcel_Style_Border::BORDER_THIN, 'color' => array('argb' => '444444'), )),
+        'fill' => array('type' => \PHPExcel_Style_Fill::FILL_SOLID, 'color' => array('rgb' => 'eeeeee')),
+        'borders' => array('top' => array('style' => \PHPExcel_Style_Border::BORDER_THIN, 'color' => array('argb' => '444444'), ), 'bottom' => array('style' => \PHPExcel_Style_Border::BORDER_THIN, 'color' => array('argb' => '444444'), )),
     );
 
     // Set document properties
@@ -262,7 +259,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
     header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
     header('Pragma: public'); // HTTP/1.0
 
-    $objWriter = PHPExcel_IOFactory::createWriter($excel, $exportFileType);
+    $objWriter = \PHPExcel_IOFactory::createWriter($excel, $exportFileType);
     $objWriter->save('php://output');
     exit;
 }

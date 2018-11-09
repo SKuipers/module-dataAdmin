@@ -38,18 +38,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     $page->breadcrumbs
         ->add(__('Import From File', 'Data Admin'), 'import_manage.php')
-        ->add(__('Run Import', 'Data Admin'), 'import_run.php', ['type' => $type]);
+        ->add(__('Import', 'Data Admin'), 'import_run.php', ['type' => $type]);
 
     // Some script performace tracking
     $memoryStart = memory_get_usage();
     $timeStart = microtime(true);
-
-    // Include PHPExcel
-    require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
-
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
-    echo "</div>" ;
 
     $importer = new Importer($gibbon, $pdo);
 
