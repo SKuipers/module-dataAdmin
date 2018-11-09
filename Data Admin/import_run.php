@@ -36,19 +36,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
     $type = $_GET['type'] ?? '';
     $step = isset($_GET['step'])? min(max(1, $_GET['step']), 4) : 1;
 
+    $importType = ImportType::loadImportType($type, $pdo);
+
     $page->breadcrumbs
         ->add(__('Import From File', 'Data Admin'), 'import_manage.php')
-        ->add(__('Import', 'Data Admin'), 'import_run.php', ['type' => $type]);
+        ->add($importType->getDetail('name'), 'import_run.php', ['type' => $type])
+        ->add(__('Step').' '.$step);
 
     // Some script performace tracking
     $memoryStart = memory_get_usage();
     $timeStart = microtime(true);
 
     $importer = new Importer($gibbon, $pdo);
-
-    // Get the importType information
-    
-    $importType = ImportType::loadImportType($type, $pdo);
 
     $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
@@ -87,8 +86,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             echo "<div class='error'>" . $e->getMessage() . "</div>" ;
         }
 
-        $page->breadcrumbs->add(__('Step 1 - Select Spreadsheet', 'Data Admin'));
-        
         echo '<h2>';
         echo __('Step 1 - Select Spreadsheet', 'Data Admin');
         echo '</h2>';
@@ -206,8 +203,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     //STEP 2, CONFIG -----------------------------------------------------------------------------------
     elseif ($step==2) {
-        $page->breadcrumbs->add(__('Step 2 - Data Check & Confirm', 'Data Admin'));
-
         echo '<h2>';
         echo __('Step 2 - Data Check & Confirm', 'Data Admin');
         echo '</h2>';
@@ -433,11 +428,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     //STEP 3 & 4, DRY & LIVE RUN  -----------------------------------------------------------------------------------
     elseif ($step==3 || $step==4) {
-        $pageTitle = ($step==3)? __('Step 3 - Dry Run', 'Data Admin') : __('Step 4 - Live Run', 'Data Admin');
-
-        $page->breadcrumbs->add($pageTitle);
-
-        echo '<h2>'.$pageTitle.'</h2>';
+        echo '<h2>';
+        echo ($step==3)? __('Step 3 - Dry Run', 'Data Admin') : __('Step 4 - Live Run', 'Data Admin');
+        echo '</h2>';
 
         // Gather our data
         $mode = (isset($_POST['mode']))? $_POST['mode'] : null;

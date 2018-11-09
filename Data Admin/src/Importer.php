@@ -236,8 +236,8 @@ class Importer
 
 		$csv->parse( $csvString );
 
-		$this->importHeaders = $csv->titles;
-		$this->importData = $csv->data;
+		$this->importHeaders = $csv->titles ?? [];
+		$this->importData = $csv->data ?? [];
 
 		$this->importLog['error'] = $csv->error_info;
 		unset($csv);
@@ -246,7 +246,7 @@ class Importer
 			$this->rowErrors[ $error['row'] ] = 1;
 		}
 
-		return (!empty($this->importHeaders) && count($this->importData) > 0 && count($this->importErrors) == 0 );
+		return (!empty($this->importHeaders) && count($this->importData) > 0 && count($this->rowErrors) == 0 );
     }
 
 
