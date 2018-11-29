@@ -28,9 +28,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs
+        ->add(__('Combine Similar Fields', 'Data Admin'), 'duplication_combine.php')
+        ->add(__('Confirm'));
 
     $tableName = (isset($_POST['tableName']))? $_POST['tableName'] : '';
     $fieldName = (isset($_POST['fieldName']))? $_POST['fieldName'] : '';
