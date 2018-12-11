@@ -67,13 +67,14 @@ table:
         args: {filter: yesno, custom: true}
     gibbonRoleIDPrimary:
         name: "Primary Role"
-        desc: "Short Name"
+        desc: "Role Name"
         args: {filter: string, required: true, custom: true }
         relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
     gibbonRoleIDAll:
         name: "All Roles (including Primary Role)"
-        desc: "Short Names, Comma separated"
-        args: {filter: string, required: true, custom: true }
+        desc: "Role Names, Comma separated"
+        args: {filter: csv, required: true, custom: true }
+        relationship: { table: gibbonRole, key: gibbonRoleID, field: name  }
     email:
         name: "Email"
         desc: ""

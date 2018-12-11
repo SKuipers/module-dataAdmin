@@ -180,6 +180,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
             // echo '<pre>';
             // print_r($relationalData);
             // echo '</pre>';
+            // die();
 
             $rowCount = 2;
             while ($row = $result->fetch()) {
@@ -193,26 +194,32 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                     // Handle relational fields
                     if ($importType->isFieldRelational($fieldName)) {
                         extract($importType->getField($fieldName, 'relationship'));
+                        $filter = $importType->getField($fieldName, 'filter');
 
-                        // Single key relational field -- value is the ID from other table
-                        $relationalField = (is_array($field))? $field[0] : $field;
-                        $relationalValue = @$relationalData[$fieldName][$value][$relationalField];
+                        $values = $filter == 'csv' ? array_map('trim', explode(',', $value)) : [$value];
+                        $relationalValue = [];
 
-                        // Multi-key relational field (fill in backwards, slightly hacky but works)
-                        if (is_array($field) && count($field) > 1) {
-                            for ($n=1; $n < count($field); $n++) {
-                                $relationalField = $field[$n];
+                        foreach ($values as $value) {
+                            // Single key relational field -- value is the ID from other table
+                            $relationalField = (is_array($field))? $field[0] : $field;
+                            $relationalValue[] = @$relationalData[$fieldName][$value][$relationalField];
 
-                                // Does the field exist in the import definition but not in the current table?
-                                // Add the value to the row to fill-in the link between read-only relational fields
-                                if ($importType->isFieldReadOnly($relationalField)) {
-                                    $row[ $relationalField ] = @$relationalData[$fieldName][$value][$relationalField];
+                            // Multi-key relational field (fill in backwards, slightly hacky but works)
+                            if (is_array($field) && count($field) > 1) {
+                                for ($n=1; $n < count($field); $n++) {
+                                    $relationalField = $field[$n];
+
+                                    // Does the field exist in the import definition but not in the current table?
+                                    // Add the value to the row to fill-in the link between read-only relational fields
+                                    if ($importType->isFieldReadOnly($relationalField)) {
+                                        $row[ $relationalField ] = @$relationalData[$fieldName][$value][$relationalField];
+                                    }
                                 }
                             }
                         }
                         
                         // Replace the relational ID value with the actual value
-                        $value = $relationalValue;
+                        $value = implode(',', $relationalValue);
                     }
 
                     // Set the cell value

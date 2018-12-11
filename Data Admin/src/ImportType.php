@@ -857,6 +857,8 @@ class ImportType
                             }
                             break;
 
+            case 'csv':     break;
+
             case 'customfield': break;
 
             case 'string':
