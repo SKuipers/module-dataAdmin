@@ -93,3 +93,8 @@ INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`
 $count++;
 $sql[$count][0]="1.3.06" ;
 $sql[$count][1]="";
+
+//v1.3.07
+$count++;
+$sql[$count][0]="1.3.07" ;
+$sql[$count][1]="";

@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.3.07] - 2018-12-11
+### Added
+- Handle importing and exporting relational values that are CSV (eg: All Roles)
+
 ## [1.3.06] - 2018-09-26
 ### Added
 - Added application/octet-stream as a valid MIME type
