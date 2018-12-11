@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.4.01] - 2018-12-11
+### Added
+- Handle importing and exporting relational values that are CSV (eg: All Roles)
+
 ## [1.4.00] - 2018-11-09
 ### Added
 - Gibbon v17 requirement
