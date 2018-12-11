@@ -17,8 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Modules\DataAdmin\ImportType;
-use Modules\DataAdmin\DatabaseTools;
+use Gibbon\Module\DataAdmin\ImportType;
+use Gibbon\Module\DataAdmin\DatabaseTools;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';

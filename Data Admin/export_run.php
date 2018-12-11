@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Modules\DataAdmin\ImportType;
+use Gibbon\Module\DataAdmin\ImportType;
 
 //Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 600);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\DataAdmin;
+namespace Gibbon\Module\DataAdmin;
 
 class ParseCSV {
 

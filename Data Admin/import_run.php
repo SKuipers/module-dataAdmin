@@ -18,9 +18,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
-use Modules\DataAdmin\Importer;
-use Modules\DataAdmin\ImportType;
-use Modules\DataAdmin\ParseCSV;
+use Gibbon\Module\DataAdmin\Importer;
+use Gibbon\Module\DataAdmin\ImportType;
+use Gibbon\Module\DataAdmin\ParseCSV;
 use Gibbon\Tables\DataTable;
 use Gibbon\Domain\DataSet;
 
