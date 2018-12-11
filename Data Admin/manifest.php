@@ -30,16 +30,7 @@ $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
 //Module tables
- $moduleTables[0]="CREATE TABLE `dataAdminImportLog` (
-  `importLogID` int(8) unsigned zerofill NOT NULL AUTO_INCREMENT,
-  `gibbonPersonID` int(10) unsigned zerofill NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `type` varchar(30) NOT NULL,
-  `success` tinyint(1) NOT NULL,
-  `importResults` text NOT NULL,
-  `columnOrder` text NOT NULL,
-  PRIMARY KEY (`importLogID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 ;" ;
+//  $moduleTables[0] = "";
 
 //gibbonSettings entries
 $gibbonSetting[0]="INSERT INTO `gibbonSetting` (`scope` ,`name` ,`nameDisplay` ,`description` ,`value`)VALUES ('Data Admin', 'enableUserLevelPermissions', 'Enable User-level Permissions', 'Restrict user import and export based on their user role permissions.', 'Y');";

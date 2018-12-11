@@ -37,7 +37,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
     // Get a list of available import options
     $importTypeList = ImportType::loadImportTypeList($pdo, false);
 
-    $sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
+    $sql = "SELECT gibbonLog.*, gibbonPerson.username, gibbonPerson.surname, gibbonPerson.preferredName 
+            FROM gibbonLog
+            JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonLog.gibbonPersonID) 
+            WHERE gibbonLog.title LIKE 'Import -%'";
+
     $result=$pdo->executeQuery(array(), $sql);
 
     if (empty($importTypeList) || $result->rowCount()<1) {
@@ -68,15 +72,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
         echo "</tr>" ;
 
         while ($row=$result->fetch()) {
-            if (!isset($importTypeList[ $row['type'] ])) {
+            $data = isset($row['serialisedArray'])? unserialize($row['serialisedArray']) : [];
+            if (!isset($importTypeList[ $data['type'] ])) {
                 continue;
             } // Skip invalid import types
 
-            echo "<tr class='".($row['success'] == false? 'error' : '')."'>" ;
-            $importType = $importTypeList[ $row['type'] ];
+            echo "<tr class='".($data['success'] == false? 'error' : '')."'>" ;
+            $importType = $importTypeList[ $data['type'] ];
 
             echo "<td>";
-            printf("<span title='%s'>%s</span> ", $row['timestamp'], date('M j, Y', $row['unixtime']));
+            printf("<span title='%s'>%s</span> ", $row['timestamp'], date('M j, Y', strtotime($row['timestamp'])));
             echo "</td>";
 
             echo "<td>";
@@ -85,10 +90,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
 
             echo "<td>" . $importType->getDetail('category'). "</td>" ;
             echo "<td>" . $importType->getDetail('name'). "</td>" ;
-            echo "<td>" .(($row['success'] == true)? 'Success' : 'Failed'). "</td>";
+            echo "<td>" .(($data['success'] == true)? 'Success' : 'Failed'). "</td>";
 
             echo "<td>";
-            echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+            echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&gibbonLogID=" . $row['gibbonLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
             echo "</td>";
 
             echo "</tr>" ;

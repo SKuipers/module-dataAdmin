@@ -84,13 +84,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
             echo "<td>" . $importType->getDetail('desc'). "</td>" ;
             echo "<td>";
 
-            $data=array("type"=>$importTypeName);
-            $sql="SELECT surname, preferredName, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID && type=:type ORDER BY timestamp DESC LIMIT 1" ;
+            $data=array('type' => $importTypeName);
+            $sql = "SELECT gibbonPerson.surname, gibbonPerson.preferredName, gibbonLog.timestamp
+                    FROM gibbonLog 
+                    JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonLog.gibbonPersonID) 
+                    WHERE gibbonLog.title = CONCAT('Import - ', :type) 
+                    ORDER BY gibbonLog.timestamp DESC LIMIT 1" ;
             $result=$pdo->executeQuery($data, $sql);
 
             if ($pdo->getQuerySuccess() && $result->rowCount()>0) {
                 $log = $result->fetch();
-                printf("<span title='%s by %s %s'>%s</span> ", $log['timestamp'], $log['preferredName'], $log['surname'], date('M j, Y', $log['unixtime']));
+                printf("<span title='%s by %s %s'>%s</span> ", $log['timestamp'], $log['preferredName'], $log['surname'], date('M j, Y', strtotime($log['timestamp'])));
             }
 
             echo "</td>";

@@ -915,53 +915,34 @@ class Importer
     }
 
     /**
-     * Create Import Log
      * Inserts a record of an import into the database
      *
-     * @access  public
-     * @version	25th April 2016
-     * @since	25th April 2016
      * @param	string	gibbonPersonID
      * @param	string	Import Type name
      * @param	array	Results of the import
      * @param	array	Column order used
-     *
      * @return	bool
      */
-    public function createImportLog( $gibbonPersonID, $type, $results = array(), $columnOrder = array() ) {
+    public function createImportLog($gibbonPersonID, $type, $results = [], $columnOrder = []) {
 
         $success = (( $results['importSuccess'] && $results['buildSuccess'] && $results['databaseSuccess'] ) || $results['ignoreErrors']);
 
-        $data=array("gibbonPersonID"=>$gibbonPersonID, "type"=>$type, "success"=>$success, "importResults"=>serialize($results), "columnOrder"=>serialize($columnOrder) );
+        $log = [
+            'type'        => $type,
+            'success'     => $success,
+            'results'     => $results,
+            'columnOrder' => $columnOrder,
+        ];
 
-        $sql="INSERT INTO dataAdminImportLog SET gibbonPersonID=:gibbonPersonID, type=:type, success=:success, importResults=:importResults, columnOrder=:columnOrder" ;
-        $result=$this->pdo->executeQuery($data, $sql);
+        $data = [
+            'gibbonPersonID'  => $gibbonPersonID,
+            'title'           => 'Import - '.$type,
+            'serialisedArray' => serialize($log),
+            'ip'              => getIPAddress(),
+        ];
 
-        return $this->pdo->getQuerySuccess();
-    }
+        $sql = "INSERT INTO gibbonLog SET gibbonSchoolYearID=(SELECT gibbonSchoolYearID FROM gibbonSchoolYear WHERE status='Current'), gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='System Admin'), gibbonPersonID=:gibbonPersonID, title=:title, serialisedArray=:serialisedArray, ip=:ip";
 
-    /**
-     * Lock Tables
-     *
-     * @access  private
-     * @version	28th April 2016
-     * @since	28th April 2016
-     * @param	array	Tables to be locked
-     *
-     * @return	bool	true if database is now locked
-     */
-    private function lockTables( $tables ) {
-
-        if (empty($tables)) return false;
-
-        try {
-            $sql="LOCK TABLES " . implode(' WRITE, ', $tables) ." WRITE";
-            $result = $this->pdo->executeQuery(array(), $sql);
-            return true;
-        }
-        catch(PDOException $e) {
-            return false;
-        }
-
+        return $this->pdo->insert($sql, $data);
     }
 }

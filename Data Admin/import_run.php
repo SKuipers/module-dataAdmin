@@ -78,13 +78,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     //STEP 1, SELECT TERM -----------------------------------------------------------------------------------
     if ($step==1) {
-        try {
-            $data=array( 'type' => $type, 'success' => '1' );
-            $sql="SELECT importLogID FROM dataAdminImportLog as importLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
-            $result = $pdo->executeQuery($data, $sql);
-        } catch (PDOException $e) {
-            echo "<div class='error'>" . $e->getMessage() . "</div>" ;
-        }
+        $data = array('type' => $type);
+        $sql = "SELECT gibbonLog.gibbonLogID
+                FROM gibbonLog WHERE gibbonLog.title = CONCAT('Import - ', :type) 
+                ORDER BY gibbonLog.timestamp DESC LIMIT 1" ;
+        $importLog = $pdo->selectOne($sql, $data);
 
         echo '<h2>';
         echo __('Step 1 - Select Spreadsheet', 'Data Admin');
@@ -120,7 +118,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             'linearplus' => __('From Export Data', 'Data Admin'),
             'linear'     => __('Same as Below', 'Data Admin'),
         );
-        $selectedOrder = ($result->rowCount() > 0)? 'last' : 'guess';
+        $selectedOrder = (!empty($importLog))? 'last' : 'guess';
         $row = $form->addRow();
         $row->addLabel('columnOrder', __('Column Order'));
         $row->addSelect('columnOrder')->fromArray($columnOrders)->isRequired()->selected($selectedOrder);
@@ -227,16 +225,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $columnOrder=(isset($_POST["columnOrder"]))? $_POST["columnOrder"] : 'guess';
 
             if ($columnOrder == 'last') {
-                try {
-                    $data=array( 'type' => $type, 'success' => '1' );
-                    $sql="SELECT columnOrder FROM dataAdminImportLog WHERE type=:type AND success=:success ORDER BY timestamp DESC LIMIT 1" ;
-                    $columnResult = $pdo->executeQuery($data, $sql);
-                } catch (PDOException $e) {
-                    echo "<div class='error'>" . $e->getMessage() . "</div>" ;
-                }
+                $data = array('type' => $type);
+                $sql = "SELECT * FROM gibbonLog WHERE gibbonLog.title = CONCAT('Import - ', :type) 
+                        ORDER BY gibbonLog.timestamp DESC LIMIT 1" ;
 
-                $columnOrderLast = $columnResult->fetch();
-                $columnOrderLast = unserialize($columnOrderLast['columnOrder']);
+                $importLog = $pdo->selectOne($sql, $data);
+                $importLog = isset($importLog['serialisedArray'])? unserialize($importLog['serialisedArray']) : [];
+                $columnOrderLast = $importLog['columnOrder'] ?? [];
             }
 
             $importer->fieldDelimiter = (!empty($_POST["fieldDelimiter"]))? stripslashes($_POST["fieldDelimiter"]) : ',';

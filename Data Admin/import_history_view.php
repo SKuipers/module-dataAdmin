@@ -28,10 +28,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_
     echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    $importLogID = (isset($_GET['importLogID']))? $_GET['importLogID'] : -1;
+    $gibbonLogID = (isset($_GET['gibbonLogID']))? $_GET['gibbonLogID'] : -1;
 
-    $data = array( 'importLogID' => $importLogID );
-    $sql="SELECT importResults, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime, username, surname, preferredName FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID AND importLogID=:importLogID";
+    $data = array('gibbonLogID' => $gibbonLogID);
+    $sql = "SELECT gibbonLog.*, gibbonPerson.username, gibbonPerson.surname, gibbonPerson.preferredName 
+            FROM gibbonLog
+            JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonLog.gibbonPersonID) 
+            WHERE gibbonLog.gibbonLogID=:gibbonLogID";
     $result=$pdo->executeQuery($data, $sql);
 
     if ($result->rowCount() < 1) {
@@ -40,16 +43,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_
         echo "</div>" ;
     } else {
         $importLog = $result->fetch();
-        $importResults = (isset($importLog['importResults']))? unserialize($importLog['importResults']) : array();
+        $importData = isset($importLog['serialisedArray'])? unserialize($importLog['serialisedArray']) : [];
+        $importResults = $importData['results'] ?? [];
 
-        if (empty($importResults) || !isset($importLog['type'])) {
+        if (empty($importResults) || !isset($importData['type'])) {
             echo "<div class='error'>" ;
             echo __("There are no records to display.") ;
             echo "</div>" ;
             return;
         }
 
-        $importType = ImportType::loadImportType($importLog['type'], $pdo); ?>
+        $importType = ImportType::loadImportType($importData['type'], $pdo); ?>
 		<h1>
 			<?php echo __('Import History', 'Data Admin'); ?>
 		</h1>
@@ -68,13 +72,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history_
 				</td>
 				<td width="50%">
 					<?php echo __("Date").": "; ?><br/>
-					<?php printf("<span title='%s'>%s</span>", $importLog['timestamp'], date('F j, Y, g:i a', $importLog['unixtime'])); ?>
+					<?php printf("<span title='%s'>%s</span>", $importLog['timestamp'], date('F j, Y, g:i a', strtotime($importLog['timestamp']))); ?>
 				</td>
 			</tr>
 			<tr>
 				<td width="50%">
 					<?php echo __("Details").": "; ?><br/>
-					<?php echo ($importLog['success'])? __("Success") : __("Failed"); ?>
+					<?php echo ($importData['success'])? __("Success") : __("Failed"); ?>
 				</td>
 				<td width="50%">
 					<?php echo __("User").": "; ?><br/>
