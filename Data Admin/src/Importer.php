@@ -23,10 +23,6 @@ use Gibbon\Contracts\Database\Connection;
 
 /**
  * Extended Import class
- *
- * @version	25th April 2016
- * @since	25th April 2016
- * @author	Sandra Kuipers
  */
 class Importer
 {
@@ -132,10 +128,7 @@ class Importer
     /**
      * Constructor
      *
-     * @version  25th April 2016
-     * @since    25th April 2016
-     * @param    Gibbon\session
-     * @param    Gibbon\config
+     * @param    Gibbon\Core $gibbon
      * @param    Gibbon\Contracts\Database\Connection
      * @return    void
      */
@@ -155,14 +148,9 @@ class Importer
     }
 
     /**
-     * Is Valid Mime Type
      * Validates the supplied MIME Type with a list of valid types
      *
-     * @access  public
-     * @version	25th April 2016
-     * @since	25th April 2016
      * @param	string	MIME Type
-     *
      * @return	bool
      */
     public function isValidMimeType( $fileMimeType ) {
@@ -172,11 +160,7 @@ class Importer
     /**
      * Open CSV File
      *
-     * @access  public
-     * @version	27th April 2016
-     * @since	27th April 2016
      * @param	string	Full File Path
-     *
      * @return	bool	true on success
      */
     public function openCSVFile( $csvFile ) {
@@ -188,10 +172,6 @@ class Importer
 
     /**
      * Close CSV File
-     *
-     * @access  public
-     * @version	27th April 2016
-     * @since	27th April 2016
      */
     public function closeCSVFile() {
         fclose($this->csvFileHandler);
@@ -199,10 +179,6 @@ class Importer
 
     /**
      * Get CSV Line
-     *
-     * @access  public
-     * @version	27th April 2016
-     * @since	27th April 2016
      *
      * @return	array	Next parsed CSV line, based on current handler
      */
@@ -213,11 +189,7 @@ class Importer
     /**
      * Read CSV String
      *
-     * @access  public
-     * @version	27th April 2016
-     * @since	27th April 2016
      * @param	string	CSV Data
-     *
      * @return	bool	true on successful CSV parse
      */
     public function readCSVString( $csvString ) {
@@ -309,16 +281,11 @@ class Importer
     }
 
     /**
-     * Build Table Data
      * Iterate over the imported records, validating and building table data for each one
      *
-     * @access  public
-     * @version	28th April 2016
-     * @since	28th April 2016
      * @param	Object	Import Type
      * @param	array	Column Order
      * @param	array	Custom user-provided values
-     *
      * @return	bool	true if build succeeded
      */
     public function buildTableData( $importType, $columnOrder, $customValues = array() ) {
@@ -513,15 +480,10 @@ class Importer
     }
 
     /**
-     * Import Into Database
      * Iterate over the table data and INSERT or UPDATE the database, checking for existing records
      *
-     * @access  public
-     * @version	28th April 2016
-     * @since	28th April 2016
      * @param	Object	Import Type
      * @param	bool	Update the database?
-     *
      * @return	bool	true if import succeeded
      */
     public function importIntoDatabase( $importType, $liveRun = TRUE ) {
@@ -724,10 +686,6 @@ class Importer
     /**
      * Get Header Row
      *
-     * @access  public
-     * @version 1st December 2016
-     * @since   1st December 2016
-     *
      * @return  array     Row data
      */
     public function getHeaderRow() {
@@ -736,11 +694,7 @@ class Importer
 
     /**
      * Get First Row
-     *
-     * @access  public
-     * @version 1st December 2016
-     * @since   1st December 2016
-     *
+     * 
      * @return  array     Row data
      */
     public function getFirstRow() {
@@ -751,10 +705,6 @@ class Importer
     /**
      * Get Row Count
      *
-     * @access  public
-     * @version	27th April 2016
-     * @since	27th April 2016
-     *
      * @return	int		Count of rows imported from file
      */
     public function getRowCount() {
@@ -764,9 +714,8 @@ class Importer
     /**
      * Get Database Results
      *
-     * @access  public
-     * @since	28th April 2016
-     * @return	int		Current count of a database operation
+     * @param  string $key
+     * @return int		Current count of a database operation
      */
     public function getDatabaseResult( $key ) {
         return (isset($this->databaseResults[$key]))? $this->databaseResults[$key] : 'unknown';
@@ -775,8 +724,6 @@ class Importer
     /**
      * Get Logs
      *
-     * @access  public
-     * @since	28th April 2016
      * @return	array	Errors logged with logError
      */
     public function getLogs() {
@@ -786,8 +733,6 @@ class Importer
     /**
      * Get Warning Count
      *
-     * @access  public
-     * @since   28th April 2016
      * @return  int     Warning count
      */
     public function getWarningCount() {
@@ -797,8 +742,6 @@ class Importer
     /**
      * Get Error Count
      *
-     * @access  public
-     * @since	28th April 2016
      * @return	int		Error count
      */
     public function getErrorCount() {
@@ -807,9 +750,7 @@ class Importer
 
     /**
      * Get Error Row Count
-     *
-     * @access  public
-     * @since	28th April 2016
+     * 
      * @return	int		Count of rows with errors
      */
     public function getErrorRowCount() {
@@ -819,8 +760,6 @@ class Importer
     /**
      * Get Last Error
      *
-     * @access  public
-     * @since	28th April 2016
      * @return	string	Translated error message
      */
     public function getLastError() {
@@ -830,9 +769,6 @@ class Importer
     /**
      * Log
      *
-     * @access  protected
-     * @version	27th May 2016
-     * @since	28th April 2016
      * @param	int		Row Number
      * @param	int		Error ID
      * @param	string	Field Name
@@ -866,11 +802,7 @@ class Importer
     /**
      * Error Message
      *
-     * @access  protected
-     * @version	27th May 2016
-     * @since	28th April 2016
      * @param	int		Error ID
-     *
      * @return	string	Translated error message
      */
     protected function translateMessage( $errorID ) {
@@ -878,39 +810,39 @@ class Importer
         switch ($errorID) {
             // ERRORS
             case Importer::ERROR_IMPORT_FILE:
-                return __("There was an error reading the import file type %s", 'Data Admin'); break;
+                return __("There was an error reading the import file type %s"); break;
             case Importer::ERROR_REQUIRED_FIELD_MISSING:
-                return __("Missing value for required field.", 'Data Admin'); break;
+                return __("Missing value for required field."); break;
             case Importer::ERROR_INVALID_FIELD_VALUE:
-                return __("Invalid value: \"%s\".  Expected: %s", 'Data Admin'); break;
+                return __("Invalid value: \"%s\".  Expected: %s"); break;
             case Importer::ERROR_INVALID_HAS_SPACES:
-                return __("Invalid value: \"%s\".  This field type cannot contain spaces.", 'Data Admin'); break;
+                return __("Invalid value: \"%s\".  This field type cannot contain spaces."); break;
             case Importer::ERROR_INVALID_INPUTS:
-                return __("Your request failed because your inputs were invalid.", 'Data Admin'); break;
+                return __("Your request failed because your inputs were invalid."); break;
             case Importer::ERROR_LOCKING_DATABASE:
-                return __("The database could not be locked/unlocked for use.", 'Data Admin'); break;
+                return __("The database could not be locked/unlocked for use."); break;
             case Importer::ERROR_KEY_MISSING:
-                return __("Missing value for primary key or unique key set.", 'Data Admin'); break;
+                return __("Missing value for primary key or unique key set."); break;
             case Importer::ERROR_NON_UNIQUE_KEY:
-                return __("Encountered non-unique values used by %s: %s", 'Data Admin'); break;
+                return __("Encountered non-unique values used by %s: %s"); break;
             case Importer::ERROR_DATABASE_GENERIC:
-                return __("There was an error accessing the database.", 'Data Admin'); break;
+                return __("There was an error accessing the database."); break;
             case Importer::ERROR_DATABASE_FAILED_INSERT:
-                return __("Failed to insert record into database.", 'Data Admin'); break;
+                return __("Failed to insert record into database."); break;
             case Importer::ERROR_DATABASE_FAILED_UPDATE:
-                return __("Failed to update database record.", 'Data Admin'); break;
+                return __("Failed to update database record."); break;
             case Importer::ERROR_RELATIONAL_FIELD_MISMATCH:
-                return __("%s: %s does not match an existing %s in %s", 'Data Admin'); break;
+                return __("%s: %s does not match an existing %s in %s"); break;
             // WARNINGS
             case Importer::WARNING_DUPLICATE_KEY:
-                return __("A duplicate entry already exists for this record. Record skipped.", 'Data Admin'); break;
+                return __("A duplicate entry already exists for this record. Record skipped."); break;
             case Importer::WARNING_RECORD_NOT_FOUND:
-                return __("A database entry for this record could not be found. Record skipped.", 'Data Admin'); break;
+                return __("A database entry for this record could not be found. Record skipped."); break;
             // MESSAGES
             case Importer::MESSAGE_GENERATED_PASSWORD:
-                return __("Password generated for user %s: %s", 'Data Admin'); break;
+                return __("Password generated for user %s: %s"); break;
             default:
-                return __("An error occured, the import was aborted.", 'Data Admin'); break;
+                return __("An error occured, the import was aborted."); break;
         }
     }
 
