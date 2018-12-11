@@ -17,11 +17,15 @@ table:
         desc: ""
         args: { filter: string, custom: true, required: true, readonly: true }
         relationship: { table: gibbonExternalAssessment, key: gibbonExternalAssessmentID, field: nameShort  }
+    date:
+        name: "Date Created"
+        desc: "yyyy-mm-dd"
+        args: {filter: date, custom: true, required: true, readonly: true }
     gibbonExternalAssessmentStudentID:
         name: "Student"
         desc: "Email Address"
         args: { filter: email, required: true }
-        relationship: { table: gibbonExternalAssessmentStudent, key: gibbonExternalAssessmentStudentID, join: gibbonPerson, on: [gibbonPersonID, gibbonPersonID], field: [ email, gibbonExternalAssessmentID ]  }
+        relationship: { table: gibbonExternalAssessmentStudent, key: gibbonExternalAssessmentStudentID, join: gibbonPerson, on: [gibbonPersonID, gibbonPersonID], field: [ email, date, gibbonExternalAssessmentID ]  }
     category:
         name: "Category"
         desc: "Must match the category of the field in the External Assessment"
