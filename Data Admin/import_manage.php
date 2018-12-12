@@ -65,13 +65,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
         $table = DataTable::create('rollGroups');
         $table->setTitle(__($importGroupName));
 
-        $table->addColumn('category', __('Category'))->width('20%');
-        $table->addColumn('name', __('Name'));
-        $table->addColumn('lastRun', __('Last Run'))
-            ->width('25%')
+        $table->addColumn('category', __('Category'))
+            ->width('20%')
             ->format(function ($importType) {
+                return __($importType['category']);
+            });
+        $table->addColumn('name', __('Name'))
+            ->format(function ($importType) {
+                $nameParts = array_map('trim', explode('-', $importType['name']));
+                return implode(' - ', array_map('__', $nameParts));
+            });
+        $table->addColumn('timestamp', __('Last Import'))
+            ->width('25%')
+            ->format(function ($importType) use ($guid) {
                 if ($log = $importType['log']) {
-                    return '<span title="'.Format::dateTime($log['timestamp']).' - '.Format::nameList([$log]).'">'.Format::dateReadable($log['timestamp']).'</span>';
+                    $text = Format::dateReadable($log['timestamp']);
+                    $url = $_SESSION[$guid]['absoluteURL'].'/fullscreen.php?q=/modules/Data Admin/import_history_view.php&gibbonLogID='.$log['gibbonLogID'].'&width=600&height=550';
+                    $title = Format::dateTime($log['timestamp']).' - '.Format::nameList([$log]);
+                    return Format::link($url, $text, ['title' => $title, 'class' => 'thickbox']);
                 }
                 return '';
             });
@@ -84,7 +95,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
                         ->setIcon('run')
                         ->setURL('/modules/Data Admin/import_run.php');
 
-                    $actions->addAction('export', __('Export Structure'))
+                    $actions->addAction('export', __('Export Columns'))
                         ->isDirect()
                         ->addParam('q', $_GET['q'])
                         ->addParam('data', 0)

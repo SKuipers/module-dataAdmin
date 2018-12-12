@@ -38,12 +38,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     $importType = ImportType::loadImportType($type, $pdo);
 
+    $nameParts = array_map('trim', explode('-', $importType->getDetail('name')));
+    $name = implode(' - ', array_map('__', $nameParts));
+
     $page->breadcrumbs
         ->add(__('Import From File'), 'import_manage.php')
-        ->add($importType->getDetail('name'), 'import_run.php', ['type' => $type])
-        ->add(__('Step').' '.$step);
+        ->add($name, 'import_run.php', ['type' => $type])
+        ->add(__('Step {number}', ['number' => $step]));
 
-    // Some script performace tracking
+    // Some script performance tracking
     $memoryStart = memory_get_usage();
     $timeStart = microtime(true);
 
@@ -63,7 +66,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         return;
     } elseif (!$importType->isValid()) {
         echo "<div class='error'>";
-        printf(__('Import cannot proceed, as the selected Import Type "%s" did not validate with the database.'), $type) ;
+        echo __('Import cannot proceed, there was an error reading the import file type {type}.', ['type' => $type]);
         echo "<br/></div>";
         return;
     }
@@ -115,7 +118,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         }
 
         $row = $form->addRow();
-        $row->addLabel('mode', __('Mode'))->description(__('Options available depend on the import type.'));
+        $row->addLabel('mode', __('Mode'));
         $row->addSelect('mode')->fromArray($availableModes)->isRequired();
 
         $columnOrders = array(
@@ -159,7 +162,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
         if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php")) {
             echo "<div class='linkTop'>" ;
-            echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Structure') . "<img style='margin-left: 5px' title='" . __('Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+            echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Columns') . "<img style='margin-left: 5px' title='" . __('Export Columns'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
             echo "</div>" ;
         }
 
@@ -190,12 +193,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 echo "<tr>" ;
                 echo "<td>" . $count. "</td>" ;
                 echo "<td>";
-                echo $importType->getField($fieldName, 'name');
+                echo __($importType->getField($fieldName, 'name'));
                 if ($importType->isFieldRequired($fieldName) == true) {
                     echo " <strong class='highlight'>*</strong>";
                 }
                 echo "</td>" ;
-                echo "<td><em>" . $importType->getField($fieldName, 'desc'). "</em></td>" ;
+                echo "<td><em>" . __($importType->getField($fieldName, 'desc')). "</em></td>" ;
                 echo "<td>";
                 echo $importType->readableFieldType($fieldName);
                 echo "</td>" ;
@@ -212,7 +215,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         //Check file type
         if ($importer->isValidMimeType($_FILES['file']['type']) == false) {
             echo "<div class='error'>";
-            printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a spreadsheet file.'), $_FILES['file']['type']);
+            printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a valid file.'), $_FILES['file']['type']);
             echo "<br/></div>";
         } elseif (empty($_POST["fieldDelimiter"]) or empty($_POST["stringEnclosure"])) {
             echo "<div class='error'>";
@@ -220,7 +223,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             echo "<br/></div>";
         } elseif ($mode != "sync" and $mode != "insert" and $mode != "update") {
             echo "<div class='error'>";
-            echo __('Import cannot proceed, as the "Mode" field has been left blank.');
+            echo __('Import cannot proceed, as the "Mode" field have been left blank.');
             echo "<br/></div>";
         } else {
             $proceed=true ;
@@ -277,7 +280,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                     $lastFieldValue = 'Y';
                     $lastColumnValue = $importType->getPrimaryKey();
                 }
-                
+
                 $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
                 $row = $table->addRow();
@@ -314,7 +317,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $header->addContent(__('Field Name'));
                 $header->addContent(__('Type'));
                 $header->addContent(__('Column'));
-                $header->addContent(__('Sample'));
+                $header->addContent(__('Example'));
 
                 $count = 0;
 
@@ -383,7 +386,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                     }
 
                     $row = $table->addRow();
-                    $row->addContent($importType->getField($fieldName, 'name'))
+                    $row->addContent(__($importType->getField($fieldName, 'name')))
                             ->wrap('<span class="'.$importType->getField($fieldName, 'desc').'">', '</span>')
                             ->append($columnIndicators($fieldName));
                     $row->addContent($importType->readableFieldType($fieldName));
@@ -411,7 +414,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
             $row = $table->addRow();
-            $row->addLabel('csvData', __('CSV Data:'));
+            $row->addLabel('csvData', __('Data'));
             $row->addTextArea('csvData')->setRows(4)->setCols(74)->setClass('')->readonly()->setValue($csvData);
 
             $row = $table->addRow();
@@ -514,147 +517,45 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $logs = $importer->getLogs();
 
             if (count($logs) > 0) {
-                echo "<table class='smallIntBorder fullWidth colorOddEven' cellspacing='0'>" ;
-                echo "<tr class='head'>" ;
-                echo "<th style='width: 40px;'>" ;
-                echo __('Row') ;
-                echo "</th>" ;
-                echo "<th style='width: 200px;'>" ;
-                echo __('Field') ;
-                echo "</th>" ;
-                echo "<th >" ;
-                echo __('Message') ;
-                echo "</th>" ;
-                echo "</tr>" ;
+                $table = DataTable::create('logs');
+                $table->modifyRows(function ($log, $row) {
+                    return $row->addClass($log['type'] ?? '');
+                });
 
-                foreach ($logs as $log) {
-                    echo "<tr class='".$log['type']."'>" ;
-                    echo "<td>" . $log['row'] . "</td>";
-                    echo "<td>";
-                    echo $log['field_name'];
-                    echo ($log['field'] >= 0)? " (". $log['field'] .")" : "";
-                    echo "</td>";
-                    echo "<td>" . $log['info'] . "</td>";
-                    echo "</tr>" ;
-                }
+                $table->addColumn('row', __('Row'));
+                $table->addColumn('field', __('Field'))
+                    ->format(function ($log) {
+                        return $log['field_name'].($log['field'] >= 0 ? ' ('. $log['field'] .')' : '');
+                    });
+                $table->addColumn('info', __('Message'));
 
-                echo "</table><br/>" ;
+                echo $table->render(new DataSet($logs));
+                echo '<br/>';
             }
 
             $executionTime = mb_substr(microtime(true) - $timeStart, 0, 6).' sec';
-            $memoryUsage = readableFileSize(max(0, memory_get_usage() - $memoryStart)); ?>
+            $memoryUsage = readableFileSize(max(0, memory_get_usage() - $memoryStart)); 
+            
+            $results = array(
+                'importSuccess'		=> $importSuccess,
+                'buildSuccess'		=> $buildSuccess,
+                'databaseSuccess'	=> $databaseSuccess,
+                'rows'				=> $importer->getRowCount(),
+                'rowerrors'			=> $importer->getErrorRowCount(),
+                'errors'			=> $importer->getErrorCount(),
+                'warnings'			=> $importer->getWarningCount(),
+                'inserts'			=> $importer->getDatabaseResult('inserts'),
+                'inserts_skipped'	=> $importer->getDatabaseResult('inserts_skipped'),
+                'updates'			=> $importer->getDatabaseResult('updates'),
+                'updates_skipped'	=> $importer->getDatabaseResult('updates_skipped'),
+                'executionTime'		=> $executionTime,
+                'memoryUsage'		=> $memoryUsage,
+                'ignoreErrors'		=> $ignoreErrors,
+            );
 
-			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
-				<tr <?php echo "class='". (($importSuccess)? 'current' : 'error') ."'"; ?>>
-					<td class="right"  width="50%">
-						<?php echo __("Reading File").": "; ?>
-					</td>
-					<td>
-						<?php echo ($importSuccess)? __('Success') : __('Failed'); ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo __("Execution time").": "; ?>
-					</td>
-					<td>
-						<?php echo $executionTime; ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo __("Memory usage").": "; ?>
-					</td>
-					<td>
-						<?php
-
-                        echo $memoryUsage; ?>
-					</td>
-				</tr>
-			</table><br/>
-			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
-				<tr <?php echo "class='". (($buildSuccess)? 'current' : 'error') ."'"; ?>>
-					<td class="right" width="50%">
-						<?php echo __("Validating data").": "; ?>
-					</td>
-					<td>
-						<?php echo ($buildSuccess)? __('Success') : __('Failed'); ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo __("Rows processed").": "; ?>
-					</td>
-					<td>
-						<?php echo $importer->getRowCount(); ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo __("Rows with errors").": "; ?>
-					</td>
-					<td>
-						<?php echo $importer->getErrorRowCount(); ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo __("Total errors").": "; ?>
-					</td>
-					<td>
-						<?php echo $importer->getErrorCount(); ?>
-					</td>
-				</tr>
-				<?php if ($importer->getWarningCount() > 0) : ?>
-				<tr>
-					<td class="right">
-						<?php echo __("Total warnings").": "; ?>
-					</td>
-					<td>
-						<?php echo $importer->getWarningCount(); ?>
-					</td>
-				</tr>
-				<?php endif; ?>
-			</table><br/>
-
-			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
-				<tr <?php echo "class='". (($databaseSuccess)? 'current' : 'error') ."'"; ?>>
-					<td class="right" width="50%">
-						<?php echo __("Querying database").": "; ?>
-					</td>
-					<td>
-						<?php echo ($databaseSuccess)? __('Success') : __('Failed'); ?>
-					</td>
-				</tr>
-				<tr>
-					<td class="right">
-						<?php echo($step == 3? __('Simulated').' ' : '') . __("Database Inserts").": "; ?>
-					</td>
-					<td>
-					<?php
-                        echo $importer->getDatabaseResult('inserts');
-            if ($importer->getDatabaseResult('inserts_skipped') > 0) {
-                echo " (". $importer->getDatabaseResult('inserts_skipped') ." ". __("skipped") .")";
-            } ?>
-					</td>
-				</tr>
-
-				<tr>
-					<td class="right">
-						<?php echo($step == 3? __('Simulated').' ' : '') . __("Database Updates").": "; ?>
-					</td>
-					<td>
-					<?php echo $importer->getDatabaseResult('updates');
-            if ($importer->getDatabaseResult('updates_skipped') > 0) {
-                echo " (". $importer->getDatabaseResult('updates_skipped') ." ". __("skipped") .")";
-            } ?>
-					</td>
-				</tr>
-
-
-			</table><br/>
-
-            <?php if ($step==3) {
+            echo $page->fetchFromTemplate('importer.twig.html', $results);
+            
+            if ($step==3) {
                 $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=4');
                 $form->getRenderer()->setWrapper('form', 'div')->setWrapper('row', 'div')->setWrapper('cell', 'div');
 
@@ -671,7 +572,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
                 $row = $table->addRow();
-                $row->addLabel('csvData', __('CSV Data:'));
+                $row->addLabel('csvData', __('Data'));
                 $row->addTextArea('csvData')->setRows(4)->setCols(74)->setClass('')->readonly()->setValue($csvData);
 
                 $row = $table->addRow();
@@ -709,22 +610,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $columnOrder['syncField'] =  $syncField;
                 $columnOrder['syncColumn'] =  $syncColumn;
 
-                $results = array(
-                    'importSuccess'		=> $importSuccess,
-                    'buildSuccess'		=> $buildSuccess,
-                    'databaseSuccess'	=> $databaseSuccess,
-                    'rows'				=> $importer->getRowCount(),
-                    'rowerrors'			=> $importer->getErrorRowCount(),
-                    'errors'			=> $importer->getErrorCount(),
-                    'warnings'			=> $importer->getWarningCount(),
-                    'inserts'			=> $importer->getDatabaseResult('inserts'),
-                    'inserts_skipped'	=> $importer->getDatabaseResult('inserts_skipped'),
-                    'updates'			=> $importer->getDatabaseResult('updates'),
-                    'updates_skipped'	=> $importer->getDatabaseResult('updates_skipped'),
-                    'executionTime'		=> $executionTime,
-                    'memoryUsage'		=> $memoryUsage,
-                    'ignoreErrors'		=> $ignoreErrors,
-                );
+                
 
                 $importer->createImportLog($_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder);
             }
