@@ -172,7 +172,7 @@ class ImportType
 
     public static function getImportTypeDir(Connection $pdo)
     {
-        return self::getBaseDir($pdo) . "/modules/Data Admin/imports";
+        return self::getBaseDir($pdo) . "/resources/imports";
     }
 
     public static function getCustomImportTypeDir(Connection $pdo)
@@ -230,22 +230,16 @@ class ImportType
 
     protected static function sortImportTypes($a, $b)
     {
-        if ($a->getDetail('grouping') < $b->getDetail('grouping')) {
-            return -1;
-        } elseif ($a->getDetail('grouping') > $b->getDetail('grouping')) {
-            return 1;
+        if ($a->getDetail('grouping') != $b->getDetail('grouping')) {
+            return $a->getDetail('grouping') <=> $b->getDetail('grouping');
         }
 
-        if ($a->getDetail('category') < $b->getDetail('category')) {
-            return -1;
-        } elseif ($a->getDetail('category') > $b->getDetail('category')) {
-            return 1;
+        if ($a->getDetail('category') != $b->getDetail('category')) {
+            return $a->getDetail('category') <=> $b->getDetail('category');
         }
 
-        if ($a->getDetail('name') < $b->getDetail('name')) {
-            return -1;
-        } elseif ($a->getDetail('name') > $b->getDetail('name')) {
-            return 1;
+        if ($a->getDetail('name') != $b->getDetail('name')) {
+            return $a->getDetail('name') <=> $b->getDetail('name');
         }
 
         return 0;
@@ -260,7 +254,6 @@ class ImportType
      */
     public static function loadImportType($importTypeName, Connection $pdo = null)
     {
-
         // Check custom first, this allows for local overrides
         $path = self::getCustomImportTypeDir($pdo).'/'.$importTypeName.'.yml';
         if (!file_exists($path)) {
@@ -301,7 +294,7 @@ class ImportType
     /**
      * Compares the importType structure with the database table to ensure imports will succeed
      *
-     * @param   Object  PDO Conenction
+     * @param   Connection  PDO
      * @return  bool    true if all fields match existing table columns
      */
     protected function validateWithDatabase(Connection $pdo)
@@ -318,6 +311,7 @@ class ImportType
         $validatedFields = 0;
         foreach ($this->table as $fieldName => $field) {
             if ($this->isFieldReadOnly($fieldName)) {
+                $this->setValueTypeByFilter($fieldName);
                 $validatedFields++;
                 continue;
             }
@@ -516,7 +510,6 @@ class ImportType
             $this->setField($fieldName, 'precision', $decimalParts[0]);
             $this->setField($fieldName, 'scale', $decimalParts[1]);
         } elseif ($type == 'enum') {
-
             // Grab the CSV enum elements as an array
             $elements = explode(',', str_replace("'", "", $details));
             $this->setField($fieldName, 'elements', $elements);
@@ -539,6 +532,22 @@ class ImportType
             $this->setField($fieldName, 'kind', 'char');
             $this->setField($fieldName, 'length', 50);
         }
+    }
+
+    protected function setValueTypeByFilter($fieldName)
+    {
+        $type = '';
+        $kind = '';
+
+        switch ($this->getField($fieldName, 'filter')) {
+            case 'string':  $type = 'text'; $kind = 'text'; break;
+            case 'date':    $type = 'date'; $kind = 'date'; break;
+            case 'url':     $type = 'text'; $kind = 'text'; break;
+            case 'email':   $type = 'text'; $kind = 'text'; break;
+        }
+
+        $this->setField($fieldName, 'type', $type);
+        $this->setField($fieldName, 'kind', $kind);
     }
 
     /**
@@ -816,7 +825,7 @@ class ImportType
                 } else {
                     $value = 'Other';
                 }
-                            break;
+                break;
 
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
                 if (!empty($value)) {
@@ -1082,37 +1091,63 @@ class ImportType
      */
     public function readableFieldType($fieldName)
     {
-        $output = '';
+        $filter = $this->getField($fieldName, 'filter');
         $kind = $this->getField($fieldName, 'kind');
+        $length = $this->getField($fieldName, 'length');
 
-        if ($this->isFieldRelational($fieldName)) {
-            extract($this->getField($fieldName, 'relationship'));
-            return $table.' '.((is_array($field))? implode(', ', $field) : $field);
+        // if ($this->isFieldRelational($fieldName)) {
+        //     extract($this->getField($fieldName, 'relationship'));
+        //     return $table.' '.((is_array($field))? implode(', ', $field) : $field);
+        // }
+
+        switch ($filter) {
+            case 'email':
+                return __('Email ({number} chars)', ['number' => $length]);
+
+            case 'url':
+                return __('URL ({number} chars)', ['number' => $length]);
         }
 
-        if (isset($kind)) {
-            $length = $this->getField($fieldName, 'length');
+        switch ($kind) {
+            case 'char':
+                return __('Text ({number} chars)', ['number' => $length]);
 
-            switch ($kind) {
-                case 'char':    $output = "Text (" . $length . " chars)"; break;
-                case 'text':    $output = "Text"; break;
-                case 'integer': $output = "Number (" . $length . " digits)"; break;
-                case 'decimal': $scale = $this->getField($fieldName, 'scale');
-                                $output = "Decimal (" . str_repeat('0', $length) .".". str_repeat('0', $scale)." format)"; break;
-                case 'yesno':   $output = "Y or N"; break;
-                case 'boolean': $output = "True or False"; break;
-                case 'enum':    $options = $this->getField($fieldName, 'elements');
-                                $optionCount = $this->getField($fieldName, 'length');
-                                $optionString = ($optionCount > 4)? mb_substr(implode(', ', $options), 0, 60).' ...' : implode(', ', $options);
-                                $output = "Options (".$optionString.")"; break;
-                default:        $output = ucfirst($kind);
-            }
+            case 'text':
+                return __('Text');
+
+            case 'integer':
+                return __('Number ({number} digits)', ['number' => $length]);
+
+            case 'decimal':
+                $scale = $this->getField($fieldName, 'scale');
+                $format = str_repeat('0', $length) .".". str_repeat('0', $scale);
+                return __('Decimal ({number} format)', ['number' => $format]);
+
+            case 'date':
+                return __('Date');
+
+            case 'yesno':
+                return __('Y or N');
+
+            case 'boolean':
+                return __('True or False');
+
+            case 'enum':
+                $options = $this->getField($fieldName, 'elements');
+                $optionString = ($length > 4)
+                    ? mb_substr(implode(', ', $options), 0, 60).' ...'
+                    : implode(', ', $options);
+                return __('Options').' ('.$optionString.')';
+
+            default:
+                return __(ucfirst($kind));
         }
-        return $output;
+        
+        return '';
     }
 
     /**
-     * Returns the value of a dynmaic function name supplied by the importType field
+     * Returns the value of a dynamic function name supplied by the importType field
      *
      * @param   string  Field name
      * @return  var|NULL
@@ -1153,13 +1188,13 @@ class ImportType
 
             if ($this->isFieldRelational($fieldName)) {
                 extract($this->getField($fieldName, 'relationship'));
-                $field = (is_array($field))? implode(', ', $field) : $field;
+                $field = is_array($field) ? current($field) : $field;
 
                 $importRestrictions[] = sprintf(
                     __('Each %s should match the %s of a %s', 'Data Admin'),
                     $this->getField($fieldName, 'name'),
                     $field,
-                    $table
+                    !empty($join) ? $join : $table
                 );
             }
 

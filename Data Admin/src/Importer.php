@@ -58,7 +58,7 @@ class Importer
     public $syncField;
     public $syncColumn;
     
-    public $outputData = array();
+    public $outputData = [];
 
     /**
      * File handler for line-by-line CSV read
@@ -78,16 +78,16 @@ class Importer
     /**
      * Array of validated, database-friendly records
      */
-    private $tableData = array();
-    private $tableFields = array();
+    private $tableData = [];
+    private $tableFields = [];
 
-    private $serializeData = array();
+    private $serializeData = [];
 
     /**
      * Errors
      */
-    private $importLog = array( 'error' => array(), 'warning' => array(), 'message' => array() );
-    private $rowErrors = array();
+    private $importLog = array( 'error' => [], 'warning' => [], 'message' => [] );
+    private $rowErrors = [];
 
     /**
      * ID of the last error message
@@ -283,16 +283,16 @@ class Importer
      * @param  array  Custom user-provided values
      * @return  bool  true if build succeeded
      */
-    public function buildTableData($importType, $columnOrder, $customValues = array())
+    public function buildTableData($importType, $columnOrder, $customValues = [])
     {
         if (empty($this->importData)) {
             return false;
         }
 
-        $this->tableData = array();
+        $this->tableData = [];
 
         foreach ($this->importData as $rowNum => $row) {
-            $fields = array();
+            $fields = [];
             $fieldCount = 0;
             $partialFail = false;
             foreach ($importType->getTableFields() as $fieldName) {
@@ -335,10 +335,10 @@ class Importer
                     $type = $importType->getField($fieldName, 'type');
 
                     if ($filter == 'nospaces') {
-                        $this->log($rowNum, Importer::ERROR_INVALID_HAS_SPACES, $fieldName, $fieldCount, array($value));
+                        $this->log($rowNum, Importer::ERROR_INVALID_HAS_SPACES, $fieldName, $fieldCount, array('value' => $value));
                     } else {
                         $expectation = (!empty($type))? $importType->readableFieldType($fieldName) : $filter;
-                        $this->log($rowNum, Importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array($value, $expectation));
+                        $this->log($rowNum, Importer::ERROR_INVALID_FIELD_VALUE, $fieldName, $fieldCount, array('value' => $value, 'expectation' => $expectation));
                     }
 
                     $partialFail = true;
@@ -400,7 +400,7 @@ class Importer
                                     Importer::ERROR_RELATIONAL_FIELD_MISMATCH,
                                     $fieldName,
                                     $fieldCount,
-                                    array($importType->getField($fieldName, 'name'), $value, $field, $table)
+                                    array('name' => $importType->getField($fieldName, 'name'), 'value' => $value, 'field' => $field, 'table' => $table)
                                 );
                                 $partialFail = true;
                             }
@@ -506,7 +506,7 @@ class Importer
 
             // Find existing record(s)
             try {
-                $data = array();
+                $data = [];
                 // Add the unique keys
                 foreach ($importType->getUniqueKeyFields() as $keyField) {
                     $data[ $keyField ] = $row[ $keyField ];
@@ -529,8 +529,8 @@ class Importer
             }
 
             // Build the data and query field=:value associations
-            $sqlFields = array();
-            $sqlData = array();
+            $sqlFields = [];
+            $sqlData = [];
 
             foreach ($row as $fieldName => $fieldData) {
                 if ($importType->isFieldReadOnly($fieldName) || ($this->mode == 'update' && $fieldName == $primaryKey)) {
@@ -565,7 +565,7 @@ class Importer
 
                 // If these IDs don't match, then one of the unique keys matched (eg: non-unique value with different database ID)
                 if ($this->syncField == true && $primaryKeyValue != $row[ $primaryKey ]) {
-                    $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[ $primaryKey ], array( $primaryKey, intval($primaryKeyValue) ));
+                    $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[ $primaryKey ], array( 'key' => $primaryKey, 'value' => intval($primaryKeyValue) ));
                     $this->databaseResults['updates_skipped'] += 1;
                     continue;
                 }
@@ -615,7 +615,7 @@ class Importer
                 }
             } else {
                 $primaryKeyValues = $result->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE, 0);
-                $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array( $primaryKey, implode(', ', $primaryKeyValues) ));
+                $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array( 'key' => $primaryKey, 'value' => implode(', ', $primaryKeyValues) ));
                 $partialFail = true;
             }
         }
@@ -629,12 +629,12 @@ class Importer
         $primaryKey = $importType->getPrimaryKey();
         $primaryKeyField = $this->escapeIdentifier($primaryKey);
 
-        $sqlKeys = array();
+        $sqlKeys = [];
         foreach ($importType->getUniqueKeys() as $uniqueKey) {
 
             // Handle multi-part unique keys (eg: school year AND course short name)
             if (is_array($uniqueKey) && count($uniqueKey) > 1) {
-                $sqlKeysFields = array();
+                $sqlKeysFields = [];
                 foreach ($uniqueKey as $fieldName) {
                     if (!in_array($fieldName, $this->tableFields)) {
                         continue;
@@ -779,7 +779,7 @@ class Importer
      * @param  string  Field Index
      * @param  array  Values to pass to String Format
      */
-    protected function log($rowNum, $messageID, $fieldName = '', $fieldNum = -1, $args = array())
+    protected function log($rowNum, $messageID, $fieldName = '', $fieldNum = -1, $args = [])
     {
         if ($messageID > 200) {
             $type = 'error';
@@ -792,7 +792,7 @@ class Importer
         $this->importLog[ $type ][] = array(
             'index' => $rowNum,
             'row' => $rowNum+2,
-            'info' => vsprintf($this->translateMessage($messageID), $args),
+            'info' => $this->translateMessage($messageID, $args),
             'field_name' => $fieldName,
             'field' => $fieldNum,
             'type' => $type
@@ -809,26 +809,24 @@ class Importer
      * @param  int    Error ID
      * @return  string  Translated error message
      */
-    protected function translateMessage($errorID)
+    protected function translateMessage($errorID, $args = [])
     {
         switch ($errorID) {
             // ERRORS
             case Importer::ERROR_IMPORT_FILE:
-                return __('There was an error reading the import file type %s'); break;
+                return __('There was an error reading the import file type {value}.', $args); break;
             case Importer::ERROR_REQUIRED_FIELD_MISSING:
                 return __('Missing value for required field.'); break;
             case Importer::ERROR_INVALID_FIELD_VALUE:
-                return __('Invalid value: \"%s\".  Expected: %s'); break;
+                return __('Invalid value: "{value}".  Expected: {expectation}', $args); break;
             case Importer::ERROR_INVALID_HAS_SPACES:
-                return __('Invalid value: \"%s\".  This field type cannot contain spaces.'); break;
+                return __('Invalid value: "{value}".  This field type cannot contain spaces.', $args); break;
             case Importer::ERROR_INVALID_INPUTS:
                 return __('Your request failed because your inputs were invalid.'); break;
-            case Importer::ERROR_LOCKING_DATABASE:
-                return __('The database could not be locked/unlocked for use.'); break;
             case Importer::ERROR_KEY_MISSING:
                 return __('Missing value for primary key or unique key set.'); break;
             case Importer::ERROR_NON_UNIQUE_KEY:
-                return __('Encountered non-unique values used by %s: %s'); break;
+                return __('Encountered non-unique values used by {key}: {value}', $args); break;
             case Importer::ERROR_DATABASE_GENERIC:
                 return __('There was an error accessing the database.'); break;
             case Importer::ERROR_DATABASE_FAILED_INSERT:
@@ -836,7 +834,7 @@ class Importer
             case Importer::ERROR_DATABASE_FAILED_UPDATE:
                 return __('Failed to update database record.'); break;
             case Importer::ERROR_RELATIONAL_FIELD_MISMATCH:
-                return __('%s: %s does not match an existing %s in %s'); break;
+                return __('{name}: {value} does not match an existing {field} in {table}.', $args); break;
             // WARNINGS
             case Importer::WARNING_DUPLICATE_KEY:
                 return __('A duplicate entry already exists for this record. Record skipped.'); break;
@@ -844,9 +842,9 @@ class Importer
                 return __('A database entry for this record could not be found. Record skipped.'); break;
             // MESSAGES
             case Importer::MESSAGE_GENERATED_PASSWORD:
-                return __('Password generated for user %s: %s'); break;
+                return __('Password generated for user {username}: {value}'); break;
             default:
-                return __('An error occured, the import was aborted.'); break;
+                return __('An error occurred, the import was aborted.'); break;
         }
     }
 
