@@ -41,14 +41,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
     // Get a list of available import options
     $importTypeList = ImportType::loadImportTypeList($pdo, false);
 
+
     // Get the unique tables used
     $importTables = array();
     foreach ($importTypeList as $importTypeName => $importType) {
-        $table = $importType->getDetail('table');
         $modes = $importType->getDetail('modes');
 
         if ((isset($modes['export']) && $modes['export'] == true) && $modes['update'] == true && $modes['insert'] == true) {
-            $importTables[$table] = $importType;
+            $importTables[$importTypeName] = $importType;
         }
     }
 
@@ -109,7 +109,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
             echo "<tr>" ;
             echo "<td>".$importType->getDetail('category'). "</td>" ;
 
-            echo "<td>".$importType->getDetail('table')."</td>" ;
+            echo "<td>".$importType->getDetail('name')."</td>" ;
 
             echo "<td>".$recordCount."</td>";
 

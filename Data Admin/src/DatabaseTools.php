@@ -59,7 +59,8 @@ class DatabaseTools
     {
         if (!$importType->isValid()) return;
 
-        $table = $this->escapeIdentifier( $importType->getDetail('table') );
+        $table = $this->escapeIdentifier( $importType->getPrimaryTable() );
+        $importType->switchTable($importType->getPrimaryTable());
 
         try {
             $data = array();
@@ -89,7 +90,9 @@ class DatabaseTools
     {
         if (!$importType->isValid()) return;
 
-        $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
+        $tableName = $this->escapeIdentifier( $importType->getPrimaryTable() );
+        $importType->switchTable($importType->getPrimaryTable());
+
         $primaryKey = $importType->getPrimaryKey();
         $primaryKeyField = $this->escapeIdentifier($primaryKey);
 
@@ -133,7 +136,9 @@ class DatabaseTools
     {
         if (!$importType->isValid()) return;
         
-        $tableName = $this->escapeIdentifier( $importType->getDetail('table') );
+        $tableName = $this->escapeIdentifier( $importType->getPrimaryTable() );
+        $importType->switchTable($importType->getPrimaryTable());
+
         $primaryKey = $this->escapeIdentifier( $importType->getPrimaryKey() );
 
         $relationships = array();

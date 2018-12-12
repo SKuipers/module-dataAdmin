@@ -81,33 +81,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
 
     $excel->setActiveSheetIndex(0) ;
 
-    $tableName = $importType->getDetail('table');
-    $primaryKey = $importType->getPrimaryKey();
+    $count = 0;
 
+    $rowData = [];
     $queryFields = [];
-    $columnFields = [];
-
-    foreach ($importType->getTableFields() as $fieldName) {
-        if ($importType->isFieldHidden($fieldName)) {
-            continue; // Skip hidden fields
-        }
-        
-        $columnFields[] = $fieldName;
-
-        if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) {
-            continue;  // Skip readonly fields when exporting data
-        }
-        
-        $queryFields[] = $fieldName;
-    }
-
-    if ($dataExport && !empty($primaryKey)) {
-        $queryFields = array_merge(array($primaryKey), $queryFields);
-        $columnFields = array_merge(array($primaryKey), $columnFields);
-    }
+    $columnFields = $importType->getAllFields();
 
     // Create the header row
-    $count = 0;
     foreach ($columnFields as $fieldName) {
         $excel->getActiveSheet()->setCellValue(num2alpha($count).'1', $importType->getField($fieldName, 'name', $fieldName));
         $excel->getActiveSheet()->getStyle(num2alpha($count).'1')->applyFromArray($style_head_fill);
@@ -131,106 +111,130 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
         $count++;
     }
 
-    
-    if ($dataExport) {
-        // Get the data
-        $data = [];
-        $sql = "SELECT ".implode(', ', $queryFields)." FROM `{$tableName}`" ;
+    foreach ($importType->getTables() as $index => $tableName) {
 
-        if ($dataExportAll == false) {
-            // Optionally limit all exports to the current school year by default, to avoid massive files
-            $gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
-            
-            if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false) {
-                $data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
-                $sql .= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
+        $importType->switchTable($tableName);
+        $primaryKey = $importType->getPrimaryKey();
+
+        foreach ($importType->getTableFields() as $fieldName) {
+            if ($importType->isFieldHidden($fieldName)) {
+                continue; // Skip hidden fields
             }
+            
+            if ($importType->isFieldReadOnly($fieldName) && $dataExport == true) {
+                continue;  // Skip readonly fields when exporting data
+            }
+            
+            $queryFields[$tableName][] = $fieldName;
         }
 
-        $sql.= " ORDER BY $primaryKey ASC";
-        $result = $pdo->executeQuery($data, $sql);
+        if ($dataExport && !empty($primaryKey)) {
+            $queryFields[$tableName] = array_merge(array($primaryKey), $queryFields[$tableName]);
+            // $columnFields = array_merge(array($primaryKey), $columnFields);
+        }
+        
+        if ($dataExport) {
+            // Get the data
+            $data = [];
+            $sql = "SELECT ".implode(', ', $queryFields[$tableName])." FROM `{$tableName}`" ;
 
-        // Continue if there's data
-        if ($result && $result->rowCount() > 0) {
-
-            // Build some relational data arrays, if needed (do this first to avoid duplicate queries per-row)
-            $relationalData = [];
-
-            foreach ($columnFields as $fieldName) {
-                if ($importType->isFieldRelational($fieldName)) {
-                    $join = $on = '';
-                    extract($importType->getField($fieldName, 'relationship'));
-                    $queryFields = (is_array($field))? implode(',', $field) : $field;
-
-                    // Build a query to grab data from relational tables
-                    $relationalSQL = "SELECT `{$table}`.`{$key}` id, {$queryFields} FROM `{$table}`";
-
-                    if (!empty($join) && !empty($on)) {
-                        if (is_array($on) && count($on) == 2) {
-                            $relationalSQL .= " JOIN {$join} ON ({$join}.{$on[0]}={$table}.{$on[1]})";
-                        }
-                    }
-
-                    $resultRelation = $pdo->executeQuery([], $relationalSQL);
-
-                    if ($resultRelation->rowCount() > 0) {
-
-                        // Fetch into an array as:  id => array( field => value, field => value, ... )
-                        $relationalData[$fieldName] = $resultRelation->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE);
-                    }
+            if ($dataExportAll == false) {
+                // Optionally limit all exports to the current school year by default, to avoid massive files
+                $gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
+                
+                if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false) {
+                    $data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
+                    $sql .= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
                 }
             }
 
-            $rowCount = 2;
-            while ($row = $result->fetch()) {
+            $sql.= " ORDER BY $primaryKey ASC";
+            $result = $pdo->executeQuery($data, $sql);
 
-                // Work backwards, so we can potentially fill in any relational read-only fields
-                for ($i=count($columnFields)-1; $i >= 0; $i--) {
-                    $fieldName = $columnFields[$i];
-                
-                    $value = (isset($row[ $fieldName ]))? $row[ $fieldName ] : null;
+            // Continue if there's data
+            if ($result && $result->rowCount() > 0) {
 
-                    // Handle relational fields
+                // Build some relational data arrays, if needed (do this first to avoid duplicate queries per-row)
+                $relationalData = [];
+
+                foreach ($importType->getTableFields() as $fieldName) {
                     if ($importType->isFieldRelational($fieldName)) {
+                        $join = $on = '';
                         extract($importType->getField($fieldName, 'relationship'));
-                        $filter = $importType->getField($fieldName, 'filter');
+                        $queryFieldsRelational = (is_array($field))? implode(',', $field) : $field;
 
-                        $values = $filter == 'csv' ? array_map('trim', explode(',', $value)) : [$value];
-                        $relationalValue = [];
+                        // Build a query to grab data from relational tables
+                        $relationalSQL = "SELECT `{$table}`.`{$key}` id, {$queryFieldsRelational} FROM `{$table}`";
 
-                        foreach ($values as $value) {
-                            // Single key relational field -- value is the ID from other table
-                            $relationalField = (is_array($field))? $field[0] : $field;
-                            $relationalValue[] = @$relationalData[$fieldName][$value][$relationalField];
+                        if (!empty($join) && !empty($on)) {
+                            if (is_array($on) && count($on) == 2) {
+                                $relationalSQL .= " JOIN {$join} ON ({$join}.{$on[0]}={$table}.{$on[1]})";
+                            }
+                        }
 
-                            // Multi-key relational field (fill in backwards, slightly hacky but works)
-                            if (is_array($field) && count($field) > 1) {
-                                for ($n=1; $n < count($field); $n++) {
-                                    $relationalField = $field[$n];
+                        $resultRelation = $pdo->executeQuery([], $relationalSQL);
 
-                                    // Does the field exist in the import definition but not in the current table?
-                                    // Add the value to the row to fill-in the link between read-only relational fields
-                                    if ($importType->isFieldReadOnly($relationalField)) {
-                                        $row[ $relationalField ] = @$relationalData[$fieldName][$value][$relationalField];
+                        if ($resultRelation->rowCount() > 0) {
+
+                            // Fetch into an array as:  id => array( field => value, field => value, ... )
+                            $relationalData[$fieldName] = $resultRelation->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE);
+                        }
+                    }
+                }
+
+                $rowCount = 2;
+                while ($row = $result->fetch()) {
+
+                    // Work backwards, so we can potentially fill in any relational read-only fields
+                    for ($i=count($columnFields)-1; $i >= 0; $i--) {
+                        $fieldName = $columnFields[$i];
+                    
+                        $value = (isset($row[ $fieldName ]))? $row[ $fieldName ] : null;
+
+                        // Handle relational fields
+                        if ($importType->isFieldRelational($fieldName)) {
+                            extract($importType->getField($fieldName, 'relationship'));
+                            $filter = $importType->getField($fieldName, 'filter');
+
+                            $values = $filter == 'csv' ? array_map('trim', explode(',', $value)) : [$value];
+                            $relationalValue = [];
+
+                            foreach ($values as $value) {
+                                // Single key relational field -- value is the ID from other table
+                                $relationalField = (is_array($field))? $field[0] : $field;
+                                $relationalValue[] = @$relationalData[$fieldName][$value][$relationalField];
+
+                                // Multi-key relational field (fill in backwards, slightly hacky but works)
+                                if (is_array($field) && count($field) > 1) {
+                                    for ($n=1; $n < count($field); $n++) {
+                                        $relationalField = $field[$n];
+
+                                        // Does the field exist in the import definition but not in the current table?
+                                        // Add the value to the row to fill-in the link between read-only relational fields
+                                        if ($importType->isFieldReadOnly($relationalField)) {
+                                            $row[ $relationalField ] = @$relationalData[$fieldName][$value][$relationalField];
+                                        }
                                     }
                                 }
                             }
+                            
+                            // Replace the relational ID value with the actual value
+                            $value = implode(',', $relationalValue);
                         }
-                        
-                        // Replace the relational ID value with the actual value
-                        $value = implode(',', $relationalValue);
+
+                        if (!empty($value)) {
+                            // Set the cell value
+                            $excel->getActiveSheet()->setCellValue(num2alpha($i).$rowCount, (string)$value);
+                        }
                     }
 
-                    // Set the cell value
-                    $excel->getActiveSheet()->setCellValue(num2alpha($i).$rowCount, $value);
+                    $rowCount++;
                 }
-
-                $rowCount++;
             }
         }
     }
 
-    $filename = ($dataExport)? __("DataExport", 'Data Admin').'-'.$tableName : __("DataStructure", 'Data Admin').'-'.$type;
+    $filename = ($dataExport) ? 'DataExport'.'-'.$type : 'DataStructure'.'-'.$type;
 
     $exportFileType = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
     if (empty($exportFileType)) {

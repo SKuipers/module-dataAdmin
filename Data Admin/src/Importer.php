@@ -80,6 +80,7 @@ class Importer
     private $tableData = [];
     private $tableFields = [];
 
+    private $cachedData = [];
     private $serializeData = [];
 
     /**
@@ -118,6 +119,8 @@ class Importer
 
     private $headerRow;
     private $firstRow;
+
+    private $debug = true;
 
     /**
      * Constructor
@@ -292,14 +295,23 @@ class Importer
         }
 
         $this->tableData = [];
+        $rowIndex = 0;
 
         foreach ($this->importData as $rowNum => $row) {
             $fields = [];
             $fieldCount = 0;
             $partialFail = false;
-            foreach ($importType->getTableFields() as $fieldName) {
+            $tableFields = $importType->getTableFields();
+
+            foreach ($importType->getAllFields() as $fieldName) {
                 $columnIndex = $columnOrder[$fieldCount];
                 $value = null;
+
+                if (!in_array($fieldName, $tableFields)) {
+                    // Skip fields not used by this table
+                    $fieldCount++;
+                    continue;
+                }
                 
                 if ($columnIndex == Importer::COLUMN_DATA_SKIP) {
                     // Skip marked columns
@@ -313,9 +325,10 @@ class Importer
                     $value = $importType->doImportFunction($fieldName);
                 } elseif ($columnIndex == Importer::COLUMN_DATA_LINKED) {
                     // Grab another field value for linked fields. Fields with values must always precede the linked field.
+                    // Can grab cached linked values if they're in a table that preceded this one.
                     if ($importType->isFieldLinked($fieldName)) {
                         $linkedFieldName = $importType->getField($fieldName, 'linked');
-                        $value = (isset($fields[$linkedFieldName]))? $fields[$linkedFieldName] : null;
+                        $value = $fields[$linkedFieldName] ?? $this->cachedData[$rowIndex][$linkedFieldName] ?? null;
                     }
                 } elseif ($columnIndex >= 0) {
                     // Use the column index to grab to associated CSV value
@@ -343,8 +356,11 @@ class Importer
                 }
 
                 // Handle relational table data
-                // Moved from Insert/Update queries so we can confirm on the dry run (and multi-key relationships)
-                if ($importType->isFieldRelational($fieldName)) {
+                if ($importType->isFieldRelational($fieldName) && !empty($this->cachedData[$rowIndex][$fieldName])) {
+                    // Grab existing cached relational data, to prevent multiple identical queries in multi-table imports
+                    $value = $this->cachedData[$rowIndex][$fieldName];
+                } elseif ($importType->isFieldRelational($fieldName)) {
+                    // Otherwise build a query to grab the relational data.
                     $join = $on = '';
                     extract($importType->getField($fieldName, 'relationship'));
 
@@ -365,7 +381,7 @@ class Importer
 
                     foreach ($values as $value) {
                         if (is_array($field) && count($field) > 0) {
-                            // Muli-key relationships
+                            // Multi-key relationships
                             $relationalField = $this->escapeIdentifier($field[0]);
                             $relationalData = array($fieldName => $value);
                             $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$relationalField}=:{$fieldName}";
@@ -386,11 +402,12 @@ class Importer
                         }
 
                         $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
+
                         if ($result->rowCount() > 0) {
                             $relationalValue[] = $result->fetchColumn(0);
                         } else {
-                            // Missing relation for required field? Or missing a relation when value is provided?
-                            if (!empty($value) || $importType->isFieldRequired($fieldName)) {
+                            // Missing relation for required field? Or missing a relation when value is provided? (excluding linked fields)
+                            if ((!empty($value) && !$importType->isFieldLinked($fieldName)) || $importType->isFieldRequired($fieldName)) {
                                 $field = (is_array($field))? implode(', ', $field) : $field;
                                 $this->log(
                                     $rowNum,
@@ -399,6 +416,8 @@ class Importer
                                     $fieldCount,
                                     array('name' => $importType->getField($fieldName, 'name'), 'value' => $value, 'field' => $field, 'table' => $table)
                                 );
+                                $this->debugLog($rowNum, $relationalSQL, $relationalData, 'relational');
+                                
                                 $partialFail = true;
                             }
                         }
@@ -458,7 +477,12 @@ class Importer
             }
 
             if (!empty($fields) && $partialFail == false) {
-                $this->tableData[] = $fields;
+                $this->tableData[$rowIndex] = $fields;
+
+                // Merge & cache the table data so multi-table imports can skip additional relational data checks
+                $this->cachedData[$rowIndex] = array_merge($this->cachedData[$rowIndex] ?? [], $fields);
+
+                $rowIndex++;
             }
         }
 
@@ -514,6 +538,7 @@ class Importer
 
             if (!$this->pdo->getQuerySuccess()) {
                 $this->log($rowNum, Importer::ERROR_DATABASE_GENERIC);
+                $this->debugLog($rowNum, $sqlKeyQueryString, $data, 'find row');
                 $partialFail = true;
                 continue;
             }
@@ -548,6 +573,7 @@ class Importer
                 // Dont update records on INSERT ONLY mode
                 if ($this->mode == 'insert') {
                     $this->log($rowNum, Importer::WARNING_DUPLICATE_KEY, $primaryKey, $primaryKeyValue);
+                    $this->debugLog($rowNum, $sqlKeyQueryString, $data, 'insert fail');
                     $this->databaseResults['updates_skipped'] += 1;
                     continue;
                 }
@@ -555,24 +581,26 @@ class Importer
                 // If these IDs don't match, then one of the unique keys matched (eg: non-unique value with different database ID)
                 if ($this->syncField == true && $primaryKeyValue != $row[$primaryKey]) {
                     $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[$primaryKey], array('key' => $primaryKey, 'value' => intval($primaryKeyValue) ));
+                    $this->debugLog($rowNum, $sqlKeyQueryString, $data, 'update fail');
                     $this->databaseResults['updates_skipped'] += 1;
                     continue;
                 }
 
                 $this->databaseResults['updates'] += 1;
+  
+                $sqlData[$primaryKey] = $primaryKeyValue;
+                $sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
 
                 // Skip now so we dont change the database
                 if (!$liveRun) {
                     continue;
                 }
-  
-                $sqlData[$primaryKey] = $primaryKeyValue;
-                $sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
 
                 $this->pdo->update($sql, $sqlData);
 
                 if (!$this->pdo->getQuerySuccess()) {
-                    $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage());
+                    $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_UPDATE);
+                    $this->debugLog($rowNum, $sql, $sqlData, 'update fail');
                     $partialFail = true;
                     continue;
                 }
@@ -584,28 +612,32 @@ class Importer
                 // Dont add records on UPDATE ONLY mode
                 if ($this->mode == 'update') {
                     $this->log($rowNum, Importer::WARNING_RECORD_NOT_FOUND);
+                    $this->debugLog($rowNum, $sqlKeyQueryString, $data, 'update fail');
                     $this->databaseResults['inserts_skipped'] += 1;
                     continue;
                 }
 
                 $this->databaseResults['inserts'] += 1;
 
+                $sql = "INSERT INTO {$tableName} SET ".$sqlFieldString;
+
                 // Skip now so we dont change the database
                 if (!$liveRun) {
                     continue;
                 }
-
-                $sql = "INSERT INTO {$tableName} SET ".$sqlFieldString;
+                
                 $this->pdo->insert($sql, $sqlData);
 
                 if (!$this->pdo->getQuerySuccess()) {
-                    $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage());
+                    $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_INSERT);
+                    $this->debugLog($rowNum, $sql, $sqlData, 'insert fail');
                     $partialFail = true;
                     continue;
                 }
             } else {
                 $primaryKeyValues = $result->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE, 0);
                 $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array('key' => $primaryKey, 'value' => implode(', ', $primaryKeyValues) ));
+                $this->debugLog($rowNum, $sqlKeyQueryString, $data, 'non-unique');
                 $partialFail = true;
             }
         }
@@ -622,10 +654,13 @@ class Importer
         $sqlKeys = [];
         foreach ($importType->getUniqueKeys() as $uniqueKey) {
 
-            if (is_array($uniqueKey) && count($uniqueKey) > 1) {
+            $uniqueKey = is_array($uniqueKey) ? $uniqueKey : [$uniqueKey];
+
+            if (count($uniqueKey) > 0) {
                 // Handle multi-part unique keys (eg: school year AND course short name)
                 $sqlKeysFields = [];
                 foreach ($uniqueKey as $fieldName) {
+                    // Skip key fields which dont exist in our imported data set
                     if (!in_array($fieldName, $this->tableFields)) {
                         continue;
                     }
@@ -634,14 +669,6 @@ class Importer
                     $sqlKeysFields[] = "({$fieldNameField}=:{$fieldName} AND {$fieldNameField} IS NOT NULL)";
                 }
                 $sqlKeys[] = '('. implode(' AND ', $sqlKeysFields) .')';
-            } else {
-                // Skip key fields which dont exist in our imported data set
-                if (!in_array($uniqueKey, $this->tableFields)) {
-                    continue;
-                }
-
-                $uniqueKeyField = $this->escapeIdentifier($uniqueKey);
-                $sqlKeys[] = "({$uniqueKeyField}=:{$uniqueKey} AND {$uniqueKeyField} IS NOT NULL)";
             }
         }
 
@@ -779,17 +806,31 @@ class Importer
         }
 
         $this->importLog[$type][] = array(
-            'index' => $rowNum,
-            'row' => $rowNum+2,
-            'info' => $this->translateMessage($messageID, $args),
+            'index'      => $rowNum,
+            'row'        => $rowNum+2,
+            'info'       => $this->translateMessage($messageID, $args),
             'field_name' => $fieldName,
-            'field' => $fieldNum,
-            'type' => $type
-       );
+            'field'      => $fieldNum,
+            'type'       => $type
+        );
 
         if ($type == 'error') {
             $this->rowErrors[$rowNum] = 1;
         }
+    }
+
+    protected function debugLog($rowNum, $sql, $data = [], $context = '')
+    {
+        if (!$this->debug) return;
+
+        $this->importLog['error'][] = array(
+            'index'      => $rowNum,
+            'row'        => $rowNum+2,
+            'info'       => $sql.'<br/><br/>'.json_encode($data, \ JSON_PRETTY_PRINT),
+            'field_name' => $context,
+            'field'      => '',
+            'type'       => 'error'
+        );
     }
 
     /**

@@ -30,25 +30,27 @@ class ImportType
     /**
      * Information about the overall Import Type
      */
-    protected $details = array();
+    protected $details = [];
 
     /**
      * Permission information for user access
      */
-    protected $access = array();
+    protected $access = [];
 
     /**
      * Values that can be used for sync & updates
      */
     protected $primaryKey;
-    protected $uniqueKeys = array();
-    protected $keyFields = array();
+    protected $uniqueKeys = [];
+    protected $keyFields = [];
+    protected $fields = [];
 
     /**
      * Holds the table fields and information for each field
      */
-    protected $table = array();
-    protected $tablesUsed = array();
+    protected $table = [];
+    protected $tables = [];
+    protected $tablesUsed = [];
 
     /**
      * Has the structure been checked against the database?
@@ -60,19 +62,19 @@ class ImportType
      * @var array
      */
     protected $useYearGroups = false;
-    protected $yearGroups = array();
+    protected $yearGroups = [];
 
     protected $useLanguages = false;
-    protected $languages = array();
+    protected $languages = [];
 
     protected $useCountries = false;
-    protected $countries = array();
+    protected $countries = [];
 
     protected $usePhoneCodes = false;
-    protected $phoneCodes = array();
+    protected $phoneCodes = [];
 
     protected $useCustomFields = false;
-    protected $customFields = array();
+    protected $customFields = [];
 
     /**
      * Constructor
@@ -100,66 +102,90 @@ class ImportType
             //Grab the unique fields used in all keys
             foreach ($this->uniqueKeys as $key) {
                 if (is_array($key) && count($key) > 1) {
-                    foreach ($key as $keyName) {
-                        if (!in_array($keyName, $this->keyFields)) {
-                            $this->keyFields[] = $keyName;
-                        }
-                    }
+                    $this->keyFields = array_merge($this->keyFields, $key);
                 } else {
-                    if (!in_array($key, $this->keyFields)) {
-                        $this->keyFields[] = $key;
-                    }
+                    $this->keyFields[] = $key;
                 }
             }
+
+            $this->keyFields = array_unique(array_reduce($this->uniqueKeys, function ($group, $item) {
+                $keys = is_array($item)? $item : [$item];
+                return array_merge($group, $keys);
+            }, []));
         }
 
-        if (isset($data['table'])) {
-            $this->table = $data['table'];
-            $this->tablesUsed[] = $this->details['table'];
+        if (isset($data['tables']) && is_array($data['tables'])) {
+            // Handle multiple tables in one file
+            $this->fields = $data['fields'];
+            $this->tables = $data['tables'];
+        } elseif (isset($data['table'])) {
+            // Convert single table into an array
+            $this->fields = $data['table'];
+            $this->tables[$this->details['table']] = [
+                'primaryKey' => $data['primaryKey'] ?? '',
+                'uniqueKeys' => $data['uniqueKeys'] ?? [],
+                'fields'     => array_keys($data['table']) ?? [],
+            ];
+        }
 
-            // Add relational tables to the tablesUsed array so they're locked
-            foreach ($this->table as $fieldName => $field) {
-                if ($this->isFieldRelational($fieldName)) {
-                    $relationship = $this->getField($fieldName, 'relationship');
-                    if (!in_array($relationship['table'], $this->tablesUsed)) {
-                        $this->tablesUsed[] = $relationship['table'];
+        if (!empty($this->tables)) {
+
+            foreach ($this->tables as $tableName => $table) {
+                $this->tablesUsed[] = $tableName;
+
+                $this->switchTable($tableName);
+
+                // Add relational tables to the tablesUsed array so they're locked
+                foreach ($this->table as $fieldName => $field) {
+                    if ($this->isFieldRelational($fieldName)) {
+                        $relationship = $this->getField($fieldName, 'relationship');
+                        if (!in_array($relationship['table'], $this->tablesUsed)) {
+                            $this->tablesUsed[] = $relationship['table'];
+                        }
+                    }
+
+                    // Check the filters so we know if extra data is nessesary
+                    $filter = $this->getField($fieldName, 'filter');
+                    if ($filter == 'yearlist') {
+                        $this->useYearGroups = true;
+                    }
+                    if ($filter == 'language') {
+                        $this->useLanguages = true;
+                    }
+                    if ($filter == 'country') {
+                        $this->useCountries = true;
+                    }
+                    if ($filter == 'phonecode') {
+                        $this->usePhoneCodes = true;
+                    }
+                    if ($filter == 'customfield') {
+                        $this->useCustomFields = true;
                     }
                 }
-
-                // Check the filters so we know if extra data is nessesary
-                $filter = $this->getField($fieldName, 'filter');
-                if ($filter == 'yearlist') {
-                    $this->useYearGroups = true;
-                }
-                if ($filter == 'language') {
-                    $this->useLanguages = true;
-                }
-                if ($filter == 'country') {
-                    $this->useCountries = true;
-                }
-                if ($filter == 'phonecode') {
-                    $this->usePhoneCodes = true;
-                }
-                if ($filter == 'customfield') {
-                    $this->useCustomFields = true;
-                }
             }
+
+            $this->tablesUsed = array_unique($this->tablesUsed);
         }
 
         if ($pdo != null) {
-            if ($validateStructure == true) {
-                $this->validated = $this->validateWithDatabase($pdo);
-                $this->loadRelationalData($pdo);
-            } else {
-                $data = array('tableName' => $this->getDetail('table'));
-                $sql = "SHOW TABLES LIKE :tableName";
-                $this->validated = !empty($pdo->selectOne($sql, $data));
+            foreach ($this->tables as $tableName => $table) {
+                $this->switchTable($tableName);
+                $this->validated = true;
+
+                if ($validateStructure == true) {
+                    $this->validated &= $this->validateWithDatabase($pdo);
+                    $this->loadRelationalData($pdo);
+                } else {
+                    $data = array('tableName' => $tableName);
+                    $sql = "SHOW TABLES LIKE :tableName";
+                    $this->validated &= !empty($pdo->selectOne($sql, $data));
+                }
             }
 
             $this->loadAccessData($pdo);
         }
 
-        if (empty($this->primaryKey) || empty($this->uniqueKeys) || empty($this->details) || empty($this->table)) {
+        if (empty($this->tables) || empty($this->details)) {
             return null;
         }
     }
@@ -191,7 +217,7 @@ class ImportType
     public static function loadImportTypeList(Connection $pdo = null, $validateStructure = false)
     {
         $yaml = new Yaml();
-        $importTypes = array();
+        $importTypes = [];
 
         // Get the built-in import definitions
         $defaultFiles = glob(self::getImportTypeDir($pdo) . "/*.yml");
@@ -301,7 +327,7 @@ class ImportType
     {
         try {
             $sql="SHOW COLUMNS FROM " . $this->getDetail('table');
-            $result = $pdo->executeQuery(array(), $sql);
+            $result = $pdo->executeQuery([], $sql);
         } catch (\PDOException $e) {
             return false;
         }
@@ -382,7 +408,7 @@ class ImportType
         if ($this->useYearGroups) {
             try {
                 $sql="SELECT gibbonYearGroupID, nameShort FROM gibbonYearGroup ORDER BY sequenceNumber";
-                $resultYearGroups = $pdo->executeQuery(array(), $sql);
+                $resultYearGroups = $pdo->executeQuery([], $sql);
             } catch (\PDOException $e) {
             }
 
@@ -397,7 +423,7 @@ class ImportType
         if ($this->useLanguages) {
             try {
                 $sql="SELECT name FROM gibbonLanguage";
-                $resultLanguages = $pdo->executeQuery(array(), $sql);
+                $resultLanguages = $pdo->executeQuery([], $sql);
             } catch (\PDOException $e) {
             }
 
@@ -412,7 +438,7 @@ class ImportType
         if ($this->useCountries || $this->usePhoneCodes) {
             try {
                 $sql="SELECT printable_name, iddCountryCode FROM gibbonCountry";
-                $resultCountries = $pdo->executeQuery(array(), $sql);
+                $resultCountries = $pdo->executeQuery([], $sql);
             } catch (\PDOException $e) {
             }
 
@@ -432,7 +458,7 @@ class ImportType
         if ($this->useCustomFields) {
             try {
                 $sql="SELECT gibbonPersonFieldID, name, type, options, required FROM gibbonPersonField where active = 'Y'";
-                $resultCustomFields = $pdo->executeQuery(array(), $sql);
+                $resultCustomFields = $pdo->executeQuery([], $sql);
             } catch (\PDOException $e) {
             }
 
@@ -551,6 +577,34 @@ class ImportType
     }
 
     /**
+     * Switch the active table - one table is handled at a time.
+     *
+     * @param string $tableName
+     */
+    public function switchTable($tableName)
+    {
+        if (isset($this->tables[$tableName])) {
+            // Intersect only the fields relative to this table
+            $fields = array_flip($this->tables[$tableName]['fields']);
+            $this->table = array_intersect_key($this->fields, $fields);
+
+            $this->primaryKey = $this->tables[$tableName]['primaryKey'] ?? '';
+            $this->uniqueKeys = $this->tables[$tableName]['uniqueKeys'] ?? [];
+            $this->details['table'] = $tableName;
+
+            $this->keyFields = array_unique(array_reduce($this->uniqueKeys, function ($group, $item) {
+                $keys = is_array($item)? $item : [$item];
+                return array_merge($group, $keys);
+            }, []));
+        }
+    }
+
+    public function getCurrentTable()
+    {
+        return $this->details['table'];
+    }
+
+    /**
      * Get Detail
      *
      * @param   string  key - name of the detail to retrieve
@@ -601,7 +655,7 @@ class ImportType
      */
     public function getUniqueKeyFields()
     {
-        return (isset($this->keyFields))? $this->keyFields : array();
+        return (isset($this->keyFields))? $this->keyFields : [];
     }
 
     /**
@@ -611,7 +665,12 @@ class ImportType
      */
     public function getTables()
     {
-        return $this->tablesUsed;
+        return array_keys($this->tables);
+    }
+
+    public function getPrimaryTable()
+    {
+        return key($this->tables);
     }
 
     /**
@@ -621,7 +680,17 @@ class ImportType
      */
     public function getTableFields()
     {
-        return (isset($this->table))? array_keys($this->table) : array();
+        return (isset($this->table))? array_keys($this->table) : [];
+    }
+
+    /**
+     * Get All Fields used in the import, regardless of table
+     *
+     * @return  array   2D array of table field names used in this import
+     */
+    public function getAllFields()
+    {
+        return (isset($this->fields))? array_keys($this->fields) : [];
     }
 
     /**
@@ -634,10 +703,10 @@ class ImportType
      */
     public function getField($fieldName, $key, $default = "")
     {
-        if (isset($this->table[$fieldName][$key])) {
-            return $this->table[$fieldName][$key];
-        } elseif (isset($this->table[$fieldName]['args'][$key])) {
-            return $this->table[$fieldName]['args'][$key];
+        if (isset($this->fields[$fieldName][$key])) {
+            return $this->fields[$fieldName][$key];
+        } elseif (isset($this->fields[$fieldName]['args'][$key])) {
+            return $this->fields[$fieldName]['args'][$key];
         } else {
             return $default;
         }
@@ -652,10 +721,10 @@ class ImportType
      */
     protected function setField($fieldName, $key, $value)
     {
-        if (isset($this->table[$fieldName])) {
-            $this->table[$fieldName][$key] = $value;
+        if (isset($this->fields[$fieldName])) {
+            $this->fields[$fieldName][$key] = $value;
         } else {
-            $this->table[$fieldName] = array( $key => $value );
+            $this->fields[$fieldName] = array( $key => $value );
         }
     }
 
@@ -829,13 +898,15 @@ class ImportType
 
             case 'yearlist': // Handle incoming blackbaud Grade Level's Allowed, turn them into Year Group IDs
                 if (!empty($value)) {
-                    $yearGroupIDs = array();
+                    $yearGroupIDs = [];
                     $yearGroupNames = explode(',', $value);
 
                     foreach ($yearGroupNames as $gradeLevel) {
                         $gradeLevel = trim($gradeLevel);
                         if (isset($this->yearGroups[$gradeLevel])) {
                             $yearGroupIDs[] = $this->yearGroups[$gradeLevel];
+                        } elseif ($key = array_search($gradeLevel, $this->yearGroups)) {
+                            $yearGroupIDs[] = $this->yearGroups[$key];
                         }
                     }
 
@@ -1022,7 +1093,7 @@ class ImportType
      */
     public function isFieldRelational($fieldName)
     {
-        return (isset($this->table[$fieldName]['relationship']) && !empty($this->table[$fieldName]['relationship']));
+        return (isset($this->fields[$fieldName]['relationship']) && !empty($this->fields[$fieldName]['relationship']));
     }
 
     /**
@@ -1033,7 +1104,7 @@ class ImportType
      */
     public function isFieldLinked($fieldName)
     {
-        return (isset($this->table[$fieldName]['args']['linked']))? $this->table[$fieldName]['args']['linked'] : false;
+        return (isset($this->fields[$fieldName]['args']['linked']))? $this->fields[$fieldName]['args']['linked'] : false;
     }
 
     /**
@@ -1044,7 +1115,8 @@ class ImportType
      */
     public function isFieldReadOnly($fieldName)
     {
-        return (isset($this->table[$fieldName]['args']['readonly']))? $this->table[$fieldName]['args']['readonly'] : false;
+        $readonly = $this->fields[$fieldName]['args']['readonly'] ?? false;
+        return is_array($readonly) ? in_array($this->getCurrentTable(), $readonly): $readonly;
     }
 
     /**
@@ -1058,7 +1130,9 @@ class ImportType
         if ($this->isFieldLinked($fieldName)) {
             return true;
         }
-        return (isset($this->table[$fieldName]['args']['hidden']))? $this->table[$fieldName]['args']['hidden'] : false;
+
+        $hidden = $this->fields[$fieldName]['args']['hidden'] ?? false;
+        return is_array($hidden) ? in_array($this->getCurrentTable(), $hidden): $hidden;
     }
 
     /**
@@ -1069,7 +1143,8 @@ class ImportType
      */
     public function isFieldRequired($fieldName)
     {
-        return (isset($this->table[$fieldName]['args']['required']))? $this->table[$fieldName]['args']['required'] : false;
+        $required = $this->fields[$fieldName]['args']['required'] ?? false;
+        return is_array($required) ? in_array($this->getCurrentTable(), $required): $required;
     }
 
     /**

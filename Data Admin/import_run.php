@@ -143,7 +143,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
         echo $form->getOutput();
 
-        $importSpecification = array_reduce($importType->getTableFields(), function ($group, $fieldName) use ($importType) {
+        $importSpecification = array_reduce($importType->getAllFields(), function ($group, $fieldName) use ($importType) {
             if (!$importType->isFieldHidden($fieldName)) {
                 $group[] = [
                     'count' => count($group) + 1,
@@ -178,7 +178,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         $table->addColumn('count', '#');
         $table->addColumn('name', __('Name'));
         $table->addColumn('desc', __('Description'));
-        $table->addColumn('type', __('Type'));
+        $table->addColumn('type', __('Type'))->width('20%');
 
         echo $table->render(new DataSet($importSpecification));
     }
@@ -268,7 +268,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $form->addRow()->addContent('&nbsp;');
 
             // COLUMN SELECTION
-            if (!empty($importType->getTableFields())) {
+            if (!empty($importType->getAllFields())) {
                 $table = $form->addRow()->addTable()->setClass('colorOddEven fullWidth');
 
                 $header = $table->addHeaderRow();
@@ -314,7 +314,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                     return $output;
                 };
 
-                foreach ($importType->getTableFields() as $fieldName) {
+                foreach ($importType->getAllFields() as $fieldName) {
                     if ($importType->isFieldHidden($fieldName)) {
                         $columnIndex = Importer::COLUMN_DATA_HIDDEN;
                         if ($importType->isFieldLinked($fieldName)) {
@@ -421,15 +421,21 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $importer->fieldDelimiter = (!empty($fieldDelimiter))? stripslashes($fieldDelimiter) : ',';
             $importer->stringEnclosure = (!empty($stringEnclosure))? stripslashes($stringEnclosure) : '"';
 
-            $importSuccess = $buildSuccess = $databaseSuccess = false;
+            
+            $importSuccess = $buildSuccess = $databaseSuccess = true;
             $importSuccess = $importer->readCSVString($csvData);
 
-            if ($importSuccess || $ignoreErrors) {
-                $buildSuccess = $importer->buildTableData($importType, $columnOrder, $columnText);
-            }
+            foreach ($importType->getTables() as $tableName) {
 
-            if ($buildSuccess || $ignoreErrors) {
-                $databaseSuccess = $importer->importIntoDatabase($importType, ($step == 4));
+                $importType->switchTable($tableName);
+
+                if ($importSuccess || $ignoreErrors) {
+                    $buildSuccess &= $importer->buildTableData($importType, $columnOrder, $columnText);
+                }
+
+                if ($buildSuccess || $ignoreErrors) {
+                    $databaseSuccess &= $importer->importIntoDatabase($importType, ($step == 4));
+                }
             }
 
             $overallSuccess = ($importSuccess && $buildSuccess && $databaseSuccess);
@@ -457,7 +463,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $table->addColumn('row', __('Row'));
                 $table->addColumn('field', __('Field'))
                     ->format(function ($log) {
-                        return $log['field_name'].($log['field'] >= 0 ? ' ('. $log['field'] .')' : '');
+                        return $log['field_name'].(!empty($log['field']) ? ' ('. $log['field'] .')' : '');
                     });
                 $table->addColumn('info', __('Message'));
 
