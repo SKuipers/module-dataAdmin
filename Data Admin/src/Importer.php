@@ -36,7 +36,6 @@ class Importer
     const ERROR_INVALID_INPUTS = 201;
     const ERROR_REQUIRED_FIELD_MISSING = 205;
     const ERROR_INVALID_FIELD_VALUE = 206;
-    const ERROR_LOCKING_DATABASE = 207;
     const ERROR_DATABASE_GENERIC = 208;
     const ERROR_DATABASE_FAILED_INSERT = 209;
     const ERROR_DATABASE_FAILED_UPDATE = 210;
@@ -86,7 +85,7 @@ class Importer
     /**
      * Errors
      */
-    private $importLog = array( 'error' => [], 'warning' => [], 'message' => [] );
+    private $importLog = ['error' => [], 'warning' => [], 'message' => []];
     private $rowErrors = [];
 
     /**
@@ -97,20 +96,20 @@ class Importer
     /**
      * Current counts for database operations
      */
-    private $databaseResults = array(
+    private $databaseResults = [
         'inserts' => 0,
         'inserts_skipped' => 0,
         'updates' => 0,
         'updates_skipped' => 0,
         'duplicates' => 0
-    );
+    ];
 
     /**
      * Valid import MIME types
      */
-    private $csvMimeTypes = array(
+    private $csvMimeTypes = [
         'text/csv', 'text/xml', 'text/comma-separated-values', 'text/x-comma-separated-values', 'application/vnd.ms-excel', 'application/csv', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'application/msexcel', 'application/x-msexcel', 'application/x-ms-excel', 'application/x-excel', 'application/x-dos_ms_excel', 'application/xls', 'application/x-xls', 'application/vnd.oasis.opendocument.spreadsheet', 'application/octet-stream',
-    );
+    ];
 
     /**
      * Gibbon\Contracts\Database\Connection
@@ -160,7 +159,7 @@ class Importer
     public function openCSVFile($csvFile)
     {
         ini_set("auto_detect_line_endings", true);
-        $this->csvFileHandler=fopen($csvFile, "r");
+        $this->csvFileHandler = fopen($csvFile, "r");
         return ($this->csvFileHandler !== false);
     }
 
@@ -204,7 +203,7 @@ class Importer
         unset($csv);
 
         foreach ($this->importLog['error'] as $error) {
-            $this->rowErrors[ $error['row'] ] = 1;
+            $this->rowErrors[$error['row']] = 1;
         }
 
         return (!empty($this->importHeaders) && count($this->importData) > 0 && count($this->rowErrors) == 0);
@@ -233,6 +232,9 @@ class Importer
                 $this->headerRow = $this->getCSVLine();
                 $this->firstRow = $this->getCSVLine();
                 $this->closeCSVFile();
+            } else {
+                $this->errorID = Importer::ERROR_IMPORT_FILE;
+                return false;
             }
         } elseif ($fileType == 'xlsx' || $fileType == 'xls' || $fileType == 'xml' || $fileType == 'ods') {
             $filePath = $_FILES['file']['tmp_name'];
@@ -296,34 +298,30 @@ class Importer
             $fieldCount = 0;
             $partialFail = false;
             foreach ($importType->getTableFields() as $fieldName) {
-                $columnIndex = $columnOrder[ $fieldCount ];
-
+                $columnIndex = $columnOrder[$fieldCount];
                 $value = null;
-                // Skip marked columns
+                
                 if ($columnIndex == Importer::COLUMN_DATA_SKIP) {
+                    // Skip marked columns
                     $fieldCount++;
                     continue;
-                }
-                // Get the custom text value provided by the user (from Step 2)
-                elseif ($columnIndex == Importer::COLUMN_DATA_CUSTOM) {
-                    $value = (isset($customValues[ $fieldCount ]))? $customValues[ $fieldCount ] : '';
-                }
-                // Run a user_func based on the function name defined for that field
-                elseif ($columnIndex == Importer::COLUMN_DATA_FUNCTION) {
+                } elseif ($columnIndex == Importer::COLUMN_DATA_CUSTOM) {
+                    // Get the custom text value provided by the user (from Step 2)
+                    $value = (isset($customValues[$fieldCount]))? $customValues[$fieldCount] : '';
+                } elseif ($columnIndex == Importer::COLUMN_DATA_FUNCTION) {
+                    // Run a user_func based on the function name defined for that field
                     $value = $importType->doImportFunction($fieldName);
-                }
-                // Grab another field value for linked fields. Fields with values must always preceed the linked field.
-                elseif ($columnIndex == Importer::COLUMN_DATA_LINKED) {
+                } elseif ($columnIndex == Importer::COLUMN_DATA_LINKED) {
+                    // Grab another field value for linked fields. Fields with values must always precede the linked field.
                     if ($importType->isFieldLinked($fieldName)) {
                         $linkedFieldName = $importType->getField($fieldName, 'linked');
-                        $value = (isset($fields[ $linkedFieldName ]))? $fields[ $linkedFieldName ] : null;
+                        $value = (isset($fields[$linkedFieldName]))? $fields[$linkedFieldName] : null;
                     }
-                }
-                // Use the column index to grab to associated CSV value
-                elseif ($columnIndex >= 0) {
+                } elseif ($columnIndex >= 0) {
+                    // Use the column index to grab to associated CSV value
                     // Get the associative key from the CSV headers using the current index
                     $columnKey = (isset($this->importHeaders[$columnIndex]))? $this->importHeaders[$columnIndex] : -1;
-                    $value = (isset($row[ $columnKey ]))? $row[ $columnKey ] : null;
+                    $value = (isset($row[$columnKey]))? $row[$columnKey] : null;
                 }
 
                 // Filter
@@ -347,8 +345,7 @@ class Importer
                 // Handle relational table data
                 // Moved from Insert/Update queries so we can confirm on the dry run (and multi-key relationships)
                 if ($importType->isFieldRelational($fieldName)) {
-                    $join = '';
-                    $on = '';
+                    $join = $on = '';
                     extract($importType->getField($fieldName, 'relationship'));
 
                     $table = $this->escapeIdentifier($table);
@@ -367,25 +364,25 @@ class Importer
                     $relationalValue = [];
 
                     foreach ($values as $value) {
-                        // Muli-key relationships
                         if (is_array($field) && count($field) > 0) {
+                            // Muli-key relationships
                             $relationalField = $this->escapeIdentifier($field[0]);
-                            $relationalData = array( $fieldName => $value );
+                            $relationalData = array($fieldName => $value);
                             $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$relationalField}=:{$fieldName}";
 
                             for ($i=1; $i<count($field); $i++) {
                                 // Relational field from within current import data
                                 $relationalField = $field[$i];
-                                if (isset($fields[ $relationalField ])) {
-                                    $relationalData[ $relationalField ] = $fields[ $relationalField ];
+                                if (isset($fields[$relationalField])) {
+                                    $relationalData[$relationalField] = $fields[$relationalField];
                                     $relationalSQL .= " AND ".$this->escapeIdentifier($relationalField)."=:{$relationalField}";
                                 }
                             }
-                            // Single key/value relationship
                         } else {
+                            // Single key/value relationship
                             $relationalField = $this->escapeIdentifier($field);
-                            $relationalData = array( $fieldName => $value );
-                            $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$table}.{$relationalField}=:{$fieldName}";
+                            $relationalData = array($fieldName => $value);
+                            $relationalSQL = "SELECT {$table}.{$key} FROM {$table} {$tableJoin} WHERE {$relationalField}=:{$fieldName}";
                         }
 
                         $result = $this->pdo->executeQuery($relationalData, $relationalSQL);
@@ -419,30 +416,27 @@ class Importer
                 // Do we serialize this data?
                 $serialize = $importType->getField($fieldName, 'serialize');
                 if (!empty($serialize)) {
-
-                    // Is this the field we're serializing? Grab the array
                     if ($serialize == $fieldName) {
-                        $value = serialize($this->serializeData[ $serialize ]);
-                        $fields[ $fieldName ] = $value;
-                    }
-                    // Otherwise collect values in an array
-                    else {
+                        // Is this the field we're serializing? Grab the array
+                        $value = serialize($this->serializeData[$serialize]);
+                        $fields[$fieldName] = $value;
+                    } else {
+                        // Otherwise collect values in an array
                         $customField = $importType->getField($fieldName, 'customField');
-                        $this->serializeData[ $serialize ][ $customField ] = $value;
+                        $this->serializeData[$serialize][$customField] = $value;
                     }
-                }
-                // Add the field to the field set for this row
-                else {
-                    $fields[ $fieldName ] = $value;
+                } else {
+                    // Add the field to the field set for this row
+                    $fields[$fieldName] = $value;
                 }
 
                 $fieldCount++;
             }
 
-            // Add the primary key if we're syncing with a databse ID
+            // Add the primary key if we're syncing with a database ID
             if ($this->syncField == true) {
-                if (isset($row[ $this->syncColumn ]) && !empty($row[ $this->syncColumn ])) {
-                    $fields[ $importType->getPrimaryKey() ] = $row[ $this->syncColumn ];
+                if (isset($row[$this->syncColumn]) && !empty($row[$this->syncColumn])) {
+                    $fields[$importType->getPrimaryKey()] = $row[$this->syncColumn];
                 } else {
                     $this->log($rowNum, Importer::ERROR_REQUIRED_FIELD_MISSING, $importType->getPrimaryKey(), $this->syncColumn);
                     $partialFail = true;
@@ -456,11 +450,11 @@ class Importer
                 }
                 $this->outputData['passwords'][] = ['username' => $fields['username'], 'password' => $fields['password']];
 
-                $salt=getSalt() ;
-                $value=$fields['password'];
-                $fields[ 'passwordStrong' ] = hash("sha256", $salt.$value);
-                $fields[ 'passwordStrongSalt' ] = $salt;
-                $fields[ 'password' ] = '';
+                $salt = getSalt() ;
+                $value = $fields['password'];
+                $fields['passwordStrong'] = hash("sha256", $salt.$value);
+                $fields['passwordStrongSalt'] = $salt;
+                $fields['password'] = '';
             }
 
             if (!empty($fields) && $partialFail == false) {
@@ -505,24 +499,20 @@ class Importer
             }
 
             // Find existing record(s)
-            try {
-                $data = [];
-                // Add the unique keys
-                foreach ($importType->getUniqueKeyFields() as $keyField) {
-                    $data[ $keyField ] = $row[ $keyField ];
-                }
-                // Add the primary key if database IDs is enabled
-                if ($this->syncField == true) {
-                    $data[ $primaryKey ] = $row[ $primaryKey ];
-                }
+            $data = [];
+            // Add the unique keys
+            foreach ($importType->getUniqueKeyFields() as $keyField) {
+                $data[$keyField] = $row[$keyField];
+            }
+            // Add the primary key if database IDs is enabled
+            if ($this->syncField == true) {
+                $data[$primaryKey] = $row[$primaryKey];
+            }
 
-                //print_r($data);
-                //echo '<br/>'.$sqlKeyQueryString.'<br/>';
-                //print_r( array_keys($row) );
+            $result = $this->pdo->select($sqlKeyQueryString, $data);
+            $keyRow = $result->fetch();
 
-                $result = $this->pdo->executeQuery($data, $sqlKeyQueryString);
-                $keyRow = $result->fetch();
-            } catch (PDOException $e) {
+            if (!$this->pdo->getQuerySuccess()) {
                 $this->log($rowNum, Importer::ERROR_DATABASE_GENERIC);
                 $partialFail = true;
                 continue;
@@ -537,7 +527,7 @@ class Importer
                     continue;
                 } else {
                     $sqlFields[] = $this->escapeIdentifier($fieldName) . "=:" . $fieldName;
-                    $sqlData[ $fieldName ] = $fieldData;
+                    $sqlData[$fieldName] = $fieldData;
                 }
 
                 // Handle merging existing custom field data with partial custom field imports
@@ -551,10 +541,9 @@ class Importer
 
             $sqlFieldString = implode(", ", $sqlFields);
 
-
             // Handle Existing Records
             if ($result->rowCount() == 1) {
-                $primaryKeyValue = $keyRow[ $primaryKey ];
+                $primaryKeyValue = $keyRow[$primaryKey];
 
                 // Dont update records on INSERT ONLY mode
                 if ($this->mode == 'insert') {
@@ -564,8 +553,8 @@ class Importer
                 }
 
                 // If these IDs don't match, then one of the unique keys matched (eg: non-unique value with different database ID)
-                if ($this->syncField == true && $primaryKeyValue != $row[ $primaryKey ]) {
-                    $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[ $primaryKey ], array( 'key' => $primaryKey, 'value' => intval($primaryKeyValue) ));
+                if ($this->syncField == true && $primaryKeyValue != $row[$primaryKey]) {
+                    $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, $row[$primaryKey], array('key' => $primaryKey, 'value' => intval($primaryKeyValue) ));
                     $this->databaseResults['updates_skipped'] += 1;
                     continue;
                 }
@@ -576,12 +565,13 @@ class Importer
                 if (!$liveRun) {
                     continue;
                 }
+  
+                $sqlData[$primaryKey] = $primaryKeyValue;
+                $sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
 
-                try {
-                    $sqlData[ $primaryKey ] = $primaryKeyValue;
-                    $sql="UPDATE {$tableName} SET " . $sqlFieldString . " WHERE ".$this->escapeIdentifier($primaryKey)."=:{$primaryKey}" ;
-                    $this->pdo->executeQuery($sqlData, $sql);
-                } catch (PDOException $e) {
+                $this->pdo->update($sql, $sqlData);
+
+                if (!$this->pdo->getQuerySuccess()) {
                     $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_UPDATE, $e->getMessage());
                     $partialFail = true;
                     continue;
@@ -605,17 +595,17 @@ class Importer
                     continue;
                 }
 
-                try {
-                    $sql="INSERT INTO {$tableName} SET ".$sqlFieldString;
-                    $this->pdo->executeQuery($sqlData, $sql);
-                } catch (PDOException $e) {
+                $sql = "INSERT INTO {$tableName} SET ".$sqlFieldString;
+                $this->pdo->insert($sql, $sqlData);
+
+                if (!$this->pdo->getQuerySuccess()) {
                     $this->log($rowNum, Importer::ERROR_DATABASE_FAILED_INSERT, $e->getMessage());
                     $partialFail = true;
                     continue;
                 }
             } else {
                 $primaryKeyValues = $result->fetchAll(\PDO::FETCH_COLUMN | \PDO::FETCH_UNIQUE, 0);
-                $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array( 'key' => $primaryKey, 'value' => implode(', ', $primaryKeyValues) ));
+                $this->log($rowNum, Importer::ERROR_NON_UNIQUE_KEY, $primaryKey, -1, array('key' => $primaryKey, 'value' => implode(', ', $primaryKeyValues) ));
                 $partialFail = true;
             }
         }
@@ -632,8 +622,8 @@ class Importer
         $sqlKeys = [];
         foreach ($importType->getUniqueKeys() as $uniqueKey) {
 
-            // Handle multi-part unique keys (eg: school year AND course short name)
             if (is_array($uniqueKey) && count($uniqueKey) > 1) {
+                // Handle multi-part unique keys (eg: school year AND course short name)
                 $sqlKeysFields = [];
                 foreach ($uniqueKey as $fieldName) {
                     if (!in_array($fieldName, $this->tableFields)) {
@@ -697,7 +687,6 @@ class Importer
     {
         return $this->firstRow;
     }
-
 
     /**
      * Get Row Count
@@ -789,17 +778,17 @@ class Importer
             $type = 'message';
         }
 
-        $this->importLog[ $type ][] = array(
+        $this->importLog[$type][] = array(
             'index' => $rowNum,
             'row' => $rowNum+2,
             'info' => $this->translateMessage($messageID, $args),
             'field_name' => $fieldName,
             'field' => $fieldNum,
             'type' => $type
-        );
+       );
 
         if ($type == 'error') {
-            $this->rowErrors[ $rowNum ] = 1;
+            $this->rowErrors[$rowNum] = 1;
         }
     }
 
@@ -814,37 +803,54 @@ class Importer
         switch ($errorID) {
             // ERRORS
             case Importer::ERROR_IMPORT_FILE:
-                return __('There was an error reading the import file type {value}.', $args); break;
+                return __('There was an error reading the import file type {value}.', $args);
+                break;
             case Importer::ERROR_REQUIRED_FIELD_MISSING:
-                return __('Missing value for required field.'); break;
+                return __('Missing value for required field.');
+                break;
             case Importer::ERROR_INVALID_FIELD_VALUE:
-                return __('Invalid value: "{value}".  Expected: {expectation}', $args); break;
+                return __('Invalid value: "{value}". Expected: {expectation}', $args);
+                break;
             case Importer::ERROR_INVALID_HAS_SPACES:
-                return __('Invalid value: "{value}".  This field type cannot contain spaces.', $args); break;
+                return __('Invalid value: "{value}". This field type cannot contain spaces.', $args);
+                break;
             case Importer::ERROR_INVALID_INPUTS:
-                return __('Your request failed because your inputs were invalid.'); break;
+                return __('Your request failed because your inputs were invalid.');
+                break;
             case Importer::ERROR_KEY_MISSING:
-                return __('Missing value for primary key or unique key set.'); break;
+                return __('Missing value for primary key or unique key set.');
+                break;
             case Importer::ERROR_NON_UNIQUE_KEY:
-                return __('Encountered non-unique values used by {key}: {value}', $args); break;
+                return __('Encountered non-unique values used by {key}: {value}', $args);
+                break;
             case Importer::ERROR_DATABASE_GENERIC:
-                return __('There was an error accessing the database.'); break;
+                return __('There was an error accessing the database.');
+                break;
             case Importer::ERROR_DATABASE_FAILED_INSERT:
-                return __('Failed to insert record into database.'); break;
+                return __('Failed to insert record into database.');
+                break;
             case Importer::ERROR_DATABASE_FAILED_UPDATE:
-                return __('Failed to update database record.'); break;
+                return __('Failed to update database record.');
+                break;
             case Importer::ERROR_RELATIONAL_FIELD_MISMATCH:
-                return __('{name}: {value} does not match an existing {field} in {table}.', $args); break;
+                return __('Each {name} value should match an existing {field} in {table}.', $args);
+                break;
+
             // WARNINGS
             case Importer::WARNING_DUPLICATE_KEY:
-                return __('A duplicate entry already exists for this record. Record skipped.'); break;
+                return __('A duplicate entry already exists for this record. Record skipped.');
+                break;
             case Importer::WARNING_RECORD_NOT_FOUND:
-                return __('A database entry for this record could not be found. Record skipped.'); break;
+                return __('A database entry for this record could not be found. Record skipped.');
+                break;
+
             // MESSAGES
             case Importer::MESSAGE_GENERATED_PASSWORD:
-                return __('Password generated for user {username}: {value}'); break;
+                return __('Password generated for user {username}: {value}');
+                break;
             default:
-                return __('An error occurred, the import was aborted.'); break;
+                return __('An error occurred, the import was aborted.');
+                break;
         }
     }
 

@@ -1095,10 +1095,18 @@ class ImportType
         $kind = $this->getField($fieldName, 'kind');
         $length = $this->getField($fieldName, 'length');
 
-        // if ($this->isFieldRelational($fieldName)) {
-        //     extract($this->getField($fieldName, 'relationship'));
-        //     return $table.' '.((is_array($field))? implode(', ', $field) : $field);
-        // }
+        if ($this->isFieldRelational($fieldName)) {
+            extract($this->getField($fieldName, 'relationship'));
+            $field = is_array($field) ? current($field) : $field;
+
+            $helpText = __('Each {name} value should match an existing {field} in {table}.', [
+                'name' => $this->getField($fieldName, 'name'),
+                'field' => $field,
+                'table' => !empty($join) ? $join : $table,
+            ]);
+
+            return '<abbr title="'.$helpText.'">'.__('Text').' ('.$field.')</abbr>';
+        }
 
         switch ($filter) {
             case 'email':
@@ -1133,11 +1141,8 @@ class ImportType
                 return __('True or False');
 
             case 'enum':
-                $options = $this->getField($fieldName, 'elements');
-                $optionString = ($length > 4)
-                    ? mb_substr(implode(', ', $options), 0, 60).' ...'
-                    : implode(', ', $options);
-                return __('Options').' ('.$optionString.')';
+                $options = implode('<br/>', $this->getField($fieldName, 'elements'));
+                return '<abbr title="'.$options.'">'.__('Options').'</abbr>';
 
             default:
                 return __(ucfirst($kind));
@@ -1161,61 +1166,6 @@ class ImportType
         } else {
             return null;
         }
-    }
-
-    public function getImportRestrictions()
-    {
-        $importRestrictions = array();
-
-        if (!empty($this->getUniqueKeys())) {
-            foreach ($this->getUniqueKeys() as $key) {
-                if (is_array($key)) {
-                    $keyNames = array();
-                    foreach (array_reverse($key) as $keyName) {
-                        $keyNames[] = $this->getField($keyName, 'name');
-                    }
-                    $importRestrictions[] = __('Unique', 'Data Admin').' '. implode(__(' for each ', 'Data Admin'), $keyNames);
-                } else {
-                    $importRestrictions[] = $this->getField($key, 'name') .' ' . __('must be unique', 'Data Admin');
-                }
-            }
-        }
-
-        foreach ($this->getTableFields() as $fieldName) {
-            if ($this->isFieldHidden($fieldName)) {
-                continue; // Skip hidden fields
-            }
-
-            if ($this->isFieldRelational($fieldName)) {
-                extract($this->getField($fieldName, 'relationship'));
-                $field = is_array($field) ? current($field) : $field;
-
-                $importRestrictions[] = sprintf(
-                    __('Each %s should match the %s of a %s', 'Data Admin'),
-                    $this->getField($fieldName, 'name'),
-                    $field,
-                    !empty($join) ? $join : $table
-                );
-            }
-
-            if ($this->getField($fieldName, 'type') == 'enum') {
-                $importRestrictions[] = sprintf(
-                    __('%s must be one of: %s', 'Data Admin'),
-                    $this->getField($fieldName, 'name'),
-                    implode(', ', $this->getField($fieldName, 'elements'))
-                );
-            }
-
-            if ($this->getField($fieldName, 'filter') == 'email') {
-                $importRestrictions[] = sprintf(__('%s must be a valid email address'), $this->getField($fieldName, 'name'));
-            }
-
-            if ($this->getField($fieldName, 'filter') == 'url') {
-                $importRestrictions[] = sprintf(__('%s must be a valid url'), $this->getField($fieldName, 'name'));
-            }
-        }
-        
-        return $importRestrictions;
     }
 
     /**

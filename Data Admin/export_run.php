@@ -20,7 +20,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Module\DataAdmin\ImportType;
 
 // Increase max execution time, as this stuff gets big
-ini_set('max_execution_time', 600);
+ini_set('max_execution_time', 7200);
+ini_set('memory_limit','1024M');
+set_time_limit(1200);
 
 $_POST['address'] = '/modules/Data Admin/export_run.php';
 
@@ -156,6 +158,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
 
             foreach ($columnFields as $fieldName) {
                 if ($importType->isFieldRelational($fieldName)) {
+                    $join = $on = '';
                     extract($importType->getField($fieldName, 'relationship'));
                     $queryFields = (is_array($field))? implode(',', $field) : $field;
 
