@@ -19,12 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\DataAdmin\ImportType;
 
-//Increase max execution time, as this stuff gets big
+// Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 600);
 
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
-include __DIR__ . '/../../version.php';
 
 // Module Bootstrap
 require __DIR__ . '/module.php';

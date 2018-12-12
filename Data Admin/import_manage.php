@@ -19,6 +19,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Module\DataAdmin\ImportType;
 
+use Gibbon\Tables\DataTable;
+use Gibbon\Services\Format;
+use Gibbon\Domain\DataSet;
+use Gibbon\Domain\System\LogGateway;
+
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
@@ -30,93 +35,64 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
 } else {
     $page->breadcrumbs->add(__('Import From File', 'Data Admin'));
 
+    $logGateway = $container->get(LogGateway::class);
+    $logsByType = $logGateway->selectLogsByModuleAndTitle('System Admin', 'Import - %')->fetchGrouped();
+
+    $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+
     // Get a list of available import options
     $importTypeList = ImportType::loadImportTypeList($pdo, false);
 
-    if (count($importTypeList)<1) {
-        echo "<div class='error'>" ;
-        echo __("There are no records to display.") ;
-        echo "</div>" ;
-    } else {
-        $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+    $importTypeGroups = array_reduce($importTypeList, function ($group, $importType) use ($checkUserPermissions, $guid, $connection2, $logsByType) {
+        if ($importType->isValid()) {
+            $type = $importType->getDetail('type');
+            $log = $logsByType['Import - '.$type] ?? [];
 
-        $grouping = '';
-        foreach ($importTypeList as $importTypeName => $importType) {
-            if (!$importType->isValid()) {
-                continue;
-            }
-
-            if ($grouping != $importType->getDetail('grouping')) {
-                if ($grouping != '') {
-                    echo "</table><br/>" ;
-                }
-
-                $grouping = $importType->getDetail('grouping');
-
-                echo "<tr class='break'>" ;
-                echo "<td colspan='5'><h4>".$grouping."</h4></td>" ;
-                echo "</tr>" ;
-
-                echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-
-                echo "<tr class='head'>" ;
-                echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;
-                echo __("Category") ;
-                echo "</th>" ;
-                echo "<th style='width: 23%;padding: 5px !important;'>" ;
-                echo __("Name") ;
-                echo "</th>" ;
-                echo "<th style='width: 35%;padding: 5px !important;'>" ;
-                echo __("Description") ;
-                echo "</th>" ;
-                echo "<th style='width: 15%;padding: 5px !important;'>" ;
-                echo __("Last Run", 'Data Admin') ;
-                echo "</th>" ;
-                echo "<th style='width: 12%;padding: 5px !important;'>" ;
-                echo __("Actions") ;
-                echo "</th>" ;
-                echo "</tr>" ;
-            }
-
-            echo "<tr>" ;
-            echo "<td>" . $importType->getDetail('category'). "</td>" ;
-            echo "<td>" . $importType->getDetail('name'). "</td>" ;
-            echo "<td>" . $importType->getDetail('desc'). "</td>" ;
-            echo "<td>";
-
-            $data=array('type' => $importTypeName);
-            $sql = "SELECT gibbonPerson.surname, gibbonPerson.preferredName, gibbonLog.timestamp
-                    FROM gibbonLog 
-                    JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonLog.gibbonPersonID) 
-                    WHERE gibbonLog.title = CONCAT('Import - ', :type) 
-                    ORDER BY gibbonLog.timestamp DESC LIMIT 1" ;
-            $result=$pdo->executeQuery($data, $sql);
-
-            if ($pdo->getQuerySuccess() && $result->rowCount()>0) {
-                $log = $result->fetch();
-                printf("<span title='%s by %s %s'>%s</span> ", $log['timestamp'], $log['preferredName'], $log['surname'], date('M j, Y', strtotime($log['timestamp'])));
-            }
-
-            echo "</td>";
-            echo "<td>";
-
-            if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2)) {
-                echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __('Import', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
-                echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
-            } else {
-                echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
-            }
-
-
-            echo "</td>";
-            echo "</tr>" ;
+            $group[$importType->getDetail('grouping', 'System')][] = [
+                'type'         => $type,
+                'log'          => current($log),
+                'category'     => $importType->getDetail('category'),
+                'name'         => $importType->getDetail('name'),
+                'isAccessible' => $checkUserPermissions == 'Y'
+                    ? $importType->isImportAccessible($guid, $connection2)
+                    : true,
+            ];
         }
+        return $group;
+    }, []);
 
-        echo "</table><br/>" ;
+    foreach ($importTypeGroups as $importGroupName => $importTypes) {
+        $table = DataTable::create('rollGroups');
+        $table->setTitle(__($importGroupName));
+
+        $table->addColumn('category', __('Category'))->width('20%');
+        $table->addColumn('name', __('Name'));
+        $table->addColumn('lastRun', __('Last Run'))
+            ->width('25%')
+            ->format(function ($importType) {
+                if ($log = $importType['log']) {
+                    return '<span title="'.Format::dateTime($log['timestamp']).' - '.Format::nameList([$log]).'">'.Format::dateReadable($log['timestamp']).'</span>';
+                }
+                return '';
+            });
+
+        $table->addActionColumn()
+            ->addParam('type')
+            ->format(function ($importType, $actions) {
+                if ($importType['isAccessible']) {
+                    $actions->addAction('import', __('Import'))
+                        ->setIcon('run')
+                        ->setURL('/modules/Data Admin/import_run.php');
+
+                    $actions->addAction('export', __('Export Structure'))
+                        ->isDirect()
+                        ->addParam('q', $_GET['q'])
+                        ->addParam('data', 0)
+                        ->setIcon('download')
+                        ->setURL('/modules/Data Admin/export_run.php');
+                }
+            });
+
+        echo $table->render(new DataSet($importTypes));
     }
-
-    // Info
-    echo "<div class='message'>" ;
-    echo __('This list is being added to with each version. New import types may be added by request, please post requests for new import types on the forum thread <a href="https://ask.gibbonedu.org/discussion/895/data-import-module">here</a>.', 'Data Admin');
-    echo "</div>" ;
 }

@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
     $importType = ImportType::loadImportType($type, $pdo);
 
     $page->breadcrumbs
-        ->add(__('Import From File', 'Data Admin'), 'import_manage.php')
+        ->add(__('Import From File'), 'import_manage.php')
         ->add($importType->getDetail('name'), 'import_run.php', ['type' => $type])
         ->add(__('Step').' '.$step);
 
@@ -47,34 +47,44 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
     $memoryStart = memory_get_usage();
     $timeStart = microtime(true);
 
-    $importer = new Importer($gibbon, $pdo);
+    $importer = new Importer($pdo);
 
     $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
 
     if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
         echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+        echo __('You do not have access to this action.') ;
         echo "</div>" ;
         return;
     } elseif (empty($importType)) {
         echo "<div class='error'>" ;
-        echo __("Your request failed because your inputs were invalid.") ;
+        echo __('Your request failed because your inputs were invalid.') ;
         echo "</div>" ;
         return;
     } elseif (!$importType->isValid()) {
         echo "<div class='error'>";
-        printf(__('Import cannot proceed, as the selected Import Type "%s" did not validate with the database.', 'Data Admin'), $type) ;
+        printf(__('Import cannot proceed, as the selected Import Type "%s" did not validate with the database.'), $type) ;
         echo "<br/></div>";
         return;
     }
 
+    $steps = [
+        1 => __('Select File'),
+        2 => __('Confirm Data'),
+        3 => __('Dry Run'),
+        4 => __('Live Run'),
+    ];
+
     echo "<ul id='progressbar'>";
-    printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", __("Select Spreadsheet", 'Data Admin'));
-    printf("<li class='%s'>%s</li>", ($step >= 2)? "active" : "", __("Confirm Data", 'Data Admin'));
-    printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", __("Dry Run", 'Data Admin'));
-    printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", __("Live Run", 'Data Admin'));
+    printf("<li class='%s'>%s</li>", ($step >= 1)? "active" : "", $steps[1]);
+    printf("<li class='%s'>%s</li>", ($step >= 2)? "active" : "", $steps[2]);
+    printf("<li class='%s'>%s</li>", ($step >= 3)? "active" : "", $steps[3]);
+    printf("<li class='%s'>%s</li>", ($step >= 4)? "active" : "", $steps[4]);
     echo "</ul>";
 
+    echo '<h2>';
+    echo __('Step {number} - {name}', ['number' => $step, 'name' => $steps[$step]]);
+    echo '</h2>';
 
     //STEP 1, SELECT TERM -----------------------------------------------------------------------------------
     if ($step==1) {
@@ -84,12 +94,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 ORDER BY gibbonLog.timestamp DESC LIMIT 1" ;
         $importLog = $pdo->selectOne($sql, $data);
 
-        echo '<h2>';
-        echo __('Step 1 - Select Spreadsheet', 'Data Admin');
-        echo '</h2>';
-
         echo '<div class="message">';
-        echo __('Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there\'s no guaruntee the import won\'t change or overwrite important data.', 'Data Admin');
+        echo __("Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there's no guarantee the import won't change or overwrite important data.");
         echo '</div>';
 
         $form = Form::create('importStep1', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=2');
@@ -99,24 +105,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         $availableModes = array();
         $modes = $importType->getDetail('modes');
         if (!empty($modes['update']) && !empty($modes['insert'])) {
-            $availableModes['sync'] = __('UPDATE & INSERT', 'Data Admin');
+            $availableModes['sync'] = __('UPDATE & INSERT');
         }
         if (!empty($modes['update'])) {
-            $availableModes['update'] = __('UPDATE only', 'Data Admin');
+            $availableModes['update'] = __('UPDATE only');
         }
         if (!empty($modes['insert'])) {
-            $availableModes['insert'] = __('INSERT only', 'Data Admin');
+            $availableModes['insert'] = __('INSERT only');
         }
 
         $row = $form->addRow();
-        $row->addLabel('mode', __('Mode'))->description(__('Options available depend on the import type.', 'Data Admin'));
+        $row->addLabel('mode', __('Mode'))->description(__('Options available depend on the import type.'));
         $row->addSelect('mode')->fromArray($availableModes)->isRequired();
 
         $columnOrders = array(
-            'guess'      => __('Best Guess', 'Data Admin'),
-            'last'       => __('From Last Import', 'Data Admin'),
-            'linearplus' => __('From Export Data', 'Data Admin'),
-            'linear'     => __('Same as Below', 'Data Admin'),
+            'guess'      => __('Best Guess'),
+            'last'       => __('From Last Import'),
+            'linearplus' => __('From Export Data'),
+            'linear'     => __('Same as Below'),
         );
         $selectedOrder = (!empty($importLog))? 'last' : 'guess';
         $row = $form->addRow();
@@ -124,7 +130,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         $row->addSelect('columnOrder')->fromArray($columnOrders)->isRequired()->selected($selectedOrder);
 
         $row = $form->addRow();
-        $row->addLabel('file', __('Spreadsheet'))->description(__('See Notes below for specification.'));
+        $row->addLabel('file', __('File'))->description(__('See Notes below for specification.'));
         $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
 
         $row = $form->addRow();
@@ -147,13 +153,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         echo '</h4>';
 
         echo '<ol>';
-        echo '<li style="color: #c00; font-weight: bold">'.__('Always include a header row in the uploaded file.', 'Data Admin').'</li>';
+        echo '<li style="color: #c00; font-weight: bold">'.__('Always include a header row in the uploaded file.').'</li>';
         echo '<li>'.__('Imports cannot be run concurrently (e.g. make sure you are the only person importing at any one time).').'</li>';
         echo '</ol>';
 
         if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php")) {
             echo "<div class='linkTop'>" ;
-            echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Structure', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+            echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Structure') . "<img style='margin-left: 5px' title='" . __('Export Structure'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
             echo "</div>" ;
         }
 
@@ -201,28 +207,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     //STEP 2, CONFIG -----------------------------------------------------------------------------------
     elseif ($step==2) {
-        echo '<h2>';
-        echo __('Step 2 - Data Check & Confirm', 'Data Admin');
-        echo '</h2>';
-
         $mode = (isset($_POST['mode']))? $_POST['mode'] : null;
 
         //Check file type
         if ($importer->isValidMimeType($_FILES['file']['type']) == false) {
             echo "<div class='error'>";
-            printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a Spreadsheet file.', 'Data Admin'), $_FILES['file']['type']);
+            printf(__('Import cannot proceed, as the submitted file has a MIME-TYPE of %1$s, and as such does not appear to be a spreadsheet file.'), $_FILES['file']['type']);
             echo "<br/></div>";
         } elseif (empty($_POST["fieldDelimiter"]) or empty($_POST["stringEnclosure"])) {
             echo "<div class='error'>";
-            echo __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
+            echo __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.');
             echo "<br/></div>";
         } elseif ($mode != "sync" and $mode != "insert" and $mode != "update") {
             echo "<div class='error'>";
-            echo __('Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
+            echo __('Import cannot proceed, as the "Mode" field has been left blank.');
             echo "<br/></div>";
         } else {
             $proceed=true ;
-            $columnOrder=(isset($_POST["columnOrder"]))? $_POST["columnOrder"] : 'guess';
+            $columnOrder=(isset($_POST['columnOrder']))? $_POST['columnOrder'] : 'guess';
 
             if ($columnOrder == 'last') {
                 $data = array('type' => $type);
@@ -234,8 +236,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $columnOrderLast = $importLog['columnOrder'] ?? [];
             }
 
-            $importer->fieldDelimiter = (!empty($_POST["fieldDelimiter"]))? stripslashes($_POST["fieldDelimiter"]) : ',';
-            $importer->stringEnclosure = (!empty($_POST["stringEnclosure"]))? stripslashes($_POST["stringEnclosure"]) : '"';
+            $importer->fieldDelimiter = (!empty($_POST['fieldDelimiter']))? stripslashes($_POST['fieldDelimiter']) : ',';
+            $importer->stringEnclosure = (!empty($_POST['stringEnclosure']))? stripslashes($_POST['stringEnclosure']) : '"';
 
             // Load the CSV or Excel data from the uploaded file
             $csvData = $importer->readFileIntoCSV();
@@ -245,11 +247,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
             if (empty($csvData) || empty($headings) || empty($firstLine)) {
                 echo "<div class='error'>";
-                echo __('Import cannot proceed, the file type cannot be read.', 'Data Admin');
+                echo __('Import cannot proceed, the file type cannot be read.');
                 echo "<br/></div>";
                 return;
             }
-
 
             echo "<script>";
             echo "var csvFirstLine = " . json_encode($firstLine) .";";
@@ -280,12 +281,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
                 $row = $table->addRow();
-                $row->addLabel('syncField', __('Use database ID field?', 'Data Admin'))->description(__('Only entries with a matching database ID will be updated.', 'Data Admin'));
+                $row->addLabel('syncField', __('Use database ID field?'))->description(__('Only entries with a matching database ID will be updated.'));
                 $row->addYesNoRadio('syncField')->checked($lastFieldValue);
 
                 $form->toggleVisibilityByClass('syncDetails')->onRadio('syncField')->when('Y');
                 $row = $table->addRow()->addClass('syncDetails');
-                $row->addLabel('syncColumn', __('Primary Key ID'))->description(sprintf(__("Sync field %s with CSV column:", 'Data Admin'), '<code>'.$importType->getPrimaryKey().'</code>'));
+                $row->addLabel('syncColumn', __('Primary Key ID'))->description(sprintf(__("Sync field %s with CSV column:"), '<code>'.$importType->getPrimaryKey().'</code>'));
                 $row->addSelect('syncColumn')->fromArray($headings)->selected($lastColumnValue)->placeholder()->isRequired();
             }
 
@@ -310,10 +311,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $table = $form->addRow()->addTable()->setClass('colorOddEven fullWidth');
 
                 $header = $table->addHeaderRow();
-                $header->addContent(__('Field Name', 'Data Admin'));
-                $header->addContent(__('Type', 'Data Admin'));
-                $header->addContent(__('Column', 'Data Admin'));
-                $header->addContent(__('Sample', 'Data Admin'));
+                $header->addContent(__('Field Name'));
+                $header->addContent(__('Type'));
+                $header->addContent(__('Column'));
+                $header->addContent(__('Sample'));
 
                 $count = 0;
 
@@ -321,13 +322,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                     $columns = [];
                     
                     if ($importType->isFieldRequired($fieldName) == false) {
-                        $columns[Importer::COLUMN_DATA_SKIP] = __('[ Skip this Column ]');
+                        $columns[Importer::COLUMN_DATA_SKIP] = '[ '.__('Skip this Column').' ]';
                     }
                     if ($importType->getField($fieldName, 'custom')) {
-                        $columns[Importer::COLUMN_DATA_CUSTOM] = __('[ Custom Value ]');
+                        $columns[Importer::COLUMN_DATA_CUSTOM] = '[ '.__('Custom Value').' ]';
                     }
                     if ($importType->getField($fieldName, 'function')) {
-                        $columns[Importer::COLUMN_DATA_FUNCTION] = __('[ Generate Value ]');
+                        $columns[Importer::COLUMN_DATA_FUNCTION] = '[ '.__('Generate Value').' ]';
                         //data-function='". $importType->getField($fieldName, 'function') ."'
                     }
                     return $columns;
@@ -344,10 +345,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                         $output .= " <strong class='highlight'>*</strong>";
                     }
                     if ($importType->isFieldUniqueKey($fieldName)) {
-                        $output .= "<img title='" . __('Unique Key', 'Data Admin') . "' src='./themes/Default/img/target.png' style='float: right; width:14px; height:14px;margin-left:4px;'>";
+                        $output .= "<img title='" . __('Unique Key') . "' src='./themes/Default/img/target.png' style='float: right; width:14px; height:14px;margin-left:4px;'>";
                     }
                     if ($importType->isFieldRelational($fieldName)) {
-                        $output .= "<img title='" . __('Relational', 'Data Admin') . "' src='./themes/Default/img/refresh.png' style='float: right; width:14px; height:14px;margin-left:4px;'>";
+                        $output .= "<img title='" . __('Relational') . "' src='./themes/Default/img/refresh.png' style='float: right; width:14px; height:14px;margin-left:4px;'>";
                     }
                     return $output;
                 };
@@ -391,7 +392,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                             ->fromArray($defaultColumns($fieldName))
                             ->fromArray($columns)
                             ->isRequired()
-                            ->setClass('columnOrder floatLeft mediumWidth')
+                            ->setClass('columnOrder mediumWidth')
                             ->selected($selectedColumn)
                             ->placeholder();
                     $row->addTextField('columnText['.$count.']')
@@ -410,7 +411,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
             $row = $table->addRow();
-            $row->addLabel('csvData', __('CSV Data:', 'Data Admin'));
+            $row->addLabel('csvData', __('CSV Data:'));
             $row->addTextArea('csvData')->setRows(4)->setCols(74)->setClass('')->readonly()->setValue($csvData);
 
             $row = $table->addRow();
@@ -423,28 +424,24 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
     //STEP 3 & 4, DRY & LIVE RUN  -----------------------------------------------------------------------------------
     elseif ($step==3 || $step==4) {
-        echo '<h2>';
-        echo ($step==3)? __('Step 3 - Dry Run', 'Data Admin') : __('Step 4 - Live Run', 'Data Admin');
-        echo '</h2>';
-
         // Gather our data
-        $mode = (isset($_POST['mode']))? $_POST['mode'] : null;
-        $syncField = (isset($_POST['syncField']))? $_POST['syncField'] : null;
-        $syncColumn = (isset($_POST['syncColumn']))? $_POST['syncColumn'] : null;
+        $mode = $_POST['mode'] ?? null;
+        $syncField = $_POST['syncField'] ?? null;
+        $syncColumn = $_POST['syncColumn'] ?? null;
 
-        $csvData = (isset($_POST['csvData']))? $_POST['csvData'] : null;
+        $csvData = $_POST['csvData'] ?? null;
         if ($step==4) {
-            $columnOrder = (isset($_POST['columnOrder']))? unserialize($_POST['columnOrder']) : null;
-            $columnText = (isset($_POST['columnText']))? unserialize($_POST['columnText']) : null;
+            $columnOrder = isset($_POST['columnOrder'])? unserialize($_POST['columnOrder']) : null;
+            $columnText = isset($_POST['columnText'])? unserialize($_POST['columnText']) : null;
         } else {
-            $columnOrder = (isset($_POST['columnOrder']))? $_POST['columnOrder'] : null;
-            $columnText = (isset($_POST['columnText']))? $_POST['columnText'] : null;
+            $columnOrder = $_POST['columnOrder'] ?? null;
+            $columnText = $_POST['columnText'] ?? null;
         }
 
-        $fieldDelimiter = (isset($_POST['fieldDelimiter']))? urldecode($_POST['fieldDelimiter']) : null;
-        $stringEnclosure = (isset($_POST['stringEnclosure']))? urldecode($_POST['stringEnclosure']) : null;
+        $fieldDelimiter = isset($_POST['fieldDelimiter'])? urldecode($_POST['fieldDelimiter']) : null;
+        $stringEnclosure = isset($_POST['stringEnclosure'])? urldecode($_POST['stringEnclosure']) : null;
 
-        $ignoreErrors = (isset($_POST['ignoreErrors']))? $_POST['ignoreErrors'] : false;
+        $ignoreErrors = $_POST['ignoreErrors'] ?? false;
 
         if (empty($csvData) || empty($columnOrder)) {
             echo "<div class='error'>";
@@ -453,7 +450,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             return;
         } elseif ($mode != "sync" and $mode != "insert" and $mode != "update") {
             echo "<div class='error'>";
-            echo __('Import cannot proceed, as the "Mode" field has been left blank.', 'Data Admin');
+            echo __('Import cannot proceed, as the "Mode" field has been left blank.');
             echo "<br/></div>";
         } elseif (($mode == 'sync' || $mode == 'update') && (!empty($syncField) && $syncColumn < 0)) {
             echo "<div class='error'>";
@@ -462,7 +459,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             return;
         } elseif (empty($fieldDelimiter) or empty($stringEnclosure)) {
             echo "<div class='error'>";
-            echo __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.', 'Data Admin');
+            echo __('Import cannot proceed, as the "Field Delimiter" and/or "String Enclosure" fields have been left blank.');
             echo "<br/></div>";
         } else {
             $importer->mode = $mode;
@@ -497,16 +494,16 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             if ($overallSuccess) {
                 if ($step == 3) {
                     echo "<div class='message'>";
-                    echo __('The data was successfully validated. This is a <b>DRY RUN!</b> No changes have been made to the database. If everything looks good here, you can click submit to complete this import.', 'Data Admin');
+                    echo __('The data was successfully validated. This is a <b>DRY RUN!</b> No changes have been made to the database. If everything looks good here, you can click submit to complete this import.');
                     echo "</div>";
                 } else {
                     echo "<div class='success'>";
-                    echo __('The import completed successfully and all relevant database fields have been created and/or updated.', 'Data Admin');
+                    echo __('The import completed successfully and all relevant database fields have been created and/or updated.');
                     echo "</div>";
                 }
             } elseif ($ignoreErrors) {
                 echo "<div class='warning'>";
-                echo __('The import completed successfully, with the following errors ignored.', 'Data Admin');
+                echo __('The import completed successfully, with the following errors ignored.');
                 echo "</div>";
             } else {
                 echo "<div class='error'>";
@@ -520,13 +517,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 echo "<table class='smallIntBorder fullWidth colorOddEven' cellspacing='0'>" ;
                 echo "<tr class='head'>" ;
                 echo "<th style='width: 40px;'>" ;
-                echo __("Row", 'Data Admin') ;
+                echo __('Row') ;
                 echo "</th>" ;
                 echo "<th style='width: 200px;'>" ;
-                echo __("Field", 'Data Admin') ;
+                echo __('Field') ;
                 echo "</th>" ;
                 echo "<th >" ;
-                echo __("Message", 'Data Admin') ;
+                echo __('Message') ;
                 echo "</th>" ;
                 echo "</tr>" ;
 
@@ -550,15 +547,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php echo "class='". (($importSuccess)? 'current' : 'error') ."'"; ?>>
 					<td class="right"  width="50%">
-						<?php echo __("Reading Spreadsheet", 'Data Admin').": "; ?>
+						<?php echo __("Reading File").": "; ?>
 					</td>
 					<td>
-						<?php echo ($importSuccess)? __("Success") : __("Failed"); ?>
+						<?php echo ($importSuccess)? __('Success') : __('Failed'); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Execution time", 'Data Admin').": "; ?>
+						<?php echo __("Execution time").": "; ?>
 					</td>
 					<td>
 						<?php echo $executionTime; ?>
@@ -566,7 +563,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Memory usage", 'Data Admin').": "; ?>
+						<?php echo __("Memory usage").": "; ?>
 					</td>
 					<td>
 						<?php
@@ -578,15 +575,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php echo "class='". (($buildSuccess)? 'current' : 'error') ."'"; ?>>
 					<td class="right" width="50%">
-						<?php echo __("Validating data", 'Data Admin').": "; ?>
+						<?php echo __("Validating data").": "; ?>
 					</td>
 					<td>
-						<?php echo ($buildSuccess)? __("Success", 'Data Admin') : __("Failed", 'Data Admin'); ?>
+						<?php echo ($buildSuccess)? __('Success') : __('Failed'); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Rows processed", 'Data Admin').": "; ?>
+						<?php echo __("Rows processed").": "; ?>
 					</td>
 					<td>
 						<?php echo $importer->getRowCount(); ?>
@@ -594,7 +591,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Rows with errors", 'Data Admin').": "; ?>
+						<?php echo __("Rows with errors").": "; ?>
 					</td>
 					<td>
 						<?php echo $importer->getErrorRowCount(); ?>
@@ -602,7 +599,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo __("Total errors", 'Data Admin').": "; ?>
+						<?php echo __("Total errors").": "; ?>
 					</td>
 					<td>
 						<?php echo $importer->getErrorCount(); ?>
@@ -611,7 +608,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 				<?php if ($importer->getWarningCount() > 0) : ?>
 				<tr>
 					<td class="right">
-						<?php echo __("Total warnings", 'Data Admin').": "; ?>
+						<?php echo __("Total warnings").": "; ?>
 					</td>
 					<td>
 						<?php echo $importer->getWarningCount(); ?>
@@ -623,21 +620,21 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 			<table class='smallIntBorder' cellspacing='0' style="margin: 0 auto; width: 60%;">
 				<tr <?php echo "class='". (($databaseSuccess)? 'current' : 'error') ."'"; ?>>
 					<td class="right" width="50%">
-						<?php echo __("Querying database", 'Data Admin').": "; ?>
+						<?php echo __("Querying database").": "; ?>
 					</td>
 					<td>
-						<?php echo ($databaseSuccess)? __("Success", 'Data Admin') : __("Failed", 'Data Admin'); ?>
+						<?php echo ($databaseSuccess)? __('Success') : __('Failed'); ?>
 					</td>
 				</tr>
 				<tr>
 					<td class="right">
-						<?php echo($step == 3? __('Simulated').' ' : '') . __("Database Inserts", 'Data Admin').": "; ?>
+						<?php echo($step == 3? __('Simulated').' ' : '') . __("Database Inserts").": "; ?>
 					</td>
 					<td>
 					<?php
                         echo $importer->getDatabaseResult('inserts');
             if ($importer->getDatabaseResult('inserts_skipped') > 0) {
-                echo " (". $importer->getDatabaseResult('inserts_skipped') ." ". __("skipped", 'Data Admin') .")";
+                echo " (". $importer->getDatabaseResult('inserts_skipped') ." ". __("skipped") .")";
             } ?>
 					</td>
 				</tr>
@@ -649,7 +646,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 					<td>
 					<?php echo $importer->getDatabaseResult('updates');
             if ($importer->getDatabaseResult('updates_skipped') > 0) {
-                echo " (". $importer->getDatabaseResult('updates_skipped') ." ". __("skipped", 'Data Admin') .")";
+                echo " (". $importer->getDatabaseResult('updates_skipped') ." ". __("skipped") .")";
             } ?>
 					</td>
 				</tr>
@@ -674,15 +671,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
                 $row = $table->addRow();
-                $row->addLabel('csvData', __('CSV Data:', 'Data Admin'));
+                $row->addLabel('csvData', __('CSV Data:'));
                 $row->addTextArea('csvData')->setRows(4)->setCols(74)->setClass('')->readonly()->setValue($csvData);
 
                 $row = $table->addRow();
-                $row->onlyIf(!$overallSuccess)->addCheckbox('ignoreErrors')->description(__('Ignore Errors? (Expert Only!)', 'Data Admin'))->setValue($ignoreErrors)->setClass('');
+                $row->onlyIf(!$overallSuccess)->addCheckbox('ignoreErrors')->description(__('Ignore Errors? (Expert Only!)'))->setValue($ignoreErrors)->setClass('');
                 $row->onlyIf($overallSuccess)->addContent('');
                 
                 if (!$overallSuccess && !$ignoreErrors) {
-                    $row->addButton(__('Cannot Continue', 'Data Admin'))->setID('submitStep3')->isDisabled()->addClass('right');
+                    $row->addButton(__('Cannot Continue'))->setID('submitStep3')->isDisabled()->addClass('right');
                 } else {
                     $row->addSubmit()->setID('submitStep3');
                 }
@@ -695,10 +692,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 // Output passwords if generated
                 if (!empty($importer->outputData['passwords'])) {
                     echo '<h4>';
-                    echo __('Generated Passwords', 'Data Admin');
+                    echo __('Generated Passwords');
                     echo '</h4>';
                     echo '<p>';
-                    echo __('These passwords have been generated by the import process. They have <b>NOT</b> been recorded anywhere: please copy & save them now if you wish to record them.', 'Data Admin');
+                    echo __('These passwords have been generated by the import process. They have <b>NOT</b> been recorded anywhere: please copy & save them now if you wish to record them.');
                     echo '</p>';
 
                     $table = DataTable::create('output');
