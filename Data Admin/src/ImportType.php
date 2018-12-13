@@ -1196,7 +1196,7 @@ class ImportType
                 return __('Text ({number} chars)', ['number' => $length]);
 
             case 'text':
-                return __('Text');
+                return $filter != 'string' ? __('Text').' ('.$filter.')' : __('Text');
 
             case 'integer':
                 return __('Number ({number} digits)', ['number' => $length]);
