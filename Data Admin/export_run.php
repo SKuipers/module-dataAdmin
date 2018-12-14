@@ -59,7 +59,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
         return;
     } elseif (!$importType->isValid()) {
         echo "<div class='error'>";
-        echo __('Import cannot proceed, there was an error reading the import file type {type}.', ['type' => $type]);
+        echo __('There was an error reading the file {value}.', ['value' => $type]);
         echo "<br/></div>";
         return;
     }

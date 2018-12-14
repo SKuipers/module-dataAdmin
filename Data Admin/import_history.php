@@ -18,6 +18,10 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Data\ImportType;
+use Gibbon\Tables\DataTable;
+use Gibbon\Domain\DataSet;
+use Gibbon\Domain\System\LogGateway;
+use Gibbon\Services\Format;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -28,76 +32,51 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
     echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    $page->breadcrumbs->add(__('View Import History', 'Data Admin'));
-
-    echo "<h3>" ;
-    echo __("Import History", 'Data Admin') ;
-    echo "</h3>" ;
+    $page->breadcrumbs->add(__('View Import History'));
 
     // Get a list of available import options
     $importTypeList = ImportType::loadImportTypeList($pdo, false);
 
-    $sql = "SELECT gibbonLog.*, gibbonPerson.username, gibbonPerson.surname, gibbonPerson.preferredName 
-            FROM gibbonLog
-            JOIN gibbonPerson ON (gibbonPerson.gibbonPersonID=gibbonLog.gibbonPersonID) 
-            WHERE gibbonLog.title LIKE 'Import -%'";
+    $logGateway = $container->get(LogGateway::class);
+    $logsByType = $logGateway->selectLogsByModuleAndTitle('System Admin', 'Import - %')->fetchAll();
 
-    $result=$pdo->executeQuery(array(), $sql);
+    $logsByType = array_map(function ($log) use (&$importTypeList) {
+        $log['data'] = isset($log['serialisedArray'])? unserialize($log['serialisedArray']) : [];
+        $log['importType'] = @$importTypeList[$log['data']['type']];
+        return $log;
+    }, $logsByType);
 
-    if (empty($importTypeList) || $result->rowCount()<1) {
-        echo "<div class='error'>" ;
-        echo __("There are no records to display.") ;
-        echo "</div>" ;
-    } else {
-        echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-        echo "<tr class='head'>" ;
-        echo "<th style='width: 100px;'>" ;
-        echo __("Date") ;
-        echo "</th>" ;
-        echo "<th>" ;
-        echo __("User") ;
-        echo "</th>" ;
-        echo "<th style='width: 80px;'>" ;
-        echo __("Category") ;
-        echo "</th>" ;
-        echo "<th >" ;
-        echo __("Import Type", 'Data Admin') ;
-        echo "</th>" ;
-        echo "<th>" ;
-        echo __("Details") ;
-        echo "</th>" ;
-        echo "<th>" ;
-        echo __("Actions") ;
-        echo "</th>" ;
-        echo "</tr>" ;
+    $table = DataTable::create('importHistory');
+    $table->setTitle(__('Import History'));
 
-        while ($row=$result->fetch()) {
-            $data = isset($row['serialisedArray'])? unserialize($row['serialisedArray']) : [];
-            if (!isset($importTypeList[ $data['type'] ])) {
-                continue;
-            } // Skip invalid import types
+    $table->addColumn('timestamp', __('Date'))
+        ->format(Format::using('dateTime', 'timestamp'));
 
-            echo "<tr class='".($data['success'] == false? 'error' : '')."'>" ;
-            $importType = $importTypeList[ $data['type'] ];
+    $table->addColumn('user', __('User'))
+        ->format(Format::using('name', ['', 'preferredName', 'surname', 'Staff', false, true]));
 
-            echo "<td>";
-            printf("<span title='%s'>%s</span> ", $row['timestamp'], date('M j, Y', strtotime($row['timestamp'])));
-            echo "</td>";
+    $table->addColumn('category', __('Category'))
+        ->format(function ($log) {
+            return $log['importType']->getDetail('category');
+        });
 
-            echo "<td>";
-            echo $row['preferredName'].' '.$row['surname'];
-            echo "</td>";
+    $table->addColumn('name', __('Name'))
+        ->format(function ($log) {
+            return $log['importType']->getDetail('name');
+        });
+        
+    $table->addColumn('details', __('Details'))
+        ->format(function ($log) {
+            return !empty($log['data']['success']) ? __('Success') : __('Failed');
+        });
 
-            echo "<td>" . $importType->getDetail('category'). "</td>" ;
-            echo "<td>" . $importType->getDetail('name'). "</td>" ;
-            echo "<td>" .(($data['success'] == true)? 'Success' : 'Failed'). "</td>";
+    $table->addActionColumn()
+        ->addParam('gibbonLogID')
+        ->format(function ($importType, $actions) {
+            $actions->addAction('view', __('View'))
+                ->isModal('600', '550')
+                ->setURL('/modules/Data Admin/import_history_view.php');
+        });
 
-            echo "<td>";
-            echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&gibbonLogID=" . $row['gibbonLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
-            echo "</td>";
-
-            echo "</tr>" ;
-        }
-        echo "</table>" ;
-    }
+    echo $table->render(new DataSet($logsByType));
 }

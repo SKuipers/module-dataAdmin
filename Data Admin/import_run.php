@@ -61,7 +61,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         echo Format::alert(__('Your request failed because your inputs were invalid.'));
         return;
     } elseif (!$importType->isValid()) {
-        echo Format::alert(__('Import cannot proceed, there was an error reading the import file type {type}.', ['type' => $type]));
+        echo Format::alert(__('There was an error reading the file {value}.', ['value' => $type]));
         return;
     }
 
@@ -217,7 +217,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             $firstLine = $importer->getFirstRow();
 
             if (empty($csvData) || empty($headings) || empty($firstLine)) {
-                echo Format::alert(__('Import cannot proceed, there was an error reading the import file type {type}.', ['type' => $_FILES['file']['name']]));
+                echo Format::alert(__('There was an error reading the file {value}.', ['value' => $_FILES['file']['name']]));
                 return;
             }
 

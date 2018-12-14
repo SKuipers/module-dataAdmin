@@ -33,7 +33,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
     echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    $page->breadcrumbs->add(__('Import From File', 'Data Admin'));
+    $page->breadcrumbs->add(__('Import From File'));
 
     $logGateway = $container->get(LogGateway::class);
     $logsByType = $logGateway->selectLogsByModuleAndTitle('System Admin', 'Import - %')->fetchGrouped();
@@ -43,6 +43,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
     // Get a list of available import options
     $importTypeList = ImportType::loadImportTypeList($pdo, false);
 
+    // Build an array of combined import type info and log data
     $importTypeGroups = array_reduce($importTypeList, function ($group, $importType) use ($checkUserPermissions, $guid, $connection2, $logsByType) {
         if ($importType->isValid()) {
             $type = $importType->getDetail('type');
@@ -62,7 +63,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
     }, []);
 
     foreach ($importTypeGroups as $importGroupName => $importTypes) {
-        $table = DataTable::create('rollGroups');
+        $table = DataTable::create('imports');
         $table->setTitle(__($importGroupName));
 
         $table->addColumn('category', __('Category'))

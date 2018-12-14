@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 namespace Gibbon\Module\DataAdmin;
 
 use Gibbon\Contracts\Database\Connection;
+use Gibbon\Data\ImportType;
 
 /**
  * Database Tools class
