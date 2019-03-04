@@ -111,7 +111,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
         $row = $form->addRow();
         $row->addLabel('mode', __('Mode'));
-        $row->addSelect('mode')->fromArray($availableModes)->isRequired();
+        $row->addSelect('mode')->fromArray($availableModes)->required();
 
         $columnOrders = array(
             'guess'      => __('Best Guess'),
@@ -122,19 +122,19 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
         $selectedOrder = (!empty($importLog))? 'last' : 'guess';
         $row = $form->addRow();
         $row->addLabel('columnOrder', __('Column Order'));
-        $row->addSelect('columnOrder')->fromArray($columnOrders)->isRequired()->selected($selectedOrder);
+        $row->addSelect('columnOrder')->fromArray($columnOrders)->required()->selected($selectedOrder);
 
         $row = $form->addRow();
         $row->addLabel('file', __('File'))->description(__('See Notes below for specification.'));
-        $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
+        $row->addFileUpload('file')->required()->accepts('.csv,.xls,.xlsx,.xml,.ods');
 
         $row = $form->addRow();
         $row->addLabel('fieldDelimiter', __('Field Delimiter'));
-        $row->addTextField('fieldDelimiter')->isRequired()->maxLength(1)->setValue(',');
+        $row->addTextField('fieldDelimiter')->required()->maxLength(1)->setValue(',');
 
         $row = $form->addRow();
         $row->addLabel('stringEnclosure', __('String Enclosure'));
-        $row->addTextField('stringEnclosure')->isRequired()->maxLength(1)->setValue('"');
+        $row->addTextField('stringEnclosure')->required()->maxLength(1)->setValue('"');
 
         $row = $form->addRow();
         $row->addFooter();
@@ -170,7 +170,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 ->addParam('type', $type)
                 ->addParam('sidebar', 'false')
                 ->setIcon('download')
-                ->isDirect()
+                ->directLink()
                 ->displayLabel();
         }
 
@@ -261,7 +261,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                     ->fromArray($headings)
                     ->selected($lastColumnValue)
                     ->placeholder()
-                    ->isRequired();
+                    ->required();
             }
 
             $form->addRow()->addContent('&nbsp;');
@@ -351,7 +351,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                             ->setID('columnOrder'.$count)
                             ->fromArray($defaultColumns($fieldName))
                             ->fromArray($columns)
-                            ->isRequired()
+                            ->required()
                             ->setClass('columnOrder mediumWidth')
                             ->selected($selectedColumn)
                             ->placeholder();
@@ -359,7 +359,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                             ->setID('columnText'.$count)
                             ->setClass('shortWidth columnText')
                             ->readonly()
-                            ->isDisabled();
+                            ->disabled();
 
                     $count++;
                 }
@@ -518,7 +518,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $row->onlyIf($overallSuccess)->addContent('');
                 
                 if (!$overallSuccess && !$ignoreErrors) {
-                    $row->addButton(__('Cannot Continue'))->setID('submitStep3')->isDisabled()->addClass('right');
+                    $row->addButton(__('Cannot Continue'))->setID('submitStep3')->disabled()->addClass('right');
                 } else {
                     $row->addSubmit()->setID('submitStep3');
                 }

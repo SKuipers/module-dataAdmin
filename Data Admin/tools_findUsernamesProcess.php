@@ -45,7 +45,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     exit;
 } else {
     // Include PHPExcel
-    require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
+    // require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
 
     try {
         $objPHPExcel = \PHPExcel_IOFactory::load($filePath);

@@ -167,12 +167,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
     $setting = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation', true);
     $row = $form->addRow();
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
-    $row->addTextField($setting['name'])->isRequired()->setValue($setting['value']);
+    $row->addTextField($setting['name'])->required()->setValue($setting['value']);
 
     $setting = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation', true);
     $row = $form->addRow();
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
-    $row->addTextField($setting['name'])->isRequired()->setValue($setting['value']);
+    $row->addTextField($setting['name'])->required()->setValue($setting['value']);
 
     $row = $form->addRow();
     $row->addFooter();

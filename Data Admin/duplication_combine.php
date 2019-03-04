@@ -69,7 +69,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     $row = $form->addRow();
     $row->addLabel('fieldName', __('Field Name'));
     $row->addSelect('fieldName')
-            ->isRequired()
+            ->required()
             ->fromArray($fieldOptions)
             ->chainedTo('tableName', $fieldChained)
             ->selected($fieldName)

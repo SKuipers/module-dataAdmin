@@ -75,7 +75,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
             $row = $form->addRow();
             $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('CONFIRM')));
             $row->addTextField('confirm')
-                    ->isRequired()
+                    ->required()
                     ->addValidation(
                         'Validate.Inclusion',
                         'within: [\'' . __('CONFIRM') . '\'], failureMessage: "' . __('Please enter the text exactly as it is displayed to confirm this action.') . '", caseSensitive: false'

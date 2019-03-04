@@ -63,12 +63,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
 
     $row = $form->addRow();
     $row->addLabel('file', __('Spreadsheet'));
-    $row->addFileUpload('file')->isRequired()->accepts('.csv,.xls,.xlsx,.xml,.ods');
+    $row->addFileUpload('file')->required()->accepts('.csv,.xls,.xlsx,.xml,.ods');
 
     $sql = "SELECT DISTINCT category AS value, category AS name FROM gibbonRole ORDER BY category";
     $row = $form->addRow();
     $row->addLabel('roleCategory', __('Role Category'));
-    $row->addSelect('roleCategory')->fromQuery($pdo, $sql)->isRequired()->placeholder();
+    $row->addSelect('roleCategory')->fromQuery($pdo, $sql)->required()->placeholder();
 
     // COLUMN OPTIONS
     $form->toggleVisibilityByClass('columnTypeOptions')->onSelect('roleCategory')->whenNot(__('Please select...'));
@@ -78,7 +78,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     );
     $row = $form->addRow()->addClass('columnTypeOptions');
     $row->addLabel('columnType', __('Columns'))->description(__('Are the first and surnames separated into columns, or all in one column?'));
-    $row->addSelect('columnType')->fromArray($columnTypes)->isRequired()->placeholder();
+    $row->addSelect('columnType')->fromArray($columnTypes)->required()->placeholder();
 
     $form->toggleVisibilityByClass('oneColumnOptions')->onSelect('columnType')->when('one');
     $form->toggleVisibilityByClass('multiColumnOptions')->onSelect('columnType')->when('multi');
@@ -91,31 +91,31 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     );
     $row = $form->addRow()->addClass('oneColumnOptions');
     $row->addLabel('nameFormat', __('Name Format'))->description(__('What format are the names currently in?'));
-    $row->addSelect('nameFormat')->fromArray($formats)->isRequired()->placeholder();
+    $row->addSelect('nameFormat')->fromArray($formats)->required()->placeholder();
     
     $row = $form->addRow()->addClass('oneColumnOptions');
     $row->addLabel('nameColumn', __('Name Column'))->description(__('What column are the names in?'));
-    $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addSelect('nameColumn')->fromArray($columns)->required()->placeholder();
 
     // MULTIPLE COLUMNS
     $row = $form->addRow()->addClass('multiColumnOptions');
     $row->addLabel('nameColumn', __('Preferred Name Column'));
-    $row->addSelect('nameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addSelect('nameColumn')->fromArray($columns)->required()->placeholder();
 
     $row = $form->addRow()->addClass('multiColumnOptions');
     $row->addLabel('firstNameColumn', __('First Name Column'))->description(__('Can be the same as preferred.'));
-    $row->addSelect('firstNameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addSelect('firstNameColumn')->fromArray($columns)->required()->placeholder();
 
     $row = $form->addRow()->addClass('multiColumnOptions');
     $row->addLabel('surnameColumn', __('Surname Column'));
-    $row->addSelect('surnameColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addSelect('surnameColumn')->fromArray($columns)->required()->placeholder();
 
     // STUDENT YEAR GROUP
     $form->toggleVisibilityByClass('yearGroupOptions')->onSelect('roleCategory')->when('Student');
 
     $row = $form->addRow()->addClass('yearGroupOptions');
     $row->addLabel('yearGroupColumn', __('Year Group Column'))->description(__('Only students with the same name AND same year group will be matched.'));
-    $row->addSelect('yearGroupColumn')->fromArray($columns)->isRequired()->placeholder();
+    $row->addSelect('yearGroupColumn')->fromArray($columns)->required()->placeholder();
 
     $row = $form->addRow();
     $row->addFooter();

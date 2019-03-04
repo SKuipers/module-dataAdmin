@@ -74,7 +74,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
         ->addParam('gibbonLogID')
         ->format(function ($importType, $actions) {
             $actions->addAction('view', __('View'))
-                ->isModal('600', '550')
+                ->modalWindow('600', '550')
                 ->setURL('/modules/Data Admin/import_history_view.php');
         });
 

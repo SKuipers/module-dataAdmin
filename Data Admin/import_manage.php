@@ -97,7 +97,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
                         ->setURL('/modules/Data Admin/import_run.php');
 
                     $actions->addAction('export', __('Export Columns'))
-                        ->isDirect()
+                        ->directLink()
                         ->addParam('q', $_GET['q'])
                         ->addParam('data', 0)
                         ->setIcon('download')
