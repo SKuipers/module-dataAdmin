@@ -114,10 +114,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             }
 
             $form = Form::create('combineFields', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
-            // v15 only -- oops!
-            //$form->getRenderer()->setWrapper('form', 'div');
-            //$form->getRenderer()->setWrapper('row', 'div');
-            //$form->getRenderer()->setWrapper('cell', 'div');
+            $form->setClass('w-full blank');
 
             $form->addHiddenValue('address', $_SESSION[$guid]['address']);
             $form->addHiddenValue('tableName', $tableName);

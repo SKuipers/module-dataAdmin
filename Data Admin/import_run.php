@@ -229,7 +229,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             echo "</script>";
             
             $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=3');
-            $form->getRenderer()->setWrapper('form', 'div')->setWrapper('row', 'div')->setWrapper('cell', 'div');
+            $form->setClass('w-full blank');
 
             $form->addHiddenValue('address', $_SESSION[$guid]['address']);
             $form->addHiddenValue('mode', $mode);
@@ -495,7 +495,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             
             if ($step==3) {
                 $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=4');
-                $form->getRenderer()->setWrapper('form', 'div')->setWrapper('row', 'div')->setWrapper('cell', 'div');
+                $form->setClass('w-full blank');
 
                 $form->addHiddenValue('address', $_SESSION[$guid]['address']);
                 $form->addHiddenValue('mode', $mode);
