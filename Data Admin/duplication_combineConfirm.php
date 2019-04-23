@@ -43,7 +43,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         echo '</div>';
     } else {
         $form = Form::create('combineFieldsConfirm', $_SESSION[$guid]['absoluteURL'].'/modules/Data Admin/duplication_combineProcess.php');
-        $form->setClass('smallIntBorder fullWidth');
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('tableName', $tableName);
