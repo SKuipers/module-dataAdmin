@@ -23,10 +23,10 @@ include __DIR__ . '/../../gibbon.php';
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-$fieldName = (isset($_POST['fieldName']))? $_POST['fieldName'] : '';
-$tableName = (isset($_POST['tableName']))? $_POST['tableName'] : '';
-$mode = (isset($_POST['mode']))? $_POST['mode'] : '';
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combine.php&fieldName='.$fieldName.'&tableName='.$tableName.'&mode='.$mode;
+$fieldName = $_POST['fieldName'] ?? '';
+$tableName = $_POST['tableName'] ?? '';
+$mode = $_POST['mode'] ?? '';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/duplication_combine.php&fieldName='.$fieldName.'&tableName='.$tableName.'&mode='.$mode;
 
 if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') == false) {
     $URL .= '&return=error0';
@@ -36,9 +36,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
 
     $tableData = include __DIR__ . '/src/CombineableFields.php';
 
-    $values = (isset($_POST['values']))? $_POST['values'] : '';
+    $values = $_POST['values'] ?? '';
     $values = (!is_array($values))? array($values) : $values;
-    $renameValue = (isset($_POST['renameValue']))? $_POST['renameValue'] : '';
+    $renameValue = $_POST['renameValue'] ?? '';
 
     $fieldName = preg_replace('/[^a-zA-Z0-9_-]/', '', $fieldName);
 
@@ -63,7 +63,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
             $valueList[] = "`$fieldName` = :oldValue$i";
             $data["oldValue$i"] = $values[$i];
         }
-  
+
         $sql = "UPDATE `$tableName` SET `$fieldName`=:renameValue WHERE ".implode(' OR ', $valueList);
         $result = $connection2->prepare($sql);
         $result->execute($data);
@@ -80,4 +80,4 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         header("Location: {$URL}");
         exit;
    }
-}	
+}

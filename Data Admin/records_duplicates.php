@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplica
 else {
 	
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Duplicate Records', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/Data Admin/records_manage.php'>" . __('Manage Records', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Duplicate Records', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	// Info
@@ -120,7 +120,7 @@ else {
 						
 
 					} else {
-						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/key.png'/>" ;
 					}
 				echo "</td>";
 

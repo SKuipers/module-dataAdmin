@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -44,8 +44,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     $fieldName = (isset($_REQUEST['fieldName']))? $_REQUEST['fieldName'] : '';
     $mode = (isset($_REQUEST['mode']))? $_REQUEST['mode'] : 'Assisted';
 
-    $form = Form::create('combineFieldsFilder', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combine.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('combineFieldsFilder', $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/duplication_combine.php');
+    $form->addHiddenValue('address', $session->get('address'));
     
     $tableData = include __DIR__ . '/src/CombineableFields.php';
 
@@ -114,13 +114,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
                 echo '</p>';
             }
 
-            $form = Form::create('combineFields', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
+            $form = Form::create('combineFields', $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
             // v15 only -- oops!
             //$form->getRenderer()->setWrapper('form', 'div');
             //$form->getRenderer()->setWrapper('row', 'div');
             //$form->getRenderer()->setWrapper('cell', 'div');
 
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('tableName', $tableName);
             $form->addHiddenValue('fieldName', $fieldName);
             $form->addHiddenValue('mode', $mode);

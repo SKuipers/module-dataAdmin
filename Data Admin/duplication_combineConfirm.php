@@ -29,23 +29,23 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
     echo "</div>" ;
 
-    $tableName = (isset($_POST['tableName']))? $_POST['tableName'] : '';
-    $fieldName = (isset($_POST['fieldName']))? $_POST['fieldName'] : '';
-    $mode = (isset($_POST['mode']))? $_POST['mode'] : '';
-    $values = (isset($_POST['values']))? $_POST['values'] : '';
-    
+    $tableName = $_POST['tableName'] ?? '';
+    $fieldName = $_POST['fieldName'] ?? '';
+    $mode = $_POST['mode'] ?? '';
+    $values = $_POST['values'] ?? '';
+
     if (empty($tableName) || empty($fieldName) || empty($values)) {
         echo '<div class="error">';
         echo __('Your request failed because your inputs were invalid.') ;
         echo '</div>';
     } else {
-        $form = Form::create('combineFieldsConfirm', $_SESSION[$guid]['absoluteURL'].'/modules/Data Admin/duplication_combineProcess.php');
+        $form = Form::create('combineFieldsConfirm', $session->get('absoluteURL').'/modules/Data Admin/duplication_combineProcess.php');
         $form->setClass('smallIntBorder fullWidth');
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
         $form->addHiddenValue('tableName', $tableName);
         $form->addHiddenValue('fieldName', $fieldName);
         $form->addHiddenValue('mode', $mode);
@@ -60,15 +60,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         for ($i = 0; $i < count($values); $i++) {
             $column->addTextField('label'.$i)->readonly()->setValue(htmlprep($values[$i]));
         }
-    
+
         $row = $form->addRow();
         $row->addLabel('renameValue', __('Rename to'));
         $row->addTextField('renameValue')->setValue(current($values));
-    
+
         $row = $form->addRow();
         $row->addFooter();
         $row->addSubmit();
-    
+
         echo $form->getOutput();
     }
-}	
+}

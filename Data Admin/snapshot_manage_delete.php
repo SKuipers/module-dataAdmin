@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 	//Proceed!
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Delete Snapshot', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Delete Snapshot', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 	
 
@@ -50,7 +50,7 @@ else {
 		$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 		$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-		$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+		$snapshotFolderPath = $session->get('absolutePath').'/uploads'.$snapshotFolder;
 		$filepath = $snapshotFolderPath.'/'.$filename;
 
 		if ( !file_exists( $filepath ) ) {
@@ -60,7 +60,7 @@ else {
 		} else {
             //Let's go!
             
-            $form = DeleteForm::createForm($_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_deleteProcess.php?file='.$filename);
+            $form = DeleteForm::createForm($session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_deleteProcess.php?file='.$filename);
             echo $form->getOutput();
 		}
 	}

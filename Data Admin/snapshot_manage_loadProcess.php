@@ -25,8 +25,8 @@ require __DIR__ . '/module.php';
 
 $filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
 
-$URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_load.php&file=$filename" ;
-$URLDelete=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;
+$URL=$session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_load.php&file=$filename" ;
+$URLDelete=$session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;
 
 if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_load.php")==FALSE) {
 	$URL.="&return=error0" ;
@@ -38,7 +38,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+	$snapshotFolderPath = $session->get('absolutePath').'/uploads'.$snapshotFolder;
 	$filepath = $snapshotFolderPath.'/'.$filename;
 
 	if (!file_exists($filepath)) {
@@ -48,8 +48,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 	}
 	else {
 
-		if ( file_exists($_SESSION[$guid]["absolutePath"] . '/config.php')) {
-			include $_SESSION[$guid]["absolutePath"].'/config.php';
+		if ( file_exists($session->get('absolutePath') . '/config.php')) {
+			include $session->get('absolutePath').'/config.php';
 		}
 
 		if (empty($databaseServer) || empty($databaseUsername) || empty($databasePassword) || empty($databaseName)) {
