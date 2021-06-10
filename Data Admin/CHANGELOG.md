@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## (1.3.08) 2021-06-10
+### Fixed
+- Refactored module, fixing session variables and adding null coalesce
 
 ## [1.3.07] - 2018-12-11
 ### Added

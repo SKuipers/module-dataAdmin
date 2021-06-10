@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.
 else {
 	
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	echo "<h3>" ;
@@ -92,7 +92,7 @@ else {
 				echo "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
 
 				echo "<td>";
-					echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/plus.png'/></a> " ;
+					echo "<a class='thickbox' href='" . $session->get('absoluteURL') . "/fullscreen.php?q=/modules/" . $session->get('module') . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/plus.png'/></a> " ;
 				echo "</td>";
 
 			echo "</tr>" ;

@@ -32,7 +32,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
 else {
 	
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Records', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	// Info
@@ -122,7 +122,7 @@ else {
 				//echo "<td>".$recordYearCount."</td>";
 
 				if ($isImportAccessible && $recordCount > 0 && $duplicateCount > 0 && $duplicateCount != '-') {
-					echo "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_duplicates.php&type=" . $importTypeName . "'>";
+					echo "<td><a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module') . "/records_duplicates.php&type=" . $importTypeName . "'>";
 						echo $duplicateCount;
 					echo "</a></td>" ;
 				} else {
@@ -130,7 +130,7 @@ else {
 				}
 
 				if ($isImportAccessible && $recordCount > 0 && $orphanCount > 0 && $orphanCount != '-') {
-					echo "<td><a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/records_orphaned.php&type=" . $importTypeName . "'>";
+					echo "<td><a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module') . "/records_orphaned.php&type=" . $importTypeName . "'>";
 						echo $orphanCount;
 					echo "</a></td>" ;
 				} else {
@@ -141,10 +141,10 @@ else {
 
 					if ( $isImportAccessible ) {
 
-						echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __('Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+						echo "<a href='" . $session->get('absoluteURL') . "/modules/" . $session->get('module') . "/export_run.php?type=". $importTypeName. "&data=1&all=1'><img title='" . __('Export Data (Beta)', 'Data Admin'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/download.png'/></a>" ;
 
 					} else {
-						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/key.png'/>" ;
 					}
 		
 

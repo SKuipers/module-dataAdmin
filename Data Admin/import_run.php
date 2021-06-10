@@ -39,10 +39,10 @@ else {
 	$timeStart = microtime(true);
 
 	// Include PHPExcel
-	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
+	require_once $session->get('absolutePath') . '/lib/PHPExcel/Classes/PHPExcel.php';
 
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	$importer = new Importer( $gibbon, $pdo );
@@ -91,7 +91,7 @@ else {
 		catch(PDOException $e) {
 			echo "<div class='error'>" . $e->getMessage() . "</div>" ;
         }
-        
+
         echo '<h2>';
 		echo __('Step 1 - Select Spreadsheet', 'Data Admin');
         echo '</h2>';
@@ -100,9 +100,9 @@ else {
 		echo __('Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there\'s no guaruntee the import won\'t change or overwrite important data.', 'Data Admin');
         echo '</div>';
 
-        $form = Form::create('importStep1', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=2');
+        $form = Form::create('importStep1', $session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/import_run.php&type='.$type.'&step=2');
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $availableModes = array();
         $modes = $importType->getDetail('modes');
@@ -142,7 +142,7 @@ else {
             $row->addSubmit();
 
         echo $form->getOutput();
-    
+
 
         echo '<h4>';
 		echo __('Notes');
@@ -155,7 +155,7 @@ else {
 
         if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php") ) {
             echo "<div class='linkTop'>" ;
-            echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=$type'>" .  __('Export Structure', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+            echo "<a href='" . $session->get('absoluteURL') . "/modules/" . $session->get('module') . "/export_run.php?type=$type'>" .  __('Export Structure', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/download.png'/></a>" ;
             echo "</div>" ;
         }
 
@@ -208,7 +208,7 @@ else {
 		echo __('Step 2 - Data Check & Confirm', 'Data Admin');
 		echo '</h2>';
 
-		$mode = (isset($_POST['mode']))? $_POST['mode'] : NULL;
+		$mode = $_POST['mode'] ?? NULL;
 
 		//Check file type
 		if ($importer->isValidMimeType($_FILES['file']['type']) == false) {
@@ -227,8 +227,8 @@ else {
 			echo "<br/></div>";
 		}
 		else {
-			$proceed=true ;
-			$columnOrder=(isset($_POST["columnOrder"]))? $_POST["columnOrder"] : 'guess';
+			$proceed = true ;
+			$columnOrder =  $_POST["columnOrder"] ?? 'guess';
 
 			if ($columnOrder == 'last') {
 				try {
@@ -267,11 +267,11 @@ else {
 			echo "var columnDataCustom = " . Importer::COLUMN_DATA_CUSTOM .";";
 			echo "var columnDataFunction = " . Importer::COLUMN_DATA_FUNCTION .";";
             echo "</script>";
-            
-            $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=3');
+
+            $form = Form::create('importStep2', $session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/import_run.php&type='.$type.'&step=3');
             $form->getRenderer()->setWrapper('form', 'div')->setWrapper('row', 'div')->setWrapper('cell', 'div');
 
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('mode', $mode);
             $form->addHiddenValue('fieldDelimiter', urlencode($_POST['fieldDelimiter']));
             $form->addHiddenValue('stringEnclosure', urlencode($_POST['stringEnclosure']));
@@ -286,7 +286,7 @@ else {
 					$lastFieldValue = 'Y';
 					$lastColumnValue = $importType->getPrimaryKey();
                 }
-                
+
                 $table = $form->addRow()->addTable()->setClass('smallIntBorder fullWidth');
 
                 $row = $table->addRow();
@@ -300,7 +300,7 @@ else {
             }
 
             $form->addRow()->addContent('&nbsp;');
-            
+
             // IMPORT RESTRICTIONS
             $importRestrictions = $importType->getImportRestrictions();
 
@@ -329,7 +329,7 @@ else {
 
                 $defaultColumns = function ($fieldName) use (&$importType) {
                     $columns = [];
-                    
+
                     if ( $importType->isFieldRequired($fieldName) == false ) {
                         $columns[Importer::COLUMN_DATA_SKIP] = __('[ Skip this Column ]');
                     }
@@ -373,7 +373,7 @@ else {
 						$count++;
 						continue;
                     }
-                    
+
                     $selectedColumn = '';
                     if ($columnOrder == 'linear' || $columnOrder == 'linearplus') {
                         $selectedColumn = ($columnOrder == 'linearplus')? $count+1 : $count;
@@ -436,23 +436,23 @@ else {
 		echo "</h2>";
 
 		// Gather our data
-		$mode = (isset($_POST['mode']))? $_POST['mode'] : NULL;
-		$syncField = (isset($_POST['syncField']))? $_POST['syncField'] : NULL;
-		$syncColumn = (isset($_POST['syncColumn']))? $_POST['syncColumn'] : NULL;
+		$mode = $_POST['mode'] ?? NULL;
+		$syncField = $_POST['syncField'] ?? NULL;
+		$syncColumn = $_POST['syncColumn'] ?? NULL;
 
-		$csvData = (isset($_POST['csvData']))? $_POST['csvData'] : NULL;
+		$csvData = $_POST['csvData'] ?? NULL;
 		if ($step==4) {
-			$columnOrder = (isset($_POST['columnOrder']))? unserialize($_POST['columnOrder']) : NULL;
-			$columnText = (isset($_POST['columnText']))? unserialize($_POST['columnText']) : NULL;
+			$columnOrder = unserialize($_POST['columnOrder']) ?? NULL;
+			$columnText = unserialize($_POST['columnText']) ?? NULL;
 		} else {
-			$columnOrder = (isset($_POST['columnOrder']))? $_POST['columnOrder'] : NULL;
-			$columnText = (isset($_POST['columnText']))? $_POST['columnText'] : NULL;
+			$columnOrder = $_POST['columnOrder'] ?? NULL;
+			$columnText = $_POST['columnText'] ?? NULL;
 		}
 
-		$fieldDelimiter = (isset($_POST['fieldDelimiter']))? urldecode($_POST['fieldDelimiter']) : NULL;
-		$stringEnclosure = (isset($_POST['stringEnclosure']))? urldecode($_POST['stringEnclosure']) : NULL;
+		$fieldDelimiter = urldecode($_POST['fieldDelimiter']) ?? NULL;
+		$stringEnclosure = urldecode($_POST['stringEnclosure']) ?? NULL;
 
-		$ignoreErrors = (isset($_POST['ignoreErrors']))? $_POST['ignoreErrors'] : false;
+		$ignoreErrors = $_POST['ignoreErrors'] ?? false;
 
 		if ( empty($csvData) || empty($columnOrder) ) {
 			echo "<div class='error'>";
@@ -677,10 +677,10 @@ else {
 
             <?php if ($step==3) {
 
-                $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=4');
+                $form = Form::create('importStep2', $session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/import_run.php&type='.$type.'&step=4');
                 $form->getRenderer()->setWrapper('form', 'div')->setWrapper('row', 'div')->setWrapper('cell', 'div');
 
-                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                $form->addHiddenValue('address', $session->get('address'));
                 $form->addHiddenValue('mode', $mode);
                 $form->addHiddenValue('syncField', $syncField);
                 $form->addHiddenValue('syncColumn', $syncColumn);
@@ -699,13 +699,13 @@ else {
                 $row = $table->addRow();
                     $row->onlyIf(!$overallSuccess)->addCheckbox('ignoreErrors')->description(__('Ignore Errors? (Expert Only!)', 'Data Admin'))->setValue($ignoreErrors)->setClass('');
                     $row->onlyIf($overallSuccess)->addContent('');
-                
+
                 if (!$overallSuccess && !$ignoreErrors) {
                     $row->addButton(__('Cannot Continue', 'Data Admin'))->setID('submitStep3')->isDisabled()->addClass('right');
                 } else {
                     $row->addSubmit()->setID('submitStep3');
                 }
-                    
+
                 echo $form->getOutput();
             }
 
@@ -748,7 +748,7 @@ else {
 					'ignoreErrors'		=> $ignoreErrors,
 				);
 
-				$importer->createImportLog( $_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder );
+				$importer->createImportLog( $session->get('gibbonPersonID'), $type, $results, $columnOrder );
 			}
 		}
 

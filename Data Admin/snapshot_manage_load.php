@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 } else {
 
     echo "<div class='trail'>";
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Load Snapshot', 'Data Admin') . "</div>";
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Load Snapshot', 'Data Admin') . "</div>";
     echo "</div>";
 
     echo "<h3>";
@@ -55,7 +55,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
         $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
         $snapshotFolder = '/' . trim($snapshotFolder, '/ ');
 
-        $snapshotFolderPath = $_SESSION[$guid]["absolutePath"] . '/uploads' . $snapshotFolder;
+        $snapshotFolderPath = $session->get('absolutePath') . '/uploads' . $snapshotFolder;
         $filepath = $snapshotFolderPath . '/' . $filename;
 
         if (!file_exists($filepath)) {
@@ -65,7 +65,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
         } else {
             //Let's go!
 
-            $form = Form::create('deleteRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_loadProcess.php?file='.$filename);
+            $form = Form::create('deleteRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_loadProcess.php?file='.$filename);
             $form->addHiddenValue('address', $_GET['q']);
 
             $col = $form->addRow()->addColumn();

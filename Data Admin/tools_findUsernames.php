@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     echo "</div>" ;
 } else {
     echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Find Usernames', 'Data Admin') . "</div>" ;
+    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Find Usernames', 'Data Admin') . "</div>" ;
     echo "</div>" ;
 
     if (isset($_GET['return'])) {
@@ -59,8 +59,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
         return $group;
     }, array());
 
-    $form = Form::create('findUsernames', $_SESSION[$guid]['absoluteURL'].'/modules/Data Admin/tools_findUsernamesProcess.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('findUsernames', $session->get('absoluteURL').'/modules/Data Admin/tools_findUsernamesProcess.php');
+    $form->addHiddenValue('address', $session->get('address'));
     $form->setClass('fullWidth smallIntBorder');
 
     $row = $form->addRow();

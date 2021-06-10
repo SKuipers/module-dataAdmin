@@ -30,7 +30,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 }
 else {
 	echo "<div class='trail'>" ;
-		echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Create Snapshot', 'Data Admin') . "</div>" ;
+		echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Create Snapshot', 'Data Admin') . "</div>" ;
 		echo "</div>" ;
 
 	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
@@ -43,7 +43,7 @@ else {
 	echo __('Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.', 'Data Admin');
     echo "</div>" ;
     
-    $form = Form::create('deleteRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_addProcess.php');
+    $form = Form::create('deleteRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_addProcess.php');
     $form->addHiddenValue('address', $_GET['q']);
 
     $row = $form->addRow();

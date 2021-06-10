@@ -24,16 +24,16 @@ include __DIR__ . '/../../gibbon.php';
 require __DIR__ . '/module.php';
 
 $filePath = isset($_FILES['file']['tmp_name'])? $_FILES['file']['tmp_name'] : '';
-$roleCategory = isset($_POST['roleCategory'])? $_POST['roleCategory'] : '';
-$columnType = isset($_POST['columnType'])? $_POST['columnType'] : '';
-$nameType = isset($_POST['nameType'])? $_POST['nameType'] : '';
-$nameFormat = isset($_POST['nameFormat'])? $_POST['nameFormat'] : '';
-$nameColumn = isset($_POST['nameColumn'])? intval($_POST['nameColumn']) : 0;
-$firstNameColumn = isset($_POST['firstNameColumn'])? intval($_POST['firstNameColumn']) : 0;
-$surnameColumn = isset($_POST['surnameColumn'])? intval($_POST['surnameColumn']) : 0;
-$yearGroupColumn = isset($_POST['yearGroupColumn'])? intval($_POST['yearGroupColumn']) : 0;
+$roleCategory = $_POST['roleCategory'] ?? '';
+$columnType = $_POST['columnType'] ?? '';
+$nameType = $_POST['nameType'] ?? '';
+$nameFormat = $_POST['nameFormat'] ?? '';
+$nameColumn = intval($_POST['nameColumn']) ?? 0;
+$firstNameColumn = intval($_POST['firstNameColumn']) ?? 0;
+$surnameColumn = intval($_POST['surnameColumn']) ?? 0;
+$yearGroupColumn = intval($_POST['yearGroupColumn']) ?? 0;
 
-$URL = $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/tools_findUsernames.php';
+$URL = $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/tools_findUsernames.php';
 
 if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsernames.php') == false) {
     $URL .= '&return=error0';
@@ -45,7 +45,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     exit;
 } else {
     // Include PHPExcel
-	require_once $_SESSION[$guid]["absolutePath"] . '/lib/PHPExcel/Classes/PHPExcel.php';
+	require_once $session->get('absolutePath') . '/lib/PHPExcel/Classes/PHPExcel.php';
 
     try {
         $objPHPExcel = \PHPExcel_IOFactory::load($filePath);
@@ -118,9 +118,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 
         if ($roleCategory == 'Student') {
             // Locate a student enrolment for the target year group with a matching student name
-            $data = ['gibbonSchoolYearID' => $_SESSION[$guid]['gibbonSchoolYearID'], 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
+            $data = ['gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
             $sql = "SELECT gibbonPerson.username
-                    FROM gibbonPerson 
+                    FROM gibbonPerson
                     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                     WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID
                     AND gibbonStudentEnrolment.gibbonYearGroupID=(SELECT gibbonYearGroupID FROM gibbonYearGroup WHERE nameShort=:yearGroup)
@@ -132,7 +132,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
         } else {
             $data = ['preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
             $sql = "SELECT gibbonPerson.username
-                    FROM gibbonPerson 
+                    FROM gibbonPerson
                     WHERE (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')
                     AND (
                         (gibbonPerson.surname = :surname1 AND gibbonPerson.preferredName = :preferredName)
@@ -162,13 +162,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 	if (empty($exportFileType)) $exportFileType = 'Excel2007';
 
 	switch($exportFileType) {
-		case 'Excel2007': 		$filename .= '.xlsx'; 
+		case 'Excel2007': 		$filename .= '.xlsx';
 								$mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; break;
-		case 'Excel5': 			$filename .= '.xls';  
+		case 'Excel5': 			$filename .= '.xls';
 								$mimetype = 'application/vnd.ms-excel'; break;
-		case 'OpenDocument': 	$filename .= '.ods';  
+		case 'OpenDocument': 	$filename .= '.ods';
 								$mimetype = 'application/vnd.oasis.opendocument.spreadsheet'; break;
-		case 'CSV': 			$filename .= '.csv';  
+		case 'CSV': 			$filename .= '.csv';
 								$mimetype = 'text/csv'; break;
 	}
 
@@ -192,4 +192,4 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, $exportFileType);
     $objWriter->save('php://output');
     exit;
-}	
+}

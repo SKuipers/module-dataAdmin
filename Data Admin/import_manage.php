@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_manage.p
 else {
 	
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import From File', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	// Get a list of available import options
@@ -99,10 +99,10 @@ else {
 				echo "<td>";
 
 					if ( $checkUserPermissions == 'Y' && $importType->isImportAccessible( $guid, $connection2 ) ) {
-						echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/import_run.php&type=" . $importTypeName . "'><img title='" . __('Import', 'Data Admin') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/run.png'/></a> " ;
-						echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/modules/" . $_SESSION[$guid]["module"] . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/download.png'/></a>" ;
+						echo "<a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module') . "/import_run.php&type=" . $importTypeName . "'><img title='" . __('Import', 'Data Admin') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/run.png'/></a> " ;
+						echo "<a href='" . $session->get('absoluteURL') . "/modules/" . $session->get('module') . "/export_run.php?type=". $importTypeName. "&data=0'><img style='margin-left: 5px' title='" . __('Export Structure', 'Data Admin'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/download.png'/></a>" ;
 					} else {
-						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/key.png'/>" ;
+						echo "<img style='margin-left: 5px' title='" . __('You do not have access to this action.'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/key.png'/>" ;
 					}
 
 

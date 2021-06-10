@@ -29,7 +29,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 else {
 
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Snapshots', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Manage Snapshots', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	echo "<h3>" ;
@@ -44,7 +44,7 @@ else {
 	
 	if ( isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php") ) {
 		echo "<div class='linkTop'>" ;
-		echo "<a href='" . $_SESSION[$guid]["absoluteURL"] ."/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_add.php'>" .  __('Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Create Snapshot', 'Data Admin'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/page_new.png'/></a>" ;
+		echo "<a href='" . $session->get('absoluteURL') ."/index.php?q=/modules/" . $session->get('module') . "/snapshot_manage_add.php'>" .  __('Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Create Snapshot', 'Data Admin'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/page_new.png'/></a>" ;
 		echo "</div>" ;
 	}
 
@@ -52,7 +52,7 @@ else {
 	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
 	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+	$snapshotFolderPath = $session->get('absolutePath').'/uploads'.$snapshotFolder;
 
 	if (is_dir($snapshotFolderPath)==FALSE) {
 		mkdir($snapshotFolderPath, 0755, TRUE) ;
@@ -90,8 +90,8 @@ else {
 				echo "<td>". readableFileSize( filesize($snapshotPath)) . "</td>" ;
 
 				echo "<td>";
-					echo "<a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __('Load') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/delivery2.png'/></a> " ;
-					echo "<a class='thickbox' href='" . $_SESSION[$guid]["absoluteURL"] . "/fullscreen.php?q=/modules/" . $_SESSION[$guid]["module"] . "/snapshot_manage_delete.php&file=". $snapshotFile. "&width=650&height=135'><img style='margin-left: 5px' title='" . __('Delete') . "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/garbage.png'/></a> " ;
+					echo "<a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module') . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __('Load') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/delivery2.png'/></a> " ;
+					echo "<a class='thickbox' href='" . $session->get('absoluteURL') . "/fullscreen.php?q=/modules/" . $session->get('module') . "/snapshot_manage_delete.php&file=". $snapshotFile. "&width=650&height=135'><img style='margin-left: 5px' title='" . __('Delete') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/garbage.png'/></a> " ;
 				echo "</td>";
 			echo "</tr>" ;
 		}

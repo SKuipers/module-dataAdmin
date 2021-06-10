@@ -31,18 +31,18 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 else {
 
 	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import Settings', 'Data Admin') . "</div>" ;
+	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Import Settings', 'Data Admin') . "</div>" ;
 	echo "</div>" ;
 
 	if (isset($_GET['return'])) {
         returnProcess($guid, $_GET['return'], null, null);
     }
 
-	$trueIcon = "<img title='" . __('Yes'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconTick.png' width=16 height=16 />";
-	$falseIcon = "<img title='" . __('No'). "' src='./themes/" . $_SESSION[$guid]["gibbonThemeName"] . "/img/iconCross.png' width=16 height=16 />";
+	$trueIcon = "<img title='" . __('Yes'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconTick.png' width=16 height=16 />";
+	$falseIcon = "<img title='" . __('No'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconCross.png' width=16 height=16 />";
 
 	// Include the module version info, with required versions
-	include $_SESSION[$guid]['absolutePath'].'/modules/'.$_SESSION[$guid]['module'].'/version.php';
+	include $session->get('absolutePath').'/modules/'.$session->get('module').'/version.php';
 	?>
 
 	<table class='smallIntBorder' cellspacing='0' style='width:60%;margin:0 auto;'>
@@ -51,7 +51,7 @@ else {
 				<?php echo __('Compatability Check', 'Data Admin'); ?>
 			</td>
 			<td class="right">
-				<?php echo $_SESSION[$guid]['module'].' '.$moduleVersion; ?>
+				<?php echo $session->get('module').' '.$moduleVersion; ?>
 			</td>
 		</tr>
 		<tr>
@@ -132,7 +132,7 @@ else {
 			<td class="right">
 				<?php
 					$importsFolder = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation');
-					$importsFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($importsFolder, '/ ');
+					$importsFolderPath = $session->get('absolutePath').'/uploads/'.trim($importsFolder, '/ ');
 
 					echo (is_writable($importsFolderPath))? $trueIcon : $falseIcon;
 				?>
@@ -146,7 +146,7 @@ else {
 			<td class="right">
 				<?php
 					$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
-					$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads/'.trim($snapshotFolder, '/ ');
+					$snapshotFolderPath = $session->get('absolutePath').'/uploads/'.trim($snapshotFolder, '/ ');
 
 					echo (is_writable($snapshotFolderPath))? $trueIcon : $falseIcon;
 				?>
@@ -157,8 +157,8 @@ else {
     
     <?php
 
-    $form = Form::create('action', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/settingsProcess.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('action', $session->get('absoluteURL').'/modules/'.$session->get('module').'/settingsProcess.php');
+    $form->addHiddenValue('address', $session->get('address'));
 
     $fileTypes = array(
         'Excel2007'    => __('Excel 2007 and above (.xlsx)', 'Data Admin'),
