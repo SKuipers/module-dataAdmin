@@ -28,28 +28,27 @@ $filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
 $URL=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_delete.php&file=$filename" ;
 $URLDelete=$_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==FALSE) {
-	$URL.="&return=error0" ;
-	header("Location: {$URL}");
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_delete.php")==false) {
+    $URL.="&return=error0" ;
+    header("Location: {$URL}");
 } else {
-	//Proceed!
-	//Check if file exists
-	$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
-	$snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+    //Proceed!
+    //Check if file exists
+    $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+    $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
-	$snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
-	$filepath = $snapshotFolderPath.'/'.$filename;
+    $snapshotFolderPath = $_SESSION[$guid]["absolutePath"].'/uploads'.$snapshotFolder;
+    $filepath = $snapshotFolderPath.'/'.$filename;
 
-	if (!file_exists($filepath)) {
-		$URL.="&return=error1" ;
-		header("Location: {$URL}");
-		exit;
-	} else {
-		unlink($filepath);
-			
-		$URLDelete=$URLDelete . "&return=success0" ;
-		header("Location: {$URLDelete}");
-		exit;
-	}
+    if (!file_exists($filepath)) {
+        $URL.="&return=error1" ;
+        header("Location: {$URL}");
+        exit;
+    } else {
+        unlink($filepath);
+            
+        $URLDelete=$URLDelete . "&return=success0" ;
+        header("Location: {$URLDelete}");
+        exit;
+    }
 }
-?>

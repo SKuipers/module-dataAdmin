@@ -28,10 +28,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     echo __("You do not have access to this action.");
     echo "</div>";
 } else {
-
-    echo "<div class='trail'>";
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/Data Admin/snapshot_manage.php'>" . __('Manage Snapshots', 'Data Admin') . "</a> > </div><div class='trailEnd'>" . __('Load Snapshot', 'Data Admin') . "</div>";
-    echo "</div>";
+    $page->breadcrumbs
+        ->add(__('Manage Snapshots', 'Data Admin'), 'snapshot_manage.php')
+        ->add(__('Load Snapshot', 'Data Admin'));
 
     echo "<h3>";
     echo __("Load Snapshot", 'Data Admin');
@@ -69,14 +68,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
             $form->addHiddenValue('address', $_GET['q']);
 
             $col = $form->addRow()->addColumn();
-                $col->addContent(__('Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin'))->wrap('<strong>', '</strong>');
-                $col->addContent(__('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!'))
+            $col->addContent(__('Are you sure you want to load this snapshot? It will replace all data in Gibbon with the selected SQL file.', 'Data Admin'))->wrap('<strong>', '</strong>');
+            $col->addContent(__('This operation cannot be undone, and may lead to loss of vital data in your system. PROCEED WITH CAUTION!'))
                     ->wrap('<span style="color: #cc0000"><i>', '</i></span>');
 
             $row = $form->addRow();
-                $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('CONFIRM')));
-                $row->addTextField('confirm')
-                    ->isRequired()
+            $row->addLabel('confirm', sprintf(__('Type %1$s to confirm'), __('CONFIRM')));
+            $row->addTextField('confirm')
+                    ->required()
                     ->addValidation(
                         'Validate.Inclusion',
                         'within: [\'' . __('CONFIRM') . '\'], failureMessage: "' . __('Please enter the text exactly as it is displayed to confirm this action.') . '", caseSensitive: false'

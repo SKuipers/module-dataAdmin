@@ -22,15 +22,15 @@ use Gibbon\Forms\Form;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == false) {
     //Acess denied
     echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+    echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $_SESSION[$guid]["absoluteURL"] . "'>" . __("Home") . "</a> > <a href='" . $_SESSION[$guid]["absoluteURL"] . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs
+        ->add(__('Combine Similar Fields', 'Data Admin'), 'duplication_combine.php')
+        ->add(__('Confirm'));
 
     $tableName = (isset($_POST['tableName']))? $_POST['tableName'] : '';
     $fieldName = (isset($_POST['fieldName']))? $_POST['fieldName'] : '';
@@ -43,7 +43,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         echo '</div>';
     } else {
         $form = Form::create('combineFieldsConfirm', $_SESSION[$guid]['absoluteURL'].'/modules/Data Admin/duplication_combineProcess.php');
-        $form->setClass('smallIntBorder fullWidth');
 
         $form->addHiddenValue('address', $_SESSION[$guid]['address']);
         $form->addHiddenValue('tableName', $tableName);
@@ -71,4 +70,4 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     
         echo $form->getOutput();
     }
-}	
+}
