@@ -159,16 +159,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
     $row->addSelect($setting['name'])->fromArray($fileTypes)->selected($setting['value']);
 
-    $setting = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions', true);
-    $row = $form->addRow();
-    $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
-    $row->addYesNo($setting['name'])->selected($setting['value']);
-
-    $setting = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation', true);
-    $row = $form->addRow();
-    $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
-    $row->addTextField($setting['name'])->required()->setValue($setting['value']);
-
     $setting = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation', true);
     $row = $form->addRow();
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);

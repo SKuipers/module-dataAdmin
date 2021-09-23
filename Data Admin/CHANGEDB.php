@@ -114,3 +114,15 @@ $count++;
 $sql[$count][0]="1.4.02" ;
 $sql[$count][1]="";
 
+
+//v1.5.00
+$count++;
+$sql[$count][0]="1.5.00" ;
+$sql[$count][1]="
+DELETE FROM `gibbonPermission` WHERE gibbonPermission.gibbonActionID=(SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Data Admin' AND gibbonAction.name='Import From File');end
+DELETE FROM `gibbonPermission` WHERE gibbonPermission.gibbonActionID=(SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Data Admin' AND gibbonAction.name='View Import History');end
+DELETE FROM `gibbonAction` WHERE gibbonAction.gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin') AND gibbonAction.name='Import From File';end
+DELETE FROM `gibbonAction` WHERE gibbonAction.gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin') AND gibbonAction.name='View Import History';end
+UPDATE `gibbonModule` SET entryURL='snapshot_manage.php' WHERE name='Data Admin';end
+";
+

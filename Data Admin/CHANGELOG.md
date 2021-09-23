@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.5.00] 2021-09-23
+### Removed
+- Removed the Import from File and Import History actions, which are part of the core
+
 ## [1.4.02] 2021-06-10
 ### Fixed
 - Refactored module, fixing session variables and adding null coalesce

@@ -41,26 +41,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-    $enableUserLevelPermissions = $_POST['enableUserLevelPermissions'] ?? 'N';
-    try {
-        $data = array('value' => $enableUserLevelPermissions);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='enableUserLevelPermissions'";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-        $fail = true;
-    }
-
-    $importCustomFolderLocation = $_POST['importCustomFolderLocation'] ?? NULL;
-    try {
-        $data = array('value' => $importCustomFolderLocation);
-        $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='importCustomFolderLocation'";
-        $result = $connection2->prepare($sql);
-        $result->execute($data);
-    } catch (PDOException $e) {
-        $fail = true;
-    }
-
     $exportSnapshotsFolderLocation = $_POST['exportSnapshotsFolderLocation'] ?? NULL;
     try {
         $data = array('value' => $exportSnapshotsFolderLocation);

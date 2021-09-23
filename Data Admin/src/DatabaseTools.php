@@ -120,10 +120,14 @@ class DatabaseTools
         $sql .= " HAVING count > 1";
 
         try {
-            $result = $this->pdo->executeQuery(array(), $sql);
+            $result = $this->pdo->select($sql);
         } catch(\PDOException $e) {
             echo 'Error: '. $e->getMessage();
             return;
+        }
+
+        if (!$this->pdo->getQuerySuccess()) {
+            echo 'Error in: '.$importType->getDetail('name');
         }
 
         if ($countOnly) {
