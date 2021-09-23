@@ -99,11 +99,6 @@ $count++;
 $sql[$count][0]="1.3.07" ;
 $sql[$count][1]="";
 
-//v1.3.08
-$count++;
-$sql[$count][0]="1.3.08" ;
-$sql[$count][1]="";
-
 //v1.4.00
 $count++;
 $sql[$count][0]="1.4.00" ;
@@ -113,3 +108,9 @@ $sql[$count][1]="";
 $count++;
 $sql[$count][0]="1.4.01" ;
 $sql[$count][1]="";
+
+//v1.4.01
+$count++;
+$sql[$count][0]="1.4.02" ;
+$sql[$count][1]="";
+
