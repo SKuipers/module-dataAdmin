@@ -42,8 +42,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     $fieldName = (isset($_REQUEST['fieldName']))? $_REQUEST['fieldName'] : '';
     $mode = (isset($_REQUEST['mode']))? $_REQUEST['mode'] : 'Assisted';
 
-    $form = Form::create('combineFieldsFilder', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combine.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('combineFieldsFilder', $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/duplication_combine.php');
+    $form->addHiddenValue('address', $session->get('address'));
     
     $tableData = include __DIR__ . '/src/CombineableFields.php';
 
@@ -116,7 +116,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
             $form = Form::create('combineFields', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/Data Admin/duplication_combineConfirm.php');
             $form->setClass('w-full blank');
 
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('tableName', $tableName);
             $form->addHiddenValue('fieldName', $fieldName);
             $form->addHiddenValue('mode', $mode);

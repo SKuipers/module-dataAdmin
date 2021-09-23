@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.4.02] 2021-06-10
+### Fixed
+- Refactored module, fixing session variables and adding null coalesce
+
 ## [1.4.01] - 2018-12-11
 ### Added
 - Handle importing and exporting relational values that are CSV (eg: All Roles)

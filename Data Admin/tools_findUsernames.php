@@ -57,8 +57,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
         return $group;
     }, array());
 
-    $form = Form::create('findUsernames', $_SESSION[$guid]['absoluteURL'].'/modules/Data Admin/tools_findUsernamesProcess.php');
-    $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+    $form = Form::create('findUsernames', $session->get('absoluteURL').'/modules/Data Admin/tools_findUsernamesProcess.php');
+    $form->addHiddenValue('address', $session->get('address'));
     $form->setClass('fullWidth smallIntBorder');
 
     $row = $form->addRow();

@@ -43,7 +43,7 @@ else {
 	echo __('Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.', 'Data Admin');
     echo "</div>" ;
     
-    $form = Form::create('deleteRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_addProcess.php');
+    $form = Form::create('deleteRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_addProcess.php');
     $form->addHiddenValue('address', $_GET['q']);
 
     $row = $form->addRow();

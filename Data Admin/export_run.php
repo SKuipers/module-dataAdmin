@@ -143,7 +143,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                 $gibbonSchoolYearID = $importType->getField('gibbonSchoolYearID', 'name', null);
                 
                 if ($gibbonSchoolYearID != null && $importType->isFieldReadOnly('gibbonSchoolYearID') == false) {
-                    $data['gibbonSchoolYearID'] = $_SESSION[$guid]['gibbonSchoolYearID'];
+                    $data['gibbonSchoolYearID'] = $session->get('gibbonSchoolYearID');
                     $sql .= " WHERE gibbonSchoolYearID=:gibbonSchoolYearID ";
                 }
             }

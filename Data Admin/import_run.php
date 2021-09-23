@@ -93,9 +93,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
 
         echo Format::alert(__("Always backup your database before performing any imports. You will have the opportunity to review the data on the next step, however there's no guarantee the import won't change or overwrite important data."), 'message');
 
-        $form = Form::create('importStep1', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=2');
+        $form = Form::create('importStep1', $session->get('absoluteURL').'/index.php?q=/modules/'.$session->get('module').'/import_run.php&type='.$type.'&step=2');
 
-        $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+        $form->addHiddenValue('address', $session->get('address'));
 
         $availableModes = array();
         $modes = $importType->getDetail('modes');
@@ -228,10 +228,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             echo "var columnDataFunction = " . Importer::COLUMN_DATA_FUNCTION .";";
             echo "</script>";
             
-            $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=3');
+            $form = Form::create('importStep2', $session->get('absoluteURL').'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=3');
             $form->setClass('w-full blank');
 
-            $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+            $form->addHiddenValue('address', $session->get('address'));
             $form->addHiddenValue('mode', $mode);
             $form->addHiddenValue('fieldDelimiter', urlencode($_POST['fieldDelimiter']));
             $form->addHiddenValue('stringEnclosure', urlencode($_POST['stringEnclosure']));
@@ -327,7 +327,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                         $count++;
                         continue;
                     }
-                    
+
                     $selectedColumn = '';
                     if ($columnOrder == 'linear' || $columnOrder == 'linearplus') {
                         $selectedColumn = ($columnOrder == 'linearplus')? $count+1 : $count;
@@ -494,10 +494,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
             echo $page->fetchFromTemplate('importer.twig.html', $results);
             
             if ($step==3) {
-                $form = Form::create('importStep2', $_SESSION[$guid]['absoluteURL'].'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=4');
+                $form = Form::create('importStep2', $session->get('absoluteURL').'/index.php?q=/modules/'.$_SESSION[$guid]['module'].'/import_run.php&type='.$type.'&step=4');
                 $form->setClass('w-full blank');
 
-                $form->addHiddenValue('address', $_SESSION[$guid]['address']);
+                $form->addHiddenValue('address', $session->get('address'));
                 $form->addHiddenValue('mode', $mode);
                 $form->addHiddenValue('syncField', $syncField);
                 $form->addHiddenValue('syncColumn', $syncColumn);
@@ -522,7 +522,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 } else {
                     $row->addSubmit()->setID('submitStep3');
                 }
-                    
+
                 echo $form->getOutput();
             }
 
@@ -543,7 +543,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_run.php"
                 $columnOrder['syncField'] =  $syncField;
                 $columnOrder['syncColumn'] =  $syncColumn;
 
-                $importer->createImportLog($_SESSION[$guid]['gibbonPersonID'], $type, $results, $columnOrder);
+                $importer->createImportLog($session->get('gibbonPersonID'), $type, $results, $columnOrder);
             }
         }
     }

@@ -54,7 +54,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
         $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
         $snapshotFolder = '/' . trim($snapshotFolder, '/ ');
 
-        $snapshotFolderPath = $_SESSION[$guid]["absolutePath"] . '/uploads' . $snapshotFolder;
+        $snapshotFolderPath = $session->get('absolutePath') . '/uploads' . $snapshotFolder;
         $filepath = $snapshotFolderPath . '/' . $filename;
 
         if (!file_exists($filepath)) {
@@ -64,7 +64,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
         } else {
             //Let's go!
 
-            $form = Form::create('deleteRecord', $_SESSION[$guid]['absoluteURL'].'/modules/'.$_SESSION[$guid]['module'].'/snapshot_manage_loadProcess.php?file='.$filename);
+            $form = Form::create('deleteRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_loadProcess.php?file='.$filename);
             $form->addHiddenValue('address', $_GET['q']);
 
             $col = $form->addRow()->addColumn();
