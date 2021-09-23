@@ -22,15 +22,15 @@ use Gibbon\Forms\Form;
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == FALSE) {
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_combine.php") == false) {
     //Acess denied
     echo "<div class='error'>" ;
-        echo __("You do not have access to this action.") ;
+    echo __("You do not have access to this action.") ;
     echo "</div>" ;
 } else {
-    echo "<div class='trail'>" ;
-    echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('Combine Similar Fields', 'Data Admin') . "</div>" ;
-    echo "</div>" ;
+    $page->breadcrumbs
+        ->add(__('Combine Similar Fields', 'Data Admin'), 'duplication_combine.php')
+        ->add(__('Confirm'));
 
     $tableName = $_POST['tableName'] ?? '';
     $fieldName = $_POST['fieldName'] ?? '';

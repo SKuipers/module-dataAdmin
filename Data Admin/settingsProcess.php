@@ -41,7 +41,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-    $enableUserLevelPermissions = $_POST['enableUserLevelPermissions'] ?? NULL;
+    $enableUserLevelPermissions = $_POST['enableUserLevelPermissions'] ?? 'N';
     try {
         $data = array('value' => $enableUserLevelPermissions);
         $sql = "UPDATE gibbonSetting SET value=:value WHERE scope='Data Admin' AND name='enableUserLevelPermissions'";
@@ -71,13 +71,13 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
         $fail = true;
     }
 
-   //RETURN RESULTS
-   if ($fail == true) {
-       $URL .= '&return=error2';
-       header("Location: {$URL}");
-   } else {
-       //Success 0
+    //RETURN RESULTS
+    if ($fail == true) {
+        $URL .= '&return=error2';
+        header("Location: {$URL}");
+    } else {
+        //Success 0
         $URL .= '&return=success0';
-       header("Location: {$URL}");
-   }
+        header("Location: {$URL}");
+    }
 }

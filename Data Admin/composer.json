@@ -1,8 +1,0 @@
-{
-    "config": {
-        "preferred-install": "dist"
-    },
-    "require": {
-        "symfony/yaml": "^2.8"
-    }
-}

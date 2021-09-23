@@ -39,7 +39,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $URL .= '&return=error0';
     header("Location: {$URL}");
     exit;
-} else if (empty($filePath)) {
+} elseif (empty($filePath)) {
     $URL .= '&return=error1';
     header("Location: {$URL}");
     exit;
@@ -49,7 +49,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 
     try {
         $objPHPExcel = \PHPExcel_IOFactory::load($filePath);
-    } catch(\PHPExcel_Reader_Exception $e) {
+    } catch (\PHPExcel_Reader_Exception $e) {
         $this->errorID = importer::ERROR_IMPORT_FILE;
         $URL .= '&return=error4';
         header("Location: {$URL}");
@@ -66,8 +66,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $studentFoundCount = 0;
 
     // Grab the header & first row for Step 1
-    foreach( $objWorksheet->getRowIterator(2) as $rowIndex => $row ){
-
+    foreach ($objWorksheet->getRowIterator(2) as $rowIndex => $row) {
         $array = $objWorksheet->rangeToArray('A'.$rowIndex.':'.$lastColumn.$rowIndex, null, true, true, false);
 
         $studentName = isset($array[0][$nameColumn])? $array[0][$nameColumn] : '';
@@ -101,13 +100,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
                 case 'lastFirstAlt':    // Split the surname before the , and the preferred name after, optionally grabbing a first name in ()
                                         if (preg_match('/([^,]+)[, ]+([\w\.\-\']+)[ \(\)]*([\w\.\-\' ]*)/i', $studentName, $matches)) {
                                             list($surname1, $preferredName, $firstName) = array_pad(array_slice($matches, 1), 3, '');
-                                            if (empty($firstName)) $firstName = $preferredName;
+                                            if (empty($firstName)) {
+                                                $firstName = $preferredName;
+                                            }
                                             $surname2 = $surname1;
                                         }
                                         break;
 
             }
-        } else if ($columnType == 'multi') {
+        } elseif ($columnType == 'multi') {
             $preferredName = isset($array[0][$nameColumn])? $array[0][$nameColumn] : '';
             $firstName = isset($array[0][$firstNameColumn])? $array[0][$firstNameColumn] : $preferredName;
             $surname1 = isset($array[0][$surnameColumn])? $array[0][$surnameColumn] : '';
@@ -173,21 +174,21 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 	}
 
     //FINALISE THE DOCUMENT SO IT IS READY FOR DOWNLOAD
-	// Set active sheet index to the first sheet, so Excel opens this as the first sheet
-	$objPHPExcel->setActiveSheetIndex(0);
+    // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+    $objPHPExcel->setActiveSheetIndex(0);
 
-	// Redirect output to a client’s web browser (Excel2007)
-	header('Content-Type: '.$mimetype);
-	header('Content-Disposition: attachment;filename="'.$filename.'"');
-	header('Cache-Control: max-age=0');
-	// If you're serving to IE 9, then the following may be needed
-	header('Cache-Control: max-age=1');
+    // Redirect output to a client’s web browser (Excel2007)
+    header('Content-Type: '.$mimetype);
+    header('Content-Disposition: attachment;filename="'.$filename.'"');
+    header('Cache-Control: max-age=0');
+    // If you're serving to IE 9, then the following may be needed
+    header('Cache-Control: max-age=1');
 
-	// If you're serving to IE over SSL, then the following may be needed
-	header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-	header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-	header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-	header ('Pragma: public'); // HTTP/1.0
+    // If you're serving to IE over SSL, then the following may be needed
+    header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+    header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+    header('Pragma: public'); // HTTP/1.0
 
     $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, $exportFileType);
     $objWriter->save('php://output');

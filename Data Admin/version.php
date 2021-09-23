@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Sets version information
  */
-$moduleVersion="1.3.08" ;
+$moduleVersion="1.4.01" ;
+$coreVersion = '22.0.00';
 
-$gibbonVersionRequired="16.0.00";
-$phpVersionRequired="5.5.0";
+$gibbonVersionRequired="22.0.00";
+$phpVersionRequired="7.0.0";
 $mysqlVersionRequired="5";

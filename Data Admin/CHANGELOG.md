@@ -4,9 +4,17 @@ CHANGELOG
 ### Fixed
 - Refactored module, fixing session variables and adding null coalesce
 
-## [1.3.07] - 2018-12-11
+## [1.4.01] - 2018-12-11
 ### Added
 - Handle importing and exporting relational values that are CSV (eg: All Roles)
+
+## [1.4.00] - 2018-11-09
+### Added
+- Gibbon v17 requirement
+- PHP 7 requirement
+### Fixed
+- Refactored all breadcrumbs to use Page class
+- Removed outdated PHPExcel file includes
 
 ## [1.3.06] - 2018-09-26
 ### Added

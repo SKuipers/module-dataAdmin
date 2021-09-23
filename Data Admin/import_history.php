@@ -17,89 +17,66 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-use Modules\DataAdmin\ImportType;
+use Gibbon\Data\ImportType;
+use Gibbon\Tables\DataTable;
+use Gibbon\Domain\DataSet;
+use Gibbon\Domain\System\LogGateway;
+use Gibbon\Services\Format;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==FALSE) {
-	//Acess denied
-	echo "<div class='error'>" ;
-		echo __("You do not have access to this action.") ;
-	echo "</div>" ;
+if (isActionAccessible($guid, $connection2, "/modules/Data Admin/import_history.php")==false) {
+    //Acess denied
+    echo "<div class='error'>" ;
+    echo __("You do not have access to this action.") ;
+    echo "</div>" ;
+} else {
+    $page->breadcrumbs->add(__('View Import History'));
+
+    // Get a list of available import options
+    $importTypeList = ImportType::loadImportTypeList($pdo, false);
+
+    $logGateway = $container->get(LogGateway::class);
+    $logsByType = $logGateway->selectLogsByModuleAndTitle('System Admin', 'Import - %')->fetchAll();
+
+    $logsByType = array_map(function ($log) use (&$importTypeList) {
+        $log['data'] = isset($log['serialisedArray'])? unserialize($log['serialisedArray']) : [];
+        $log['importType'] = @$importTypeList[$log['data']['type']];
+        return $log;
+    }, $logsByType);
+
+    $table = DataTable::create('importHistory');
+    $table->setTitle(__('Import History'));
+
+    $table->addColumn('timestamp', __('Date'))
+        ->format(Format::using('dateTime', 'timestamp'));
+
+    $table->addColumn('user', __('User'))
+        ->format(Format::using('name', ['', 'preferredName', 'surname', 'Staff', false, true]));
+
+    $table->addColumn('category', __('Category'))
+        ->format(function ($log) {
+            return $log['importType']->getDetail('category');
+        });
+
+    $table->addColumn('name', __('Name'))
+        ->format(function ($log) {
+            return $log['importType']->getDetail('name');
+        });
+        
+    $table->addColumn('details', __('Details'))
+        ->format(function ($log) {
+            return !empty($log['data']['success']) ? __('Success') : __('Failed');
+        });
+
+    $table->addActionColumn()
+        ->addParam('gibbonLogID')
+        ->format(function ($importType, $actions) {
+            $actions->addAction('view', __('View'))
+                ->modalWindow('600', '550')
+                ->setURL('/modules/Data Admin/import_history_view.php');
+        });
+
+    echo $table->render(new DataSet($logsByType));
 }
-else {
-	
-	echo "<div class='trail'>" ;
-	echo "<div class='trailHead'><a href='" . $session->get('absoluteURL') . "'>" . __("Home") . "</a> > <a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_GET["q"]) . "/" . getModuleEntry($_GET["q"], $connection2, $guid) . "'>" . __(getModuleName($_GET["q"])) . "</a> > </div><div class='trailEnd'>" . __('View Import History', 'Data Admin') . "</div>" ;
-	echo "</div>" ;
-
-	echo "<h3>" ;
-	echo __("Import History", 'Data Admin') ;
-	echo "</h3>" ;
-
-	// Get a list of available import options
-	$importTypeList = ImportType::loadImportTypeList($pdo, false);
-
-	$sql="SELECT importLogID, surname, preferredName, type, success, timestamp, UNIX_TIMESTAMP(timestamp) as unixtime FROM dataAdminImportLog as importLog, gibbonPerson WHERE gibbonPerson.gibbonPersonID=importLog.gibbonPersonID ORDER BY timestamp DESC" ;
-	$result=$pdo->executeQuery(array(), $sql);
-
-	if (empty($importTypeList) || $result->rowCount()<1) {
-		echo "<div class='error'>" ;
-		echo __("There are no records to display.") ;
-		echo "</div>" ;
-	}
-	else {
-
-		echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
-			echo "<tr class='head'>" ;
-				echo "<th style='width: 100px;'>" ;
-					echo __("Date") ;
-				echo "</th>" ;
-				echo "<th>" ;
-					echo __("User") ;
-				echo "</th>" ;
-				echo "<th style='width: 80px;'>" ;
-					echo __("Category") ;
-				echo "</th>" ;
-				echo "<th >" ;
-					echo __("Import Type", 'Data Admin') ;
-				echo "</th>" ;
-				echo "<th>" ;
-					echo __("Details") ;
-				echo "</th>" ;
-				echo "<th>" ;
-					echo __("Actions") ;
-				echo "</th>" ;
-			echo "</tr>" ;
-
-		while ($row=$result->fetch()) {
-			if (!isset($importTypeList[ $row['type'] ])) continue; // Skip invalid import types
-
-			echo "<tr class='".( $row['success'] == false? 'error' : '')."'>" ;
-				$importType = $importTypeList[ $row['type'] ];
-
-				echo "<td>";
-					printf("<span title='%s'>%s</span> ", $row['timestamp'], date('M j, Y', $row['unixtime']) );
-				echo "</td>";
-
-				echo "<td>";
-					echo $row['preferredName'].' '.$row['surname'];
-				echo "</td>";
-
-				echo "<td>" . $importType->getDetail('category'). "</td>" ;
-				echo "<td>" . $importType->getDetail('name'). "</td>" ;
-				echo "<td>" .( ($row['success'] == true)? 'Success' : 'Failed' ). "</td>";
-
-				echo "<td>";
-					echo "<a class='thickbox' href='" . $session->get('absoluteURL') . "/fullscreen.php?q=/modules/" . $session->get('module') . "/import_history_view.php&importLogID=" . $row['importLogID'] . "&width=600&height=550'><img title='" . __('View Details') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/plus.png'/></a> " ;
-				echo "</td>";
-
-			echo "</tr>" ;
-		}
-		echo "</table>" ;
-
-	}
-	
-}	
-?>
