@@ -11,7 +11,6 @@ return [
             'lastSchool'       => __('Last School'),
             'nextSchool'       => __('Next School'),
             'departureReason'  => __('Departure Reason'),
-            'citizenship1'     => __('Nationality'),
             'ethnicity'        => __('Ethnicity'),
             'religion'         => __('Religion'),
             'residencyStatus'  => __('Residency Type'),

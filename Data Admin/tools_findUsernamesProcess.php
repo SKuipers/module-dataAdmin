@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
 
@@ -28,10 +30,10 @@ $roleCategory = $_POST['roleCategory'] ?? '';
 $columnType = $_POST['columnType'] ?? '';
 $nameType = $_POST['nameType'] ?? '';
 $nameFormat = $_POST['nameFormat'] ?? '';
-$nameColumn = intval($_POST['nameColumn']) ?? 0;
-$firstNameColumn = intval($_POST['firstNameColumn']) ?? 0;
-$surnameColumn = intval($_POST['surnameColumn']) ?? 0;
-$yearGroupColumn = intval($_POST['yearGroupColumn']) ?? 0;
+$nameColumn = intval($_POST['nameColumn'] ?? 0);
+$firstNameColumn = intval($_POST['firstNameColumn'] ?? 0);
+$surnameColumn = intval($_POST['surnameColumn'] ?? 0);
+$yearGroupColumn = intval($_POST['yearGroupColumn'] ?? 0);
 
 $URL = $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/tools_findUsernames.php';
 
@@ -44,13 +46,9 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     header("Location: {$URL}");
     exit;
 } else {
-    // Include PHPExcel
-	require_once $session->get('absolutePath') . '/lib/PHPExcel/Classes/PHPExcel.php';
-
     try {
-        $objPHPExcel = \PHPExcel_IOFactory::load($filePath);
-    } catch (\PHPExcel_Reader_Exception $e) {
-        $this->errorID = importer::ERROR_IMPORT_FILE;
+        $objPHPExcel = IOFactory::load($filePath);
+    } catch (\PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
         $URL .= '&return=error4';
         header("Location: {$URL}");
         exit;
@@ -190,7 +188,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
     header('Pragma: public'); // HTTP/1.0
 
-    $objWriter = \PHPExcel_IOFactory::createWriter($objPHPExcel, $exportFileType);
+    $objWriter = IOFactory::createWriter($objPHPExcel, $exportFileType);
     $objWriter->save('php://output');
     exit;
 }

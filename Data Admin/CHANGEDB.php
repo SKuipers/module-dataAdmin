@@ -126,3 +126,8 @@ DELETE FROM `gibbonAction` WHERE gibbonAction.gibbonModuleID=(SELECT gibbonModul
 UPDATE `gibbonModule` SET entryURL='snapshot_manage.php' WHERE name='Data Admin';end
 ";
 
+//v1.5.01
+$count++;
+$sql[$count][0]="1.5.01" ;
+$sql[$count][1]="";
+

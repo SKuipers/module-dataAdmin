@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.5.01] 2021-09-30
+### Fixed
+- Removed PHPExcel class, fixed Combine Similar Fields layout
+
 ## [1.5.00] 2021-09-23
 ### Removed
 - Removed the Import from File and Import History actions, which are part of the core

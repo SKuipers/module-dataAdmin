@@ -126,7 +126,9 @@ div.message {
 }
 
 .checkboxList input[type="checkbox"] {
+    max-height: 14px;
 	margin-right: 5px;
+    max-width: 36px;
 }
 
 .floatNone {

@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Services\Format;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -102,10 +103,14 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         
         $result = $pdo->executeQuery(array(), $sql);
 
-        if ($result->rowCount() > 0) {
-            echo '<h3>';
+        echo '<h3>';
             echo __('Results');
             echo '</h3>';
+
+        if ($result->rowCount() == 0) {
+            echo Format::alert(__('There are no records to display.'), 'message');
+        } else {
+            
 
             if ($mode == 'Assisted') {
                 echo '<p>';
@@ -134,7 +139,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
             $header = $table->addHeaderRow();
             $header->addContent($fieldOptions[$fieldName]);
-            $header->addContent(__("Matches"));
+            $header->addContent(__("Matches"))->addClass('w-1/2');
 
             if ($mode == 'Assisted') {
                 $fields = $result->fetchAll(\PDO::FETCH_GROUP);
@@ -146,7 +151,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
                     $row = $table->addRow();
                     $row->addContent($fieldValue);
-                    $row->addCheckbox('values[]')->setID("valueSet$count")->fromArray($fieldMatches)->addClass('checkboxList floatNone');
+                    $row->addCheckbox('values[]')->setID("valueSet$count")->setClass('checkboxList my-1 flex-none')->fromArray($fieldMatches);
                     $count++;
                 }
             } else {
@@ -156,7 +161,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
                     $row = $table->addRow();
                     $row->addContent($field['value']);
                     $row->addContent($field['count']);
-                    $row->addCheckbox('values[]')->setClass()->setValue($field['value']);
+                    $row->addCheckbox('values[]')->setClass('checkboxList my-1 flex-none')->setValue($field['value']);
                 }
             }
 
