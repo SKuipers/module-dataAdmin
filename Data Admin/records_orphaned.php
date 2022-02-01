@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Data\ImportType;
 use Gibbon\Module\DataAdmin\DatabaseTools;
+use Gibbon\Domain\System\SettingGateway;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -84,7 +85,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
         echo "</th>" ;
         echo "</tr>" ;
 
-        $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+        $checkUserPermissions = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
         $isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) != false);
 
         foreach ($orphanedRecords as $row) {

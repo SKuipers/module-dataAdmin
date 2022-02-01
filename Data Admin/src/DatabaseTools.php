@@ -21,6 +21,7 @@ namespace Gibbon\Module\DataAdmin;
 
 use Gibbon\Contracts\Database\Connection;
 use Gibbon\Data\ImportType;
+use Gibbon\Contracts\Services\Session;
 
 /**
  * Database Tools class
@@ -50,7 +51,7 @@ class DatabaseTools
      * @param    Gibbon\session
      * @param    Gibbon\Contracts\Database\Connection
      */
-    public function __construct(\Gibbon\Session $session = NULL, Connection $pdo = NULL)
+    public function __construct(Session $session = NULL, Connection $pdo = NULL)
     {
         $this->session = $session;
         $this->pdo = $pdo;

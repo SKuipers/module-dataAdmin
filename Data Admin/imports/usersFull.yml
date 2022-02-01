@@ -51,7 +51,7 @@ table:
         name: "Username"
         desc: "User account name & login"
         args: {filter: nospaces, required: true}
-    password:
+    passwordStrong:
         name: "Password"
         desc: "At least one lowercase and one number, from 8 to 20 chars"
         args: {filter: nospaces, required: true, custom: true, function: generatePassword}

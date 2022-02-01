@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Gibbon\Domain\System\SettingGateway;
+
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
@@ -47,7 +49,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     }
 
 
-    $snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+    $snapshotFolder = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation');
     $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
 
     $snapshotFolderPath = $session->get('absolutePath').'/uploads'.$snapshotFolder;

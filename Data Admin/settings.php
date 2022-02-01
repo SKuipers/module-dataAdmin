@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Domain\System\SettingGateway;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -36,6 +37,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 
     $trueIcon = "<img title='" . __('Yes'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconTick.png' width=16 height=16 />";
     $falseIcon = "<img title='" . __('No'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconCross.png' width=16 height=16 />";
+
+    $settingGateway = $container->get(SettingGateway::class);
 
     // Include the module version info, with required versions
     include $session->get('absolutePath').'/modules/'.$session->get('module').'/version.php'; ?>
@@ -121,7 +124,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 			</td>
 			<td class="right">
 				<?php
-					$importsFolder = getSettingByScope($connection2, 'Data Admin', 'importCustomFolderLocation');
+					$importsFolder = $settingGateway->getSettingByScope('Data Admin', 'importCustomFolderLocation');
 					$importsFolderPath = $session->get('absolutePath').'/uploads/'.trim($importsFolder, '/ ');
 
     echo (is_writable($importsFolderPath))? $trueIcon : $falseIcon; ?>
@@ -134,7 +137,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 			</td>
 			<td class="right">
 				<?php
-					$snapshotFolder = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation');
+					$snapshotFolder = $settingGateway->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation');
 					$snapshotFolderPath = $session->get('absolutePath').'/uploads/'.trim($snapshotFolder, '/ ');
 
     echo (is_writable($snapshotFolderPath))? $trueIcon : $falseIcon; ?>
@@ -154,12 +157,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
         'OpenDocument' => __('OpenDocument (.ods)', 'Data Admin'),
         'CSV'          => __('Comma Separated (.csv)', 'Data Admin'),
     );
-    $setting = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType', true);
+    $setting = $settingGateway->getSettingByScope('Data Admin', 'exportDefaultFileType', true);
     $row = $form->addRow();
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
     $row->addSelect($setting['name'])->fromArray($fileTypes)->selected($setting['value']);
 
-    $setting = getSettingByScope($connection2, 'Data Admin', 'exportSnapshotsFolderLocation', true);
+    $setting = $settingGateway->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation', true);
     $row = $form->addRow();
     $row->addLabel($setting['name'], __($setting['nameDisplay']))->description($setting['description']);
     $row->addTextField($setting['name'])->required()->setValue($setting['value']);

@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Data\ImportType;
+use Gibbon\Domain\System\SettingGateway;
 
 // Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 7200);
@@ -45,7 +46,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
     $type = (isset($_GET['type']))? $_GET['type'] : '';
     $importType = ImportType::loadImportType($type, $pdo);
 
-    $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+    $checkUserPermissions = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
 
     if ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) == false) {
         echo "<div class='error'>" ;
@@ -236,7 +237,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
 
     $filename = ($dataExport) ? 'DataExport'.'-'.$type : 'DataStructure'.'-'.$type;
 
-    $exportFileType = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+    $exportFileType = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportDefaultFileType');
     if (empty($exportFileType)) {
         $exportFileType = 'Excel2007';
     }

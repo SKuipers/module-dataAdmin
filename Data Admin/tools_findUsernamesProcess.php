@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use Gibbon\Domain\System\SettingGateway;
 
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
@@ -157,7 +158,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $filename = mb_substr($_FILES['file']['name'], 0, mb_strpos($_FILES['file']['name'], '.'));
     $filename .= '-matches';
 
-    $exportFileType = getSettingByScope($connection2, 'Data Admin', 'exportDefaultFileType');
+    $exportFileType = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportDefaultFileType');
 	if (empty($exportFileType)) $exportFileType = 'Excel2007';
 
 	switch($exportFileType) {

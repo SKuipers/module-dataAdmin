@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Data\ImportType;
 use Gibbon\Module\DataAdmin\DatabaseTools;
+use Gibbon\Domain\System\SettingGateway;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -36,10 +37,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
     echo __('The following Gibbon tables can be exported to Excel. The full table export is still a beta feature, at this time it should not be relied upon as a backup method. <strong>Note:</strong> This list does not represent the entire Gibbon database, only tables with an existing import/export structure.', 'Data Admin');
     echo "</div>" ;
 
-    $databaseTools = new DatabaseTools($gibbon->session, $pdo);
+    $databaseTools = new DatabaseTools($session, $pdo);
 
     // Get a list of available import options
-    $importTypeList = ImportType::loadImportTypeList($pdo, false);
+    $settingGateway = $container->get(SettingGateway::class);
+    $importTypeList = ImportType::loadImportTypeList($settingGateway, $pdo, false);
 
 
     // Get the unique tables used
@@ -57,7 +59,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
         echo __("There are no records to display.") ;
         echo "</div>" ;
     } else {
-        $checkUserPermissions = getSettingByScope($connection2, 'Data Admin', 'enableUserLevelPermissions');
+        $checkUserPermissions = $settingGateway->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
 
         $grouping = '';
         foreach ($importTables as $importType) {

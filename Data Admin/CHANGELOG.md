@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+## [1.6.00] 2022-02-01
+### Fixed
+- Fixed deprecated functions for v23 compatibility. Not backwards compatible.
+
 ## [1.5.01] 2021-09-30
 ### Fixed
 - Removed PHPExcel class, fixed Combine Similar Fields layout
