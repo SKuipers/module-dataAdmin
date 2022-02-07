@@ -44,7 +44,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplica
     // Get the importType information
     $type = (isset($_GET['type']))? $_GET['type'] : '';
 
-    $importType = ImportType::loadImportType($type, $pdo);
+    $settingGateway = $container->get(SettingGateway::class);
+    $importType = ImportType::loadImportType($type, $settingGateway, $pdo);
 
     $duplicateRecords = $databaseTools->getDuplicateRecords($importType);
 
@@ -89,7 +90,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_duplica
         echo "</th>" ;
         echo "</tr>" ;
 
-        $checkUserPermissions = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
+        $checkUserPermissions = $settingGateway->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
         $isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) != false);
 
         foreach ($duplicateRecords as $row) {

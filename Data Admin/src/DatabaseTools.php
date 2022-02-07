@@ -169,10 +169,13 @@ class DatabaseTools
         foreach ($relationships as $fieldName => $relationship) {
             $relationalTable = $this->escapeIdentifier($relationship['table']);
             $relationalKey = $this->escapeIdentifier($relationship['key']);
+            $relationalKeyAlias = $this->escapeIdentifier($relationship['key'].'_Rel');
 
             $alias = "`rel{$count}`";
 
+            if (!$countOnly) $sqlSelect[$relationalTable.'_Rel'] = "{$tableName}.{$fieldName} AS {$relationalKeyAlias}";
             if (!$countOnly) $sqlSelect[$relationalTable] = "{$alias}.{$relationalKey}";
+            
             $sqlJoin[$relationalTable] = "LEFT JOIN {$relationalTable} AS {$alias} ON ({$tableName}.{$fieldName}={$alias}.{$relationalKey})";
             $sqlWhere[$relationalTable] = "{$alias}.{$relationalKey} IS NULL";
 

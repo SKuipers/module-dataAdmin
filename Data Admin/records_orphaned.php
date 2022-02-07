@@ -44,7 +44,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
     // Get the importType information
     $type = (isset($_GET['type']))? $_GET['type'] : '';
 
-    $importType = ImportType::loadImportType($type, $pdo);
+    $settingGateway = $container->get(SettingGateway::class);
+    $importType = ImportType::loadImportType($type, $settingGateway, $pdo);
 
     $orphanedRecords = $databaseTools->getOrphanedRecords($importType);
 
@@ -53,7 +54,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
 
     // Get the relational fields
     foreach ($importType->getTableFields() as $fieldName) {
-        if ($importType->isFieldrequired($fieldName) == false) {
+        if ($importType->isFieldRequired($fieldName) == false) {
             continue;
         } // Skip non-required fields for orphan checks
 
@@ -85,13 +86,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
         echo "</th>" ;
         echo "</tr>" ;
 
-        $checkUserPermissions = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
+        $checkUserPermissions = $settingGateway->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
         $isImportAccessible = ($checkUserPermissions == 'Y' && $importType->isImportAccessible($guid, $connection2) != false);
 
         foreach ($orphanedRecords as $row) {
 
-            //print_r($row);
-            
             $importTypeName = $importType->getDetail('type');
 
             echo "<tr>" ;
@@ -101,7 +100,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
                 if (!empty($row[ $relationship['key'] ])) {
                     echo "<td>" .$row[ $relationship['key'] ]."</td>";
                 } else {
-                    echo "<td class='error'>" .__('Missing', 'Data Admin')."</td>";
+                    echo "<td class='error'>" .__('Missing', 'Data Admin').': ';
+                    echo $row[ $relationship['key'].'_Rel' ];
+                    echo "</td>";
                 }
             }
                 

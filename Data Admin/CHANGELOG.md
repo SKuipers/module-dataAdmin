@@ -1,6 +1,13 @@
 CHANGELOG
 =========
 
+## [1.6.01] 2022-02-07
+### Fixed
+- Fixed access error when using the Export action in Manage Records
+- Fixed PHP excel errors when using the Export action in Manage Records
+- Fixed PHP error when using Orphaned Records action in Manage Records
+- Removed unused import definitions from module folder
+
 ## [1.6.00] 2022-02-01
 ### Fixed
 - Fixed deprecated functions for v23 compatibility. Not backwards compatible.
