@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.6.02] 2022-03-21
+### Refactored
+- linkTop div
 
 ## [1.6.01] 2022-02-07
 ### Fixed

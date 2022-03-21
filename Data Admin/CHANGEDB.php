@@ -142,3 +142,7 @@ $sql[$count][0]="1.6.01" ;
 $sql[$count][1]="
 UPDATE `gibbonAction` SET `URLList`='records_manage.php,records_orphaned.php,records_duplicates.php,export_run.php' WHERE name='Manage Records' AND gibbonModuleID=(SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin');end";
 
+//v1.6.02
+$count++;
+$sql[$count][0]="1.6.02" ;
+$sql[$count][1]="";

@@ -41,13 +41,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     echo "<div class='warning'>" ;
     echo __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
     echo "</div>" ;
-    
-    if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php")) {
-        echo "<div class='linkTop'>" ;
-        echo "<a href='" . $session->get('absoluteURL') ."/index.php?q=/modules/" . $session->get('module') . "/snapshot_manage_add.php'>" .  __('Create Snapshot', 'Data Admin') . "<img style='margin-left: 5px' title='" . __('Create Snapshot', 'Data Admin'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/page_new.png'/></a>" ;
-        echo "</div>" ;
-    }
 
+    if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage_add.php")) {
+        $page->navigator->addHeaderAction('add', __m('Create Snapshot'))
+            ->setURL('/modules/Data Admin/snapshot_manage_add.php')
+            ->displayLabel();
+    }
 
     $snapshotFolder = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation');
     $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
