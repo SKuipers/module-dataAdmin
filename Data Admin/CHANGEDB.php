@@ -146,3 +146,8 @@ UPDATE `gibbonAction` SET `URLList`='records_manage.php,records_orphaned.php,rec
 $count++;
 $sql[$count][0]="1.6.02" ;
 $sql[$count][1]="";
+
+//v1.6.03
+$count++;
+$sql[$count][0]="1.6.03" ;
+$sql[$count][1]="";

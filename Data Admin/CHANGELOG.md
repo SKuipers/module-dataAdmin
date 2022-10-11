@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## [1.6.03] 2022-10-11
+- Fixed division by zero error when reading snapshot file size
+- Fixed excel filetype error in Find Usernames tool
+
 ## [1.6.02] 2022-03-21
 ### Refactored
 - linkTop div

@@ -124,7 +124,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
                     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                     WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID
                     AND gibbonStudentEnrolment.gibbonYearGroupID=(SELECT gibbonYearGroupID FROM gibbonYearGroup WHERE nameShort=:yearGroup)
-                    AND (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')
                     AND (
                         (gibbonPerson.surname = :surname1 AND gibbonPerson.preferredName = :preferredName)
                         OR (gibbonPerson.surname = :surname2 AND gibbonPerson.firstName = :firstName)
@@ -161,16 +160,28 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $exportFileType = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportDefaultFileType');
 	if (empty($exportFileType)) $exportFileType = 'Excel2007';
 
-	switch($exportFileType) {
-		case 'Excel2007': 		$filename .= '.xlsx';
-								$mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; break;
-		case 'Excel5': 			$filename .= '.xls';
-								$mimetype = 'application/vnd.ms-excel'; break;
-		case 'OpenDocument': 	$filename .= '.ods';
-								$mimetype = 'application/vnd.oasis.opendocument.spreadsheet'; break;
-		case 'CSV': 			$filename .= '.csv';
-								$mimetype = 'text/csv'; break;
-	}
+    switch($exportFileType) {
+        case 'Excel2007':
+            $filename .= '.xlsx';
+            $mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            $objWriter = IOFactory::createWriter($objPHPExcel, 'Xlsx');
+            break;
+        case 'Excel5':
+            $filename .= '.xls';
+            $mimetype = 'application/vnd.ms-excel';
+            $objWriter = IOFactory::createWriter($objPHPExcel, 'Xls');
+            break;
+        case 'OpenDocument':
+            $filename .= '.ods';
+            $mimetype = 'application/vnd.oasis.opendocument.spreadsheet';
+            $objWriter = IOFactory::createWriter($objPHPExcel, 'Ods');
+            break;
+        case 'CSV':
+            $filename .= '.csv';
+            $mimetype = 'text/csv';
+            $objWriter = IOFactory::createWriter($objPHPExcel, 'Csv');
+            break;
+    }
 
     //FINALISE THE DOCUMENT SO IT IS READY FOR DOWNLOAD
     // Set active sheet index to the first sheet, so Excel opens this as the first sheet
@@ -189,7 +200,6 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
     header('Pragma: public'); // HTTP/1.0
 
-    $objWriter = IOFactory::createWriter($objPHPExcel, $exportFileType);
     $objWriter->save('php://output');
     exit;
 }

@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Services\Format;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -85,7 +86,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
             $snapshotFile = basename($snapshotPath);
             echo "<tr>" ;
             echo "<td>". date("F j, Y, g:i a", filemtime($snapshotPath)). "</td>" ;
-            echo "<td>". readableFileSize(filesize($snapshotPath)) . "</td>" ;
+            echo "<td>". Format::filesize(filesize($snapshotPath)) . "</td>" ;
 
             echo "<td>";
             echo "<a href='" . $session->get('absoluteURL') . "/index.php?q=/modules/" . $session->get('module') . "/snapshot_manage_load.php&file=". $snapshotFile. "'><img title='" . __('Load') . "' src='./themes/" . $session->get('gibbonThemeName') . "/img/delivery2.png'/></a> " ;
