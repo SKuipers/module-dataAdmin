@@ -31,7 +31,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     $page->breadcrumbs->add(__('Find Usernames', 'Data Admin'));
 
     if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, ['error4' => __('Import cannot proceed, the file type cannot be read.') ]);
+        $page->return->addReturn('error4', __('Import cannot proceed, the file type cannot be read.'));
     }
 
     echo '<p>';
@@ -92,7 +92,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     $row = $form->addRow()->addClass('oneColumnOptions');
     $row->addLabel('nameFormat', __('Name Format'))->description(__('What format are the names currently in?'));
     $row->addSelect('nameFormat')->fromArray($formats)->required()->placeholder();
-    
+
     $row = $form->addRow()->addClass('oneColumnOptions');
     $row->addLabel('nameColumn', __('Name Column'))->description(__('What column are the names in?'));
     $row->addSelect('nameColumn')->fromArray($columns)->required()->placeholder();
@@ -120,6 +120,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     $row = $form->addRow();
     $row->addFooter();
     $row->addSubmit();
-    
+
     echo $form->getOutput();
 }

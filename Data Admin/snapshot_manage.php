@@ -35,10 +35,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     echo __("Manage Snapshots", 'Data Admin') ;
     echo "</h3>" ;
 
-    if (isset($_GET["return"])) {
-        returnProcess($guid, $_GET["return"], null, null);
-    }
-
     echo "<div class='warning'>" ;
     echo __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
     echo "</div>" ;
