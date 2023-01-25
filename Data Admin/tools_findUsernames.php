@@ -71,7 +71,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
     $row->addSelect('roleCategory')->fromQuery($pdo, $sql)->required()->placeholder();
 
     // COLUMN OPTIONS
-    $form->toggleVisibilityByClass('columnTypeOptions')->onSelect('roleCategory')->whenNot(__('Please select...'));
+    $form->toggleVisibilityByClass('columnTypeOptions')->onSelect('roleCategory')->whenNot('Please select...');
     $columnTypes = array(
         'one' => __('One column of names'),
         'multi' => __('More than one column'),

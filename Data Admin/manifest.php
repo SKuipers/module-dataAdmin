@@ -25,7 +25,7 @@ $description="Provides additional import functionality for migrating existing da
 $entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="1.6.03" ; //Version number
+$version="1.7.00" ; //Version number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 

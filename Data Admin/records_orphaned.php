@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Data\ImportType;
 use Gibbon\Module\DataAdmin\DatabaseTools;
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Data\PasswordPolicy;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -45,7 +46,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_orphane
     $type = (isset($_GET['type']))? $_GET['type'] : '';
 
     $settingGateway = $container->get(SettingGateway::class);
-    $importType = ImportType::loadImportType($type, $settingGateway, $pdo);
+    $passwordPolicy = $container->get(PasswordPolicy::class);
+    $importType = ImportType::loadImportType($type, $settingGateway, $passwordPolicy, $pdo);
 
     $orphanedRecords = $databaseTools->getOrphanedRecords($importType);
 

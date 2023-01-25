@@ -20,6 +20,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 use Gibbon\Data\ImportType;
 use Gibbon\Module\DataAdmin\DatabaseTools;
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Data\PasswordPolicy;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -41,7 +42,8 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
 
     // Get a list of available import options
     $settingGateway = $container->get(SettingGateway::class);
-    $importTypeList = ImportType::loadImportTypeList($settingGateway, $pdo, false);
+    $passwordPolicy = $container->get(PasswordPolicy::class);
+    $importTypeList = ImportType::loadImportTypeList($settingGateway, $passwordPolicy, $pdo, false);
 
 
     // Get the unique tables used

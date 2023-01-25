@@ -24,6 +24,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use Gibbon\Data\PasswordPolicy;
 
 // Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 7200);
@@ -48,10 +49,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
     $dataExportAll = (isset($_GET['all']) && $_GET['all'] == true);
 
     $settingGateway = $container->get(SettingGateway::class);
+    $passwordPolicy = $container->get(PasswordPolicy::class);
 
     // Get the importType information
     $type = (isset($_GET['type']))? $_GET['type'] : '';
-    $importType = ImportType::loadImportType($type, $settingGateway, $pdo);
+    $importType = ImportType::loadImportType($type, $settingGateway, $passwordPolicy, $pdo);
 
     if ($importType->isImportAccessible($guid, $connection2) == false) {
         $URL .= '&return=error0';

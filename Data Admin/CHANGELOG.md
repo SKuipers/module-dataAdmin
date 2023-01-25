@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.7.00] 2023-01-25
+- Fixed importer errors for missing PasswordPolicy class
+
 ## [1.6.03] 2022-10-11
 - Fixed division by zero error when reading snapshot file size
 - Fixed excel filetype error in Find Usernames tool
