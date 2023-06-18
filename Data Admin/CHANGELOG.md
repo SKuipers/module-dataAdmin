@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.7.01] 2023-06-18
+- Added Gibbon Person ID to the username finder
+
 ## [1.7.00] 2023-01-25
 - Fixed importer errors for missing PasswordPolicy class
 

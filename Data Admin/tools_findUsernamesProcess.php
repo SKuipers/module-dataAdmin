@@ -59,14 +59,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $lastColumn = $objWorksheet->getHighestDataColumn();
     $lastColumn++;
 
+    $lastColumnID = $lastColumn;
+    $lastColumnID++;
+
     $objWorksheet->setCellValue($lastColumn.'1', 'Username');
+    $objWorksheet->setCellValue($lastColumnID.'1', 'Gibbon ID');
 
     $studentCount = 0;
     $studentFoundCount = 0;
 
     // Grab the header & first row for Step 1
     foreach ($objWorksheet->getRowIterator(2) as $rowIndex => $row) {
-        $array = $objWorksheet->rangeToArray('A'.$rowIndex.':'.$lastColumn.$rowIndex, null, true, true, false);
+        $array = $objWorksheet->rangeToArray('A'.$rowIndex.':'.$lastColumnID.$rowIndex, null, true, true, false);
 
         $studentName = isset($array[0][$nameColumn])? $array[0][$nameColumn] : '';
         $yearGroup = isset($array[0][$yearGroupColumn])? $array[0][$yearGroupColumn] : '';
@@ -74,7 +78,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
         if ($columnType == 'one') {
             // Parse the student name, then copy into variables based on the name format
             $matches = array();
-            $preferredName = $firstName = $surname1 = $surname2 = '';
+            $preferredName = $firstName = $surname1 = $surname2;
 
             switch ($nameFormat) {
                 case 'firstLast':       // Handle names with spaces: Alpha Beta + Gamma as well as Alpha + Beta Gamma
@@ -118,8 +122,8 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 
         if ($roleCategory == 'Student') {
             // Locate a student enrolment for the target year group with a matching student name
-            $data = ['gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
-            $sql = "SELECT gibbonPerson.username
+            $data = ['gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2), 'fullName' => $studentName ];
+            $sql = "SELECT gibbonPerson.username, gibbonPerson.gibbonPersonID
                     FROM gibbonPerson
                     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
                     WHERE gibbonStudentEnrolment.gibbonSchoolYearID=:gibbonSchoolYearID
@@ -127,10 +131,11 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
                     AND (
                         (gibbonPerson.surname = :surname1 AND gibbonPerson.preferredName = :preferredName)
                         OR (gibbonPerson.surname = :surname2 AND gibbonPerson.firstName = :firstName)
+                        OR (CONCAT(gibbonPerson.preferredName, ' ', gibbonPerson.surname) =:fullName )
                     )";
         } else {
             $data = ['preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2) ];
-            $sql = "SELECT gibbonPerson.username
+            $sql = "SELECT gibbonPerson.username, gibbonPerson.gibbonPersonID
                     FROM gibbonPerson
                     WHERE (gibbonPerson.status='Full' OR gibbonPerson.status='Expected')
                     AND (
@@ -142,14 +147,18 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
         $result = $pdo->select($sql, $data);
 
         if ($result->rowCount() == 1) {
-            $foundValue = $result->fetchColumn();
+            $values = $result->fetch();
+            $foundUsername = $values['username'] ?? '';
+            $foundID = $values['gibbonPersonID'] ?? '';
             $studentFoundCount++;
         } else {
-            $foundValue = '';
+            $foundUsername = '';
+            $foundID = '';
         }
 
         // Write the ID to the last column
-        $objWorksheet->setCellValue($lastColumn.$rowIndex, $foundValue);
+        $objWorksheet->setCellValue($lastColumn.$rowIndex, $foundUsername);
+        $objWorksheet->setCellValue($lastColumnID.$rowIndex, $foundID);
 
         $studentCount++;
     }
