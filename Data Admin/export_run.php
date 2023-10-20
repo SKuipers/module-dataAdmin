@@ -143,8 +143,15 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
             if ($importType->isFieldRelational($fieldName)) {
                 $join = $on = '';
                 extract($importType->getField($fieldName, 'relationship'));
-                $queryFieldsRelational = (is_array($field))? implode(',', $field) : $field;
 
+                // Handle fields that have multiple value options
+                if (!is_array($field) && stripos($field, '|') !== false) {
+                    $field = explode('|', $field);
+                    $field = current($field);
+                }
+
+                $queryFieldsRelational = (is_array($field))? implode(',', $field) : $field;
+                
                 // Build a query to grab data from relational tables
                 $relationalSQL = "SELECT `{$table}`.`{$key}` id, {$queryFieldsRelational} FROM `{$table}`";
 
@@ -260,6 +267,12 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                     if ($importType->isFieldRelational($fieldName)) {
                         extract($importType->getField($fieldName, 'relationship'));
                         $filter = $importType->getField($fieldName, 'filter');
+
+                        // Handle fields that have multiple value options
+                        if (!is_array($field) && stripos($field, '|') !== false) {
+                            $field = explode('|', $field);
+                            $field = current($field);
+                        }
 
                         $values = $filter == 'csv' ? array_map('trim', explode(',', $value)) : [$value];
                         $relationalValue = [];

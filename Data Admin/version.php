@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Sets version information
  */
-$moduleVersion="1.7.01" ;
+$moduleVersion="1.7.02" ;
 $coreVersion = '23.0.00';
 
 $gibbonVersionRequired="23.0.00";

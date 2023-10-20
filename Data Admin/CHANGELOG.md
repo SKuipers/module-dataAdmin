@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.7.02] 2023-10-20
+- Fixed export option in Manage Records when fields have multiple relational keys
+
 ## [1.7.01] 2023-06-18
 - Added Gibbon Person ID to the username finder
 
