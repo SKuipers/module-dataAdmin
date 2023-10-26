@@ -31,10 +31,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 } else {
     $page->breadcrumbs->add(__('Combine Similar Fields', 'Data Admin'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
     echo '<p>';
     echo __("With user-entered data it's common to end up with a variety of details that all mean the same thing or are spelled incorrectly. These discrepancies can have an effect on reports generated. Use the tool below to help find and combine fields with similar data.", 'Data Admin');
     echo '</p>';
@@ -45,7 +41,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
 
     $form = Form::create('combineFieldsFilder', $session->get('absoluteURL').'/index.php?q=/modules/Data Admin/duplication_combine.php');
     $form->addHiddenValue('address', $session->get('address'));
-    
+
     $tableData = include __DIR__ . '/src/CombineableFields.php';
 
     // Build a set of options for the chained selects
@@ -79,20 +75,20 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
     $row = $form->addRow();
     $row->addLabel('mode', __('Mode'));
     $row->addRadio('mode')->fromArray(array('Assisted' => __('Assisted'), 'Manual' => __('Manual')))->checked($mode);
-    
+
     $row = $form->addRow();
     $row->addFooter();
     $row->addSubmit();
-    
+
     echo $form->getOutput();
 
     // Validate against data set to prevent unwanted values in SQL query
     if (!empty($fieldName) && array_key_exists($tableName, $tableData) && array_key_exists($fieldName, $tableData[$tableName]['fields'])) {
         if ($mode == 'Assisted') {
             $sql = "SELECT DISTINCT match1.`$fieldName` as matched, match2.`$fieldName` as value
-            FROM `$tableName` as match1, `$tableName` as match2 
-            WHERE match2.`$fieldName` LIKE CONCAT('%', match1.`$fieldName`, '%') 
-            AND LENGTH(match1.`$fieldName`) < LENGTH(match2.`$fieldName`) 
+            FROM `$tableName` as match1, `$tableName` as match2
+            WHERE match2.`$fieldName` LIKE CONCAT('%', match1.`$fieldName`, '%')
+            AND LENGTH(match1.`$fieldName`) < LENGTH(match2.`$fieldName`)
             AND LENGTH(match1.`$fieldName`) > 2
             AND (match1.`$fieldName` <> match2.`$fieldName`)
             AND match1.`$fieldName` <> ''
@@ -100,7 +96,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         } else {
             $sql = "SELECT `$fieldName` as value, count(*) as count FROM `$tableName` GROUP BY value ORDER BY value";
         }
-        
+
         $result = $pdo->executeQuery(array(), $sql);
 
         echo '<h3>';
@@ -110,7 +106,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/duplication_com
         if ($result->rowCount() == 0) {
             echo Format::alert(__('There are no records to display.'), 'message');
         } else {
-            
+
 
             if ($mode == 'Assisted') {
                 echo '<p>';
