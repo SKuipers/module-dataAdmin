@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.7.03] 2024-04-12
+- Added school year to Find Usernames tool
+
 ## [1.7.02] 2023-10-20
 - Fixed export option in Manage Records when fields have multiple relational keys
 

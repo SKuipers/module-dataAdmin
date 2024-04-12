@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Forms\Form;
+use Gibbon\Forms\DatabaseFormFactory;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -59,7 +60,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/tools_findUsern
 
     $form = Form::create('findUsernames', $session->get('absoluteURL').'/modules/Data Admin/tools_findUsernamesProcess.php');
     $form->addHiddenValue('address', $session->get('address'));
-    $form->setClass('fullWidth smallIntBorder');
+    $form->setFactory(DatabaseFormFactory::create($pdo));
+    
+    $row = $form->addRow();
+    $row->addLabel('gibbonSchoolYearID', __('School Year'));
+    $row->addSelectSchoolYear('gibbonSchoolYearID')->required()->selected($session->get('gibbonSchoolYearID'));
 
     $row = $form->addRow();
     $row->addLabel('file', __('Spreadsheet'));

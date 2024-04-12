@@ -27,6 +27,7 @@ include __DIR__ . '/../../gibbon.php';
 require __DIR__ . '/module.php';
 
 $filePath = isset($_FILES['file']['tmp_name'])? $_FILES['file']['tmp_name'] : '';
+$gibbonSchoolYearID = $_POST['gibbonSchoolYearID'] ?? '';
 $roleCategory = $_POST['roleCategory'] ?? '';
 $columnType = $_POST['columnType'] ?? '';
 $nameType = $_POST['nameType'] ?? '';
@@ -42,7 +43,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
     $URL .= '&return=error0';
     header("Location: {$URL}");
     exit;
-} elseif (empty($filePath)) {
+} elseif (empty($filePath) || empty($gibbonSchoolYearID)) {
     $URL .= '&return=error1';
     header("Location: {$URL}");
     exit;
@@ -122,7 +123,7 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_findUsern
 
         if ($roleCategory == 'Student') {
             // Locate a student enrolment for the target year group with a matching student name
-            $data = ['gibbonSchoolYearID' => $session->get('gibbonSchoolYearID'), 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2), 'fullName' => $studentName ];
+            $data = ['gibbonSchoolYearID' => $gibbonSchoolYearID, 'yearGroup' => $yearGroup, 'preferredName' => trim($preferredName), 'firstName' => trim($firstName), 'surname1' => trim($surname1), 'surname2' => trim($surname2), 'fullName' => $studentName ];
             $sql = "SELECT gibbonPerson.username, gibbonPerson.gibbonPersonID
                     FROM gibbonPerson
                     JOIN gibbonStudentEnrolment ON (gibbonStudentEnrolment.gibbonPersonID=gibbonPerson.gibbonPersonID)
