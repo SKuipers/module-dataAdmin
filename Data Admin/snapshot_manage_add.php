@@ -33,8 +33,6 @@ else {
         ->add(__('Manage Snapshots', 'Data Admin'), 'snapshot_manage.php')
         ->add(__('Create Snapshot', 'Data Admin'));
 
-	if (isset($_GET["return"])) { returnProcess($guid, $_GET["return"], null, null); }
-
 	echo "<div class='warning'>" ;
 	echo __('Database snapshots allow you to save and restore your entire Gibbon database, which can be useful before importing data. They should NOT be used on live systems or when other users are online. Snapshots should NOT be used in place of standard backup procedures. A snapshot only saves MySQL data and does not save uploaded files or preserve any changes to the file system.', 'Data Admin');
 	echo "</div>" ;
@@ -42,7 +40,7 @@ else {
 	echo "<div class='warning'>" ;
 	echo __('Database files can be quite large, do not refresh the page after pressing submit. Also, this may fail if PHP does not have access to execute system commands.', 'Data Admin');
     echo "</div>" ;
-    
+
     $form = Form::create('deleteRecord', $session->get('absoluteURL').'/modules/'.$session->get('module').'/snapshot_manage_addProcess.php');
     $form->addHiddenValue('address', $_GET['q']);
 
