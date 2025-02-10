@@ -54,13 +54,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 		</tr>
 		<tr>
 			<td style="width: 275px">
-				<b><?php printf(__('%s version %s or higher', 'Data Admin'), 'Gibbon', mb_strstr($gibbonVersionRequired, '.', true)); ?></b><br>
+				<b><?php printf(__('%s version %s or higher', 'Data Admin'), 'Gibbon', mb_strstr($coreVersion, '.', true)); ?></b><br>
 				<span class="emphasis small"></span>
 			</td>
 			<td class="right">
 				<?php
                     echo '<span style="margin-right:20px;">Gibbon '.$version.'</span>';
-    echo (version_compare($version, $gibbonVersionRequired, '>='))? $trueIcon : $falseIcon; ?>
+    echo (version_compare($version, $coreVersion, '>='))? $trueIcon : $falseIcon; ?>
 			</td>
 		</tr>
 		<tr>

@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.8.00] 2025-02-10
+- Gibbon v28 Compatibility
+
 ## [1.7.03] 2024-04-12
 - Added school year to Find Usernames tool
 

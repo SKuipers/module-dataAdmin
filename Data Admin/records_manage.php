@@ -76,7 +76,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/records_manage.
                 echo "<td colspan='5'><h4>".$grouping."</h4></td>" ;
                 echo "</tr>" ;
 
-                echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+                echo "<table class='w-full colorOddEven' cellspacing='0'>" ;
 
                 echo "<tr class='head'>" ;
                 echo "<th style='width: 15%;padding: 5px 5px 5px 20px !important;'>" ;

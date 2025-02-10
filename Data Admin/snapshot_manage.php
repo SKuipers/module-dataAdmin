@@ -69,7 +69,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
         echo __("There are no records to display.") ;
         echo "</div>" ;
     } else {
-        echo "<table class='fullWidth colorOddEven' cellspacing='0'>" ;
+        echo "<table class='w-full colorOddEven' cellspacing='0'>" ;
         echo "<tr class='head'>" ;
         echo "<th>" ;
         echo __("Date") ;

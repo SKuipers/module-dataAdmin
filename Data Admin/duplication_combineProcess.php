@@ -57,14 +57,15 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/settings.php') 
 
     try {
         $valueList = array();
-        $data = array('renameValue' => $renameValue);
+        $data = array('renameValue' => html_entity_decode($renameValue, ENT_QUOTES, 'UTF-8'));
 
         for ($i = 0; $i < count($values); $i++) {
             $valueList[] = "`$fieldName` = :oldValue$i";
-            $data["oldValue$i"] = $values[$i];
+            $data["oldValue$i"] = html_entity_decode($values[$i], ENT_QUOTES, 'UTF-8');
         }
 
         $sql = "UPDATE `$tableName` SET `$fieldName`=:renameValue WHERE ".implode(' OR ', $valueList);
+
         $result = $connection2->prepare($sql);
         $result->execute($data);
     } catch (PDOException $e) {
