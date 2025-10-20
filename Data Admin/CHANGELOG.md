@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+## [1.9.00] 2025-10-20
+- Add file export option
+- Fix export for Timetable - Complete
+
 ## [1.8.00] 2025-02-10
 - Gibbon v28 Compatibility
 

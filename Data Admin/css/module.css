@@ -98,18 +98,6 @@ tr.warning td {
 	color: white;
 }
 
-
-div.message {
-	border: 0px;
-	border-left: 6px solid #3B73AF;
-	color: #3B73AF;
-	background-color: #D0EAFD;
-	font-size: 12px;
-	padding: 10px;
-	margin: 10px 0px 15px 0px;
-	box-shadow: 2px 2px 2px rgba(50,50,50,0.15);
-}
-
 #content {
 	overflow: initial;
 }

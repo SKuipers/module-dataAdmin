@@ -28,10 +28,8 @@ use Gibbon\Data\PasswordPolicy;
 
 // Increase max execution time, as this stuff gets big
 ini_set('max_execution_time', 7200);
-ini_set('memory_limit','1024M');
-set_time_limit(1200);
-
-$_POST['address'] = '/modules/Data Admin/export_run.php';
+ini_set('memory_limit','2048M');
+set_time_limit(2400);
 
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
@@ -63,6 +61,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
         $URL .= '&return=error1';
         header("Location: {$URL}");
         exit;
+    }
+
+    function escapeIdentifier($text)
+    {
+        return implode('.', array_map(function ($piece) {
+            return '`' . str_replace('`', '``', $piece) . '`';
+        }, explode('.', $text, 2)));
     }
 
     $checkUserPermissions = $settingGateway->getSettingByScope('Data Admin', 'enableUserLevelPermissions');
@@ -151,27 +156,41 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                 }
 
                 $queryFieldsRelational = (is_array($field))? implode(',', $field) : $field;
+
+                $relationalField = stripos($key, '.') !== false
+                    ? escapeIdentifier($key)
+                    : "`{$table}`.`{$key}`";  
                 
                 // Build a query to grab data from relational tables
-                $relationalSQL = "SELECT `{$table}`.`{$key}` id, {$queryFieldsRelational} FROM `{$table}`";
+                $relationalSQL = "SELECT {$relationalField} AS id, {$queryFieldsRelational} FROM `{$table}`";
 
                 if (!empty($join) && !empty($on)) {
                     if (is_array($on) && count($on) == 2) {
-                        $relationalSQL .= " JOIN {$join} ON ({$join}.{$on[0]}={$table}.{$on[1]})";
+                        $joinField = stripos($on[0], '.') !== false
+                            ? escapeIdentifier($on[0]).' AS `'.str_replace('.', '', $on[0]).'`'
+                            : "`{$join}`.`{$on[0]}`"; 
+
+                        $onField = stripos($on[1], '.') !== false
+                            ? escapeIdentifier($on[1]).' AS `'.str_replace('.', '', $on[1]).'`'
+                            : "`{$table}`.`{$on[1]}`"; 
+                    
+                        $relationalSQL .= " JOIN {$join} ON ({$joinField}={$onField})";
                     }
                 }
+
+
 
                 $resultRelation = $pdo->select($relationalSQL);
 
                 if ($resultRelation->rowCount() > 0) {
 
                     // Fetch into an array as:  id => array( field => value, field => value, ... )
-                    $relationalData[$fieldName] = $resultRelation->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE);
+                    $fieldNameSafe = str_replace('.', '', $fieldName);
+                    $relationalData[$fieldNameSafe] = $resultRelation->fetchAll(\PDO::FETCH_GROUP|\PDO::FETCH_UNIQUE);
                 }
             }
         }
     }
-
       
     if ($dataExport) {
 
@@ -197,9 +216,19 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                     $join[$tableName] = " LEFT JOIN `{$tableName}` ON (`{$tableName}`.{$tablePrimaryKey} = `{$mainTableName}`.{$tablePrimaryKey}) ";
                 } elseif (in_array($primaryKey, $tableUniqueKeys)) {
                     $join[$tableName] = " LEFT JOIN `{$tableName}` ON (`{$tableName}`.{$primaryKey} = `{$mainTableName}`.{$primaryKey}) ";
+                } elseif (in_array($lastPrimaryKey, $tableUniqueKeys) && !empty($lastTableName)) {
+                    $join[$tableName] = " LEFT JOIN `{$tableName}` ON (`{$tableName}`.{$lastPrimaryKey} = `{$lastTableName}`.{$lastPrimaryKey}) ";
+                } elseif (in_array($lastLastPrimaryKey, $tableUniqueKeys) && !empty($lastLastTableName)) {
+                    $join[$tableName] = " LEFT JOIN `{$tableName}` ON (`{$tableName}`.{$lastLastPrimaryKey} = `{$lastLastTableName}`.{$lastLastPrimaryKey}) ";
                 } else {
                     continue;
                 }
+
+                $lastLastTableName = $lastTableName ?? '';
+                $lastLastPrimaryKey = $lastPrimaryKey ?? '';
+
+                $lastTableName = $tableName;
+                $lastPrimaryKey = $tablePrimaryKey;
             }
     
             foreach ($importType->getTableFields() as $fieldName) {
@@ -215,7 +244,9 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                     continue;  // Skip password fields when exporting data
                 }
                 
-                $queryFields[] = "`{$tableName}`.{$fieldName}";
+                $queryFields[] = stripos($fieldName, '.') !== false
+                    ? escapeIdentifier($fieldName).' AS `'.str_replace('.', '', $fieldName).'`'
+                    : "`{$tableName}`.{$fieldName}";   
             }
     
             if (!empty($tablePrimaryKey)) {
@@ -241,7 +272,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
             }
         }
 
+
+        if (!empty($lastTableName)) {
+            $sql .= " GROUP BY `{$lastTableName}`.{$lastPrimaryKey} ";
+        }
+
         $sql .= " ORDER BY `{$mainTableName}`.{$primaryKey} ASC";
+
         $result = $pdo->select($sql, $data);
 
         if (!empty($pdo->getErrorMessage())) {
@@ -260,11 +297,13 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                 // Work backwards, so we can potentially fill in any relational read-only fields
                 for ($i=count($columnFields)-1; $i >= 0; $i--) {
                     $fieldName = $columnFields[$i];
+                    $fieldNameSafe = str_replace('.', '', $fieldName);
                     
-                    $value = $row[$fieldName] ?? null;
+                    $value = $row[$fieldNameSafe] ?? null;
 
                     // Handle relational fields
                     if ($importType->isFieldRelational($fieldName)) {
+
                         extract($importType->getField($fieldName, 'relationship'));
                         $filter = $importType->getField($fieldName, 'filter');
 
@@ -280,7 +319,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                         foreach ($values as $valueRel) {
                             // Single key relational field -- value is the ID from other table
                             $relationalField = (is_array($field))? $field[0] : $field;
-                            $relationalValue[] = @$relationalData[$fieldName][$valueRel][$relationalField];
+                            $relationalValue[] = @$relationalData[$fieldNameSafe][$valueRel][$relationalField];
 
                             // Multi-key relational field (fill in backwards, slightly hacky but works)
                             if (is_array($field) && count($field) > 1) {
@@ -290,7 +329,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/export_run.php"
                                     // Does the field exist in the import definition but not in the current table?
                                     // Add the value to the row to fill-in the link between read-only relational fields
                                     if ($importType->isFieldReadOnly($relationalField)) {
-                                        $row[ $relationalField ] = @$relationalData[$fieldName][$valueRel][$relationalField];
+                                        $row[ $relationalField ] = @$relationalData[$fieldNameSafe][$valueRel][$relationalField];
                                     }
                                 }
                             }

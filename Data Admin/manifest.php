@@ -25,7 +25,7 @@ $description="Provides additional import functionality for migrating existing da
 $entryURL="import_manage.php" ; //The landing page for the unit, used in the main menu
 $type="Additional" ; //Do not change.
 $category="Admin" ; //The main menu area to place the module in
-$version="1.8.00" ; //Version number
+$version="1.9.00" ; //Version number
 $author="Sandra Kuipers" ; //Your name
 $url="https://github.com/SKuipers/" ; //Your URL
 
@@ -128,6 +128,22 @@ $actionRows[4]["categoryPermissionStaff"]="Y" ;
 $actionRows[4]["categoryPermissionStudent"]="N" ;
 $actionRows[4]["categoryPermissionParent"]="N" ;
 $actionRows[4]["categoryPermissionOther"]="N" ;
+
+$actionRows[5]["name"]="Export Files" ;
+$actionRows[5]["precedence"]="0";
+$actionRows[5]["category"]="Files" ;
+$actionRows[5]["description"]="Export files from Gibbon";
+$actionRows[5]["URLList"]="tools_fileExport.php" ;
+$actionRows[5]["entryURL"]="tools_fileExport.php" ;
+$actionRows[5]["defaultPermissionAdmin"]="Y" ;
+$actionRows[5]["defaultPermissionTeacher"]="N" ;
+$actionRows[5]["defaultPermissionStudent"]="N" ;
+$actionRows[5]["defaultPermissionParent"]="N" ;
+$actionRows[5]["defaultPermissionSupport"]="N" ;
+$actionRows[5]["categoryPermissionStaff"]="Y" ;
+$actionRows[5]["categoryPermissionStudent"]="N" ;
+$actionRows[5]["categoryPermissionParent"]="N" ;
+$actionRows[5]["categoryPermissionOther"]="N" ;
 //Hooks
 // $hooks[0]="" ; //Serialised array to create hook and set options. See Hooks documentation online.
 ?>

@@ -176,3 +176,13 @@ $sql[$count][1]="";
 $count++;
 $sql[$count][0]="1.8.00" ;
 $sql[$count][1]="";
+
+//v1.9.00
+$count++;
+$sql[$count][0]="1.9.00" ;
+$sql[$count][1]="
+INSERT INTO `gibbonAction` (`gibbonModuleID`, `name`, `precedence`, `category`, `description`, `URLList`, `entryURL`, `defaultPermissionAdmin`, `defaultPermissionTeacher`, `defaultPermissionStudent`, `defaultPermissionParent`, `defaultPermissionSupport`, `categoryPermissionStaff`, `categoryPermissionStudent`, `categoryPermissionParent`, `categoryPermissionOther`) VALUES ((SELECT gibbonModuleID FROM gibbonModule WHERE name='Data Admin'), 'Export Files', 0, 'Files', '', 'tools_fileExport.php', 'tools_fileExport.php', 'Y', 'N', 'N', 'N', 'N', 'Y', 'N', 'N', 'N') ;end
+INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`) VALUES (NULL , '1', (SELECT gibbonActionID FROM gibbonAction JOIN gibbonModule ON (gibbonAction.gibbonModuleID=gibbonModule.gibbonModuleID) WHERE gibbonModule.name='Data Admin' AND gibbonAction.name='Export Files'));end
+CREATE TABLE `dataAdminExportLog` (`exportLogID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,`gibbonPersonID` int(10) unsigned zerofill NOT NULL,`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,`type` varchar(60) NULL,`description` varchar(255) NULL,`fileName` varchar(90) NULL,`filePath` varchar(255) NULL,`success` INT NOT NULL DEFAULT 0, PRIMARY KEY (`exportLogID`), UNIQUE KEY(`gibbonPersonID`, `filePath`)) ENGINE=MyISAM DEFAULT CHARSET=utf8;end
+
+";
