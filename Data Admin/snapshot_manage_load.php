@@ -37,14 +37,10 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     echo __("Load Snapshot", 'Data Admin');
     echo "</h3>";
 
-    if (isset($_GET["return"])) {
-        returnProcess($guid, $_GET["return"], null, null);
-    }
-
     echo "<div class='warning'>";
     echo __('Loading a snapshot is a HIGHLY DESTRUCTIVE operation. It will overwrite all data in Gibbon. Do not proceed unless you are absolutly certain you know what you\'re doing.', 'Data Admin');
     echo "</div>";
-    
+
     //Check if file exists
     $filename = (isset($_GET["file"])) ? $_GET["file"] : '';
     if ($filename == "") {

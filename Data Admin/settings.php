@@ -31,10 +31,6 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 } else {
     $page->breadcrumbs->add(__('Data Admin Settings', 'Data Admin'));
 
-    if (isset($_GET['return'])) {
-        returnProcess($guid, $_GET['return'], null, null);
-    }
-
     $trueIcon = "<img title='" . __('Yes'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconTick.png' width=16 height=16 />";
     $falseIcon = "<img title='" . __('No'). "' src='./themes/" . $session->get('gibbonThemeName') . "/img/iconCross.png' width=16 height=16 />";
 
@@ -145,7 +141,7 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/settings.php") 
 		</tr>
 
     </table></br>
-    
+
     <?php
 
     $form = Form::create('action', $session->get('absoluteURL').'/modules/'.$session->get('module').'/settingsProcess.php');
