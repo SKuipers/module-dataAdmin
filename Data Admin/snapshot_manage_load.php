@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use Gibbon\Forms\Form;
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Contracts\Filesystem\FileHandler;
 
 // Module Bootstrap
 require __DIR__ . '/module.php';
@@ -46,19 +47,17 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
     echo "</div>";
     
     //Check if file exists
-    $filename = (isset($_GET["file"])) ? $_GET["file"] : '';
+    $filename = basename(str_replace('\\', '/', (string) ($_GET['file'] ?? '')));
     if ($filename == "") {
         echo "<div class='error'>";
         echo __("You have not specified one or more required parameters.");
         echo "</div>";
     } else {
-        $snapshotFolder = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation');
-        $snapshotFolder = '/' . trim($snapshotFolder, '/ ');
+        $snapshotFolder = trim(str_replace('\\', '/', (string) $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation')), '/ ');
+        $relativePath = 'uploads'.($snapshotFolder === '' ? '' : '/'.$snapshotFolder).'/'.$filename;
+        $filepath = $container->get(FileHandler::class)->resolveStoredPath((string) $session->get('absolutePath'), $relativePath);
 
-        $snapshotFolderPath = $session->get('absolutePath') . '/uploads' . $snapshotFolder;
-        $filepath = $snapshotFolderPath . '/' . $filename;
-
-        if (!file_exists($filepath)) {
+        if ($filepath === null) {
             echo "<div class='error'>";
             echo __("The specified record cannot be found.");
             echo "</div>";

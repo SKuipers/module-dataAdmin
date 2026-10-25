@@ -1,5 +1,8 @@
 CHANGELOG
 =========
+## [1.10.00] 2026-10-25
+-  Updated to use the latest method to resolve file path
+
 ## [1.9.00] 2025-10-20
 - Add file export option
 - Fix export for Timetable - Complete

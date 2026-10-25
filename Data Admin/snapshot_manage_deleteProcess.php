@@ -18,6 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Contracts\Filesystem\FileHandler;
 
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
@@ -25,7 +26,7 @@ include __DIR__ . '/../../gibbon.php';
 // Module Bootstrap
 require __DIR__ . '/module.php';
 
-$filename=(isset($_GET["file"]))? $_GET["file"] : '' ;
+$filename = basename(str_replace('\\', '/', (string) ($_GET['file'] ?? '')));
 
 $URL=$session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage_delete.php&file=$filename" ;
 $URLDelete=$session->get('absoluteURL') . "/index.php?q=/modules/" . getModuleName($_POST["address"]) . "/snapshot_manage.php" ;
@@ -36,13 +37,11 @@ if (isActionAccessible($guid, $connection2, "/modules/Data Admin/snapshot_manage
 } else {
     //Proceed!
     //Check if file exists
-    $snapshotFolder = $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation');
-    $snapshotFolder = '/'.trim($snapshotFolder, '/ ');
+    $snapshotFolder = trim(str_replace('\\', '/', (string) $container->get(SettingGateway::class)->getSettingByScope('Data Admin', 'exportSnapshotsFolderLocation')), '/ ');
+    $relativePath = 'uploads'.($snapshotFolder === '' ? '' : '/'.$snapshotFolder).'/'.$filename;
+    $filepath = $container->get(FileHandler::class)->resolveStoredPath((string) $session->get('absolutePath'), $relativePath);
 
-    $snapshotFolderPath = $session->get('absolutePath').'/uploads'.$snapshotFolder;
-    $filepath = $snapshotFolderPath.'/'.$filename;
-
-    if (!file_exists($filepath)) {
+    if ($filepath === null) {
         $URL.="&return=error1" ;
         header("Location: {$URL}");
         exit;

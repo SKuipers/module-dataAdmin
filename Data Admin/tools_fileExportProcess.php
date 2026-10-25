@@ -19,6 +19,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Gibbon\Domain\System\SettingGateway;
+use Gibbon\Contracts\Filesystem\FileHandler;
 
 // Gibbon Bootstrap
 include __DIR__ . '/../../gibbon.php';
@@ -73,10 +74,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_fileExpor
         $exportPathStudent = $exportPathFormGroup . '/'. $studentID;
 
         $photoName = $student['username'] . '_'.$student['surname'].', '. $student['preferredName'] . '.jpg';
-        $photoPath = $absolutePath .'/'. $student['image_240'];
+        $photoPath = $container->get(FileHandler::class)->resolveStoredPath((string) $absolutePath, (string) ($student['image_240'] ?? ''));
         $destinationPath = $exportPathStudent . '/'. $photoName;
 
-        if (is_file($photoPath)) {
+        if ($photoPath !== null) {
             $exportData[] = [
                 'key'      => 'photoCount',
                 'copyFrom' => $photoPath,
@@ -111,10 +112,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_fileExpor
 
         foreach ($reports as $report) {
             $reportName = $student['username'] . '_'.$report['schoolYear'] . ' - '.$report['reportIdentifier'].'.pdf';
-            $reportPath = $absolutePath . $report['archivePath'] .'/'. $report['filePath'];
+            $reportPath = $container->get(FileHandler::class)->resolveStoredPath((string) $absolutePath, trim((string) ($report['archivePath'] ?? ''), '/').'/'.ltrim((string) ($report['filePath'] ?? ''), '/'));
             $destinationPath = $exportPathStudent . '/'. $reportName;
 
-            if (is_file($reportPath)) {
+            if ($reportPath !== null) {
                 $exportData[] = [
                     'key'      => 'reportCount',
                     'copyFrom' => $reportPath,
@@ -149,10 +150,10 @@ if (isActionAccessible($guid, $connection2, '/modules/Data Admin/tools_fileExpor
 
         foreach ($documents as $document) {
             $documentName = $student['username'] . '_'.$document['description'].'.pdf';
-            $documentPath = $absolutePath .'/'. $document['filePath'];
+            $documentPath = $container->get(FileHandler::class)->resolveStoredPath((string) $absolutePath, (string) ($document['filePath'] ?? ''));
             $destinationPath = $exportPathStudent . '/'. $documentName;
 
-            if (is_file($documentPath)) {
+            if ($documentPath !== null) {
                 $exportData[] = [
                     'key'      => 'documentCount',
                     'copyFrom' => $documentPath,

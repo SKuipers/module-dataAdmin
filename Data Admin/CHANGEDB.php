@@ -186,3 +186,8 @@ INSERT INTO `gibbonPermission` (`permissionID` ,`gibbonRoleID` ,`gibbonActionID`
 CREATE TABLE `dataAdminExportLog` (`exportLogID` int(10) unsigned zerofill NOT NULL AUTO_INCREMENT,`gibbonPersonID` int(10) unsigned zerofill NOT NULL,`timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,`type` varchar(60) NULL,`description` varchar(255) NULL,`fileName` varchar(90) NULL,`filePath` varchar(255) NULL,`success` INT NOT NULL DEFAULT 0, PRIMARY KEY (`exportLogID`), UNIQUE KEY(`gibbonPersonID`, `filePath`)) ENGINE=MyISAM DEFAULT CHARSET=utf8;end
 
 ";
+
+//v1.10.00
+$count++;
+$sql[$count][0]="1.10.00" ;
+$sql[$count][1]="";
